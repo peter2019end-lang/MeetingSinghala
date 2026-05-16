@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Peter AI Super Pro v36.0 | Trainable Sinhala Switching</title>
+    <title>Peter AI Super Pro v36.4 | Stable Login + Sinhala PDF</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif; background: #f0f4f8; color: #1e293b; }
@@ -105,16 +105,17 @@
         .train-item { background: #e2e8f0; padding: 4px 12px; border-radius: 40px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
         .train-item button { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px; }
         .train-input-group { display: flex; gap: 8px; margin: 10px 0; }
+        #pdfReportContainer { position: absolute; top: -9999px; left: -9999px; width: 210mm; background: white; padding: 20px; font-family: 'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', sans-serif; font-size: 12pt; line-height: 1.4; color: black; }
     </style>
 </head>
 <body>
     <div id="loginOverlay" class="login-overlay">
         <div class="login-container">
             <div class="login-icon"><i class="fas fa-microphone-alt"></i></div>
-            <div class="login-header"><h2>Peter AI Super Pro v36.0</h2></div>
+            <div class="login-header"><h2>Peter AI Super Pro v36.4</h2></div>
             <div class="input-group">
                 <label><i class="fas fa-user"></i> Username</label>
-                <input type="password" id="loginUsername" placeholder="Enter username">
+                <input type="text" id="loginUsername" placeholder="Enter username">
                 <i class="fas fa-eye toggle-field" id="toggleUsername"></i>
             </div>
             <div class="input-group">
@@ -128,9 +129,10 @@
     </div>
 
     <div id="mainApp" class="main-app">
+        <!-- Dashboard - same layout as before, unchanged -->
         <div class="dashboard">
             <div class="top-bar">
-                <div class="logo-area"><h1>Peter AI Super Pro <span style="font-size:11px;">v36.0</span></h1><p>Trainable Sinhala Switching</p></div>
+                <div class="logo-area"><h1>Peter AI Super Pro <span style="font-size:11px;">v36.4</span></h1><p>Stable Login | Sinhala PDF | Voice Announcements</p></div>
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div class="language-display" id="languageDisplay"><i class="fas fa-globe"></i> <span id="languageName">English</span></div>
                     <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -234,19 +236,16 @@
                 <div id="orgStatus" style="font-size:11px; margin-top:8px;"></div>
             </div>
 
-            <!-- NEW: Trainable Sinhala Triggers -->
             <div class="card card-train">
                 <div class="card-header"><h3><i class="fas fa-language"></i> Train Sinhala Triggers</h3><i class="fas fa-microphone"></i></div>
                 <div class="train-selector">
-                    <p style="font-size:12px; margin-bottom:8px;">Add words/phrases you say to request Sinhala (e.g., "Singalees", "Sinhel", "Sinhalese please"). The AI will learn them.</p>
+                    <p style="font-size:12px; margin-bottom:8px;">Add words/phrases you say to request Sinhala (e.g., "Singalees", "Sinhel").</p>
                     <div class="train-input-group">
                         <input type="text" id="newTriggerInput" placeholder="Enter trigger phrase" style="flex:1; padding:8px; border-radius:40px; border:1px solid #ccc;">
                         <button id="addTriggerBtn" class="btn btn-train"><i class="fas fa-plus"></i> Add</button>
                     </div>
-                    <div id="trainedTriggersList" class="train-list">
-                        <!-- dynamically filled -->
-                    </div>
-                    <div style="font-size:11px; margin-top:8px; color:#475569;"><i class="fas fa-info-circle"></i> Fuzzy matching enabled: slight pronunciation variations will also work.</div>
+                    <div id="trainedTriggersList" class="train-list"></div>
+                    <div style="font-size:11px; margin-top:8px; color:#475569;"><i class="fas fa-info-circle"></i> Fuzzy matching enabled.</div>
                 </div>
             </div>
 
@@ -304,84 +303,65 @@
             </div>
             <div class="card card-report">
                 <div class="card-header"><h3><i class="fas fa-file-alt"></i> Report Generation</h3><i class="fas fa-download"></i></div>
-                <button id="generateReportBtn" class="btn btn-primary">Generate PDF (AI Corrected)</button>
+                <button id="generateReportBtn" class="btn btn-primary">Generate PDF (Sinhala Supported)</button>
                 <div id="reportStatus" class="status-badge status-inactive" style="margin-top:10px;">Ready</div>
             </div>
-            <div class="footer">© 2025 Peter AI Super Pro v36.0 | Developed by Pesala Jayawardene</div>
+            <div class="footer">© 2025 Peter AI Super Pro v36.4 | Developed by Pesala Jayawardene</div>
         </div>
     </div>
 
-    <div id="officeModal" class="modal"><div class="modal-content"><h3>Office Info</h3><input type="text" id="officeName" placeholder="Office Name" style="width:100%; padding:10px; margin:8px 0;"><textarea id="officeAddress" rows="2" placeholder="Address" style="width:100%; padding:10px;"></textarea><input type="text" id="meetingType" placeholder="Meeting Type" style="width:100%; padding:10px;"><div style="display:flex; gap:10px; margin-top:15px;"><button id="saveOfficeBtn" class="btn btn-primary">Save</button><button id="closeOfficeBtn" class="btn btn-secondary">Cancel</button></div></div></div>
-    <div id="historyModal" class="modal"><div class="modal-content"><h3>Meeting History</h3><div id="historyList" style="max-height:350px; overflow-y:auto;"></div><button id="closeHistoryBtn" class="btn btn-secondary" style="margin-top:15px;">Close</button></div></div>
-    <div id="adminModal" class="modal"><div class="modal-content"><h3>Admin Panel - Page Charges</h3>
-        <div class="admin-panel-prof">
-            <div class="admin-tabs"><div class="admin-tab active" data-tab="rates">Meeting Rates</div><div class="admin-tab" data-tab="pages">Page Charges</div><div class="admin-tab" data-tab="danger">Danger</div></div>
-            <div id="tab-rates" class="admin-tab-content active">
-                <div class="admin-card"><h4>Meeting Rate Settings</h4><label>0-1h: $<input type="number" id="rate0_1" value="15" style="width:80px;"></label><br><label>1-2h: $<input type="number" id="rate1_2" value="14"></label><br><label>2-4h: $<input type="number" id="rate2_4" value="12"></label><br><label>4h+: $<input type="number" id="rateAbove4" value="11"></label><br><button id="saveRatesBtn" class="btn btn-success">Save</button></div>
-                <div class="admin-card"><h4>Translation Pricing</h4><label>Per language/hour: $<input type="number" id="perLanguageRate" value="3.0" step="0.5"></label><br><label>All 15: $<input type="number" id="allLanguagesRate" value="50"></label><br><button id="saveTranslationRatesBtn" class="btn btn-info">Save</button></div>
-            </div>
-            <div id="tab-pages" class="admin-tab-content">
-                <div class="admin-card"><h4>Individual Page Charges (PDF Report)</h4>
-                    <label>Transcript: $<input type="number" id="priceTranscript" value="0.10" step="0.01"></label><br>
-                    <label>Executive Summary: $<input type="number" id="priceSummary" value="0.10" step="0.01"></label><br>
-                    <label>Narrative Report: $<input type="number" id="priceNarrative" value="0.10" step="0.01"></label><br>
-                    <label>Action Items: $<input type="number" id="priceActions" value="0.10" step="0.01"></label><br>
-                    <label>Proposed Agenda: $<input type="number" id="priceAgenda" value="0.10" step="0.01"></label><br>
-                    <label>AI Deep Study: $<input type="number" id="priceDeepStudy" value="0.15" step="0.01"></label><br>
-                    <label>Hidden Problems: $<input type="number" id="priceHidden" value="0.10" step="0.01"></label><br>
-                    <label>Meeting Confidence: $<input type="number" id="priceConfidence" value="0.10" step="0.01"></label><br>
-                    <button id="savePagePricesBtn" class="btn btn-primary" style="margin-top:12px;">Save Page Prices</button>
-                    <div id="pagePriceStatus" style="margin-top:10px;"></div>
-                </div>
-            </div>
-            <div id="tab-danger" class="admin-tab-content"><div class="admin-card"><button id="masterResetBtn" class="btn btn-danger">MASTER RESET</button></div></div>
-        </div>
-        <button id="closeAdminBtn" class="btn btn-secondary" style="margin-top:15px; width:100%;">Close</button>
-    </div></div>
-    <div id="langModal" class="modal"><div class="modal-content"><h3>Select Language</h3><div id="languageGrid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;"></div><button id="closeLangBtn" class="btn btn-secondary" style="margin-top:15px;">Close</button></div></div>
+    <div id="pdfReportContainer"></div>
+
+    <!-- Modals (simplified but functional) -->
+    <div id="officeModal" class="modal"><div class="modal-content"><h3>Office Info</h3><input type="text" id="officeName" placeholder="Office Name"><textarea id="officeAddress" rows="2" placeholder="Address"></textarea><input type="text" id="meetingType" placeholder="Meeting Type"><div style="display:flex; gap:10px; margin-top:15px;"><button id="saveOfficeBtn" class="btn btn-primary">Save</button><button id="closeOfficeBtn" class="btn btn-secondary">Cancel</button></div></div></div>
+    <div id="historyModal" class="modal"><div class="modal-content"><h3>Meeting History</h3><div id="historyList"></div><button id="closeHistoryBtn" class="btn btn-secondary">Close</button></div></div>
+    <div id="adminModal" class="modal"><div class="modal-content"><h3>Admin Panel - Page Charges</h3><div class="admin-panel-prof"><div class="admin-tabs"><div class="admin-tab active" data-tab="rates">Meeting Rates</div><div class="admin-tab" data-tab="pages">Page Charges</div><div class="admin-tab" data-tab="danger">Danger</div></div><div id="tab-rates" class="admin-tab-content active"><div class="admin-card"><h4>Meeting Rate Settings</h4><label>0-1h: $<input type="number" id="rate0_1" value="15"></label><br><label>1-2h: $<input type="number" id="rate1_2" value="14"></label><br><label>2-4h: $<input type="number" id="rate2_4" value="12"></label><br><label>4h+: $<input type="number" id="rateAbove4" value="11"></label><br><button id="saveRatesBtn" class="btn btn-success">Save</button></div><div class="admin-card"><h4>Translation Pricing</h4><label>Per language/hour: $<input type="number" id="perLanguageRate" value="3.0" step="0.5"></label><br><label>All 15: $<input type="number" id="allLanguagesRate" value="50"></label><br><button id="saveTranslationRatesBtn" class="btn btn-info">Save</button></div></div><div id="tab-pages" class="admin-tab-content"><div class="admin-card"><h4>Individual Page Charges (PDF Report)</h4><label>Transcript: $<input type="number" id="priceTranscript" value="0.10" step="0.01"></label><br><label>Executive Summary: $<input type="number" id="priceSummary" value="0.10" step="0.01"></label><br><label>Narrative Report: $<input type="number" id="priceNarrative" value="0.10" step="0.01"></label><br><label>Action Items: $<input type="number" id="priceActions" value="0.10" step="0.01"></label><br><label>Proposed Agenda: $<input type="number" id="priceAgenda" value="0.10" step="0.01"></label><br><label>AI Deep Study: $<input type="number" id="priceDeepStudy" value="0.15" step="0.01"></label><br><label>Hidden Problems: $<input type="number" id="priceHidden" value="0.10" step="0.01"></label><br><label>Meeting Confidence: $<input type="number" id="priceConfidence" value="0.10" step="0.01"></label><br><button id="savePagePricesBtn" class="btn btn-primary">Save Page Prices</button><div id="pagePriceStatus"></div></div></div><div id="tab-danger" class="admin-tab-content"><div class="admin-card"><button id="masterResetBtn" class="btn btn-danger">MASTER RESET</button></div></div></div><button id="closeAdminBtn" class="btn btn-secondary" style="margin-top:15px; width:100%;">Close</button></div></div>
+    <div id="langModal" class="modal"><div class="modal-content"><h3>Select Language</h3><div id="languageGrid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;"></div><button id="closeLangBtn" class="btn btn-secondary">Close</button></div></div>
 
     <script>
-        // ==================== PETER AI v36.0 – TRAINABLE SINHALA SWITCHING ====================
+        // ==================== FULLY FUNCTIONAL PETER AI v36.4 ====================
         (function(){
+            // ---------- LOGIN CREDENTIALS ----------
             const validUsers = { 'WashingMachine$': 'wmiitk$', 'admin': 'admin123' };
-            let currentOrg = null, allOrgs = {};
-            let speakers = [];
-            let transcript = [];
-            let history = [];
-            let meetingActive = false;
-            let meetingStart = null, meetingEnd = null;
-            let timerInterval = null;
-            let meetingHours = 0;
-            let costCalculated = false, meetingCost = 0, costDetailsArr = [];
-            let currentLang = 'en';
-            let meetingCount = 0, reportCount = 0;
-            let office = { name: '', address: '', type: '' };
-            let recognition = null;
-            let autoSaveInterval = 1, autoTimer = null;
-            let isRestarting = false;
-            let currentRecognitionLang = 'en-US'; // 'en-US' or 'si-LK'
-            let pendingLanguageSwitch = false;
-            const speakerColors = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#3b82f6'];
             
+            // ---------- GLOBAL STATE ----------
+            let currentOrg = null, allOrgs = {};
+            let speakers = [], transcript = [], history = [];
+            let meetingActive = false, meetingStart = null, meetingEnd = null;
+            let timerInterval = null, meetingHours = 0;
+            let costCalculated = false, meetingCost = 0, costDetailsArr = [];
+            let currentLang = 'en', meetingCount = 0, reportCount = 0;
+            let office = { name: '', address: '', type: '' };
+            let recognition = null, autoTimer = null;
+            let isRestarting = false, pendingLanguageSwitch = false;
+            let currentRecognitionLang = 'en-US';
+            const speakerColors = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#3b82f6'];
             let pagePrices = { transcript:0.10, summary:0.10, narrative:0.10, actions:0.10, agenda:0.10, deepstudy:0.15, hidden:0.10, confidence:0.10 };
             const languages = { en:'English', si:'සිංහල', ta:'தமிழ்', es:'Español', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português', ru:'Русский', zh:'中文', ja:'日本語', ko:'한국어', ar:'العربية', hi:'हिन्दी', bn:'বাংলা' };
-            const langCodes = { en:'en-US', si:'si-LK', ta:'ta-IN', es:'es-ES', fr:'fr-FR', de:'de-DE', it:'it-IT', pt:'pt-PT', ru:'ru-RU', zh:'zh-CN', ja:'ja-JP', ko:'ko-KR', ar:'ar-SA', hi:'hi-IN', bn:'bn-IN' };
             const voiceLangMap = { en:'en-US', si:'si-LK', ta:'ta-IN', es:'es-ES', fr:'fr-FR', de:'de-DE', it:'it-IT', pt:'pt-PT', ru:'ru-RU', zh:'zh-CN', ja:'ja-JP', ko:'ko-KR', ar:'ar-SA', hi:'hi-IN', bn:'bn-IN' };
             
+            // ---------- VOICE & ANNOUNCEMENTS ----------
             let availableVoices = [];
             function refreshVoicesList() {
-                availableVoices = window.speechSynthesis.getVoices();
-                const msgDiv = document.getElementById('voiceStatusMsg');
-                const selectedLang = document.getElementById('voiceLanguageSelect').value;
-                const targetCode = voiceLangMap[selectedLang] || 'en-US';
-                let foundVoice = availableVoices.find(v => v.lang === targetCode) || availableVoices.find(v => v.lang.startsWith(targetCode.split('-')[0]));
-                if(foundVoice) msgDiv.innerHTML = `✅ Voice for ${selectedLang.toUpperCase()} found: ${foundVoice.name}`;
-                else msgDiv.innerHTML = `⚠️ No voice for ${selectedLang.toUpperCase()}. Using English.`;
+                try { availableVoices = window.speechSynthesis.getVoices(); } catch(e) {}
             }
             setTimeout(refreshVoicesList, 500);
             window.speechSynthesis.onvoiceschanged = refreshVoicesList;
-            function getBestVoiceForLang(langCode) { return availableVoices.find(v => v.lang === langCode) || availableVoices.find(v => v.lang.startsWith(langCode.split('-')[0])) || null; }
-
+            function getBestVoiceForLang(langCode) {
+                return availableVoices.find(v => v.lang === langCode) || availableVoices.find(v => v.lang.startsWith(langCode.split('-')[0])) || null;
+            }
+            function speakAnnouncement(message) {
+                if(!window.speechSynthesis) return;
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(message);
+                    utterance.rate = 0.9;
+                    utterance.lang = 'en-US';
+                    window.speechSynthesis.speak(utterance);
+                } catch(e) {}
+            }
+            
+            // ---------- STORAGE & UI HELPERS ----------
             function saveOrgs() { localStorage.setItem('peter_orgs', JSON.stringify(allOrgs)); }
             function loadOrgs() { allOrgs = JSON.parse(localStorage.getItem('peter_orgs') || '{}'); refreshOrgSelector(); }
             function refreshOrgSelector() { const sel = document.getElementById('orgSelector'); sel.innerHTML = '<option value="">-- Select Organization --</option>'; for(let o in allOrgs) sel.innerHTML += `<option value="${o}">${o}</option>`; }
@@ -407,7 +387,6 @@
             function displayOffice() { let div = document.getElementById('officeInfoDisplay'); if(office.name || office.address || office.type) { div.innerHTML = `<strong>${office.name||'N/A'}</strong><br>${office.address||''}<br>${office.type||''}`; div.style.display = 'block'; } else div.style.display = 'none'; }
             function updateTimer() { if(!meetingStart) return; let ms = (meetingEnd || new Date()) - meetingStart; document.getElementById('timerDisplay').innerHTML = `${String(Math.floor(ms/3600000)).padStart(2,'0')}:${String(Math.floor((ms%3600000)/60000)).padStart(2,'0')}:${String(Math.floor((ms%60000)/1000)).padStart(2,'0')}`; meetingHours = ms/3600000; }
             function startTimer() { if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(()=>{ if(meetingActive && meetingStart && !meetingEnd) updateTimer(); },1000); }
-            
             function updateConfidenceBar() {
                 if(!transcript.length) { 
                     document.getElementById('confidenceBar').innerHTML = `<div class="confidence-segment confidence-green" style="width:33%">33%</div><div class="confidence-segment confidence-yellow" style="width:34%">34%</div><div class="confidence-segment confidence-red" style="width:33%">33%</div>`;
@@ -422,451 +401,270 @@
                 let green = total ? (posCount / total * 100) : 33;
                 let yellow = total ? (neutralCount / total * 100) : 34;
                 let red = total ? (negCount / total * 100) : 33;
-                let greenPercent = Math.round(green);
-                let yellowPercent = Math.round(yellow);
-                let redPercent = Math.round(red);
-                document.getElementById('confidenceBar').innerHTML = `<div class="confidence-segment confidence-green" style="width:${green}%">${greenPercent}%</div><div class="confidence-segment confidence-yellow" style="width:${yellow}%">${yellowPercent}%</div><div class="confidence-segment confidence-red" style="width:${red}%">${redPercent}%</div>`;
+                document.getElementById('confidenceBar').innerHTML = `<div class="confidence-segment confidence-green" style="width:${green}%">${Math.round(green)}%</div><div class="confidence-segment confidence-yellow" style="width:${yellow}%">${Math.round(yellow)}%</div><div class="confidence-segment confidence-red" style="width:${red}%">${Math.round(red)}%</div>`;
                 window.meetingConfidence = { green: green.toFixed(1), yellow: yellow.toFixed(1), red: red.toFixed(1), posCount, negCount, neutralCount };
             }
             
-            // ---------- TRAINABLE TRIGGERS ----------
-            let trainedSinhalaTriggers = []; // stored per organization
+            // ---------- TRAINABLE SINHALA TRIGGERS ----------
+            let trainedSinhalaTriggers = [];
+            function loadTrainedTriggers() { if(!currentOrg) return; const stored = localStorage.getItem(`peter_sinhala_triggers_${currentOrg}`); trainedSinhalaTriggers = stored ? JSON.parse(stored) : []; renderTriggersList(); }
+            function saveTrainedTriggers() { if(!currentOrg) return; localStorage.setItem(`peter_sinhala_triggers_${currentOrg}`, JSON.stringify(trainedSinhalaTriggers)); renderTriggersList(); }
+            function addTrigger(phrase) { phrase = phrase.trim().toLowerCase(); if(phrase && !trainedSinhalaTriggers.includes(phrase)) { trainedSinhalaTriggers.push(phrase); saveTrainedTriggers(); } }
+            function removeTrigger(index) { trainedSinhalaTriggers.splice(index,1); saveTrainedTriggers(); }
+            function renderTriggersList() { const container = document.getElementById('trainedTriggersList'); if(!container) return; if(trainedSinhalaTriggers.length===0) { container.innerHTML='<span style="font-size:12px; color:#64748b;">No custom triggers. Add some above.</span>'; return; } container.innerHTML = trainedSinhalaTriggers.map((t,i)=>`<div class="train-item">${escapeHtml(t)}<button onclick="window.removeTriggerAt(${i})"><i class="fas fa-times-circle"></i></button></div>`).join(''); }
+            window.removeTriggerAt = function(idx) { removeTrigger(idx); };
             
-            function loadTrainedTriggers() {
-                if(!currentOrg) return;
-                const key = `peter_sinhala_triggers_${currentOrg}`;
-                const stored = localStorage.getItem(key);
-                if(stored) trainedSinhalaTriggers = JSON.parse(stored);
-                else trainedSinhalaTriggers = [];
-                renderTriggersList();
-            }
-            
-            function saveTrainedTriggers() {
-                if(!currentOrg) return;
-                const key = `peter_sinhala_triggers_${currentOrg}`;
-                localStorage.setItem(key, JSON.stringify(trainedSinhalaTriggers));
-                renderTriggersList();
-            }
-            
-            function addTrigger(phrase) {
-                phrase = phrase.trim().toLowerCase();
-                if(phrase && !trainedSinhalaTriggers.includes(phrase)) {
-                    trainedSinhalaTriggers.push(phrase);
-                    saveTrainedTriggers();
-                }
-            }
-            
-            function removeTrigger(index) {
-                trainedSinhalaTriggers.splice(index, 1);
-                saveTrainedTriggers();
-            }
-            
-            function renderTriggersList() {
-                const container = document.getElementById('trainedTriggersList');
-                if(!container) return;
-                if(trainedSinhalaTriggers.length === 0) {
-                    container.innerHTML = '<span style="font-size:12px; color:#64748b;">No custom triggers. Add some above.</span>';
-                    return;
-                }
-                container.innerHTML = trainedSinhalaTriggers.map((t, i) => `
-                    <div class="train-item">
-                        ${escapeHtml(t)}
-                        <button onclick="window.removeTriggerAt(${i})"><i class="fas fa-times-circle"></i></button>
-                    </div>
-                `).join('');
-            }
-            
-            window.removeTriggerAt = function(idx) {
-                removeTrigger(idx);
-            };
-            
-            // ---------- FUZZY MATCHING (Levenshtein) ----------
-            function levenshteinDistance(a, b) {
-                const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
-                for(let i = 0; i <= a.length; i++) matrix[0][i] = i;
-                for(let j = 0; j <= b.length; j++) matrix[j][0] = j;
-                for(let j = 1; j <= b.length; j++) {
-                    for(let i = 1; i <= a.length; i++) {
-                        const cost = a[i-1] === b[j-1] ? 0 : 1;
-                        matrix[j][i] = Math.min(
-                            matrix[j-1][i] + 1,
-                            matrix[j][i-1] + 1,
-                            matrix[j-1][i-1] + cost
-                        );
+            function levenshteinDistance(a,b) {
+                const matrix = Array(b.length+1).fill().map(()=>Array(a.length+1).fill(0));
+                for(let i=0;i<=a.length;i++) matrix[0][i]=i;
+                for(let j=0;j<=b.length;j++) matrix[j][0]=j;
+                for(let j=1;j<=b.length;j++)
+                    for(let i=1;i<=a.length;i++) {
+                        const cost = a[i-1]===b[j-1]?0:1;
+                        matrix[j][i] = Math.min(matrix[j-1][i]+1, matrix[j][i-1]+1, matrix[j-1][i-1]+cost);
                     }
-                }
                 return matrix[b.length][a.length];
             }
+            function fuzzyMatch(word,target,maxDist=2){ return levenshteinDistance(word.toLowerCase(),target.toLowerCase())<=maxDist; }
             
-            function fuzzyMatch(word, target, maxDistance = 2) {
-                return levenshteinDistance(word.toLowerCase(), target.toLowerCase()) <= maxDistance;
-            }
-            
-            // ---------- ENHANCED KEYWORD LISTS (built-in) ----------
             const builtinSinhalaKeywords = [
-                'sinhala', 'sinhalese', 'singhala', 'singhalese',
-                'sinahala', 'sinhalla', 'sinhale', 'sinhal', 'sinhali',
-                'sinhalaa', 'singhalaa', 'singhale', 'singhali',
-                'sinhlese', 'singlese', 'sin-ha-la', 'sing-ha-la', 'sin-ha-lese',
-                'sinhala language', 'sinhala mode', 'speak sinhala',
-                'switch to sinhala', 'talk in sinhala', 'sinhalen kata karanna',
-                'singhalen kata karanna', 'sinhala words', 'sinhala only',
-                'sri lankan language', 'සිංහල', 'සිංහලෙන් කතා'
+                'sinhala','sinhalese','singhala','singhalese','sinahala','sinhalla','sinhale','sinhal','sinhali',
+                'sinhalaa','singhalaa','singhale','singhali','sinhlese','singlese','sin-ha-la','sing-ha-la','sin-ha-lese',
+                'sinhala language','sinhala mode','speak sinhala','switch to sinhala','talk in sinhala','sinhalen kata karanna',
+                'singhalen kata karanna','sinhala words','sinhala only','sri lankan language','සිංහල','සිංහලෙන් කතා'
             ];
+            const englishKeywords = ['english','talk in english','speak english','in english','english language','ඉංග්‍රීසියෙන් කතා'];
             
-            const englishKeywords = [
-                'english', 'talk in english', 'speak english', 'in english',
-                'english language', 'ඉංග්‍රීසියෙන් කතා'
-            ];
-            
-            // Combined check: built-in + trained + fuzzy match
             function isSinhalaSwitchRequested(recentText) {
                 const words = recentText.toLowerCase().split(/\s+/);
-                // Exact match on built-in or trained
-                for(let kw of builtinSinhalaKeywords) {
-                    if(recentText.includes(kw)) return true;
-                }
-                for(let trigger of trainedSinhalaTriggers) {
-                    if(recentText.includes(trigger)) return true;
-                }
-                // Fuzzy matching: for each word in recent text, check against all triggers & built-in (short ones)
+                for(let kw of builtinSinhalaKeywords) if(recentText.includes(kw)) return true;
+                for(let trig of trainedSinhalaTriggers) if(recentText.includes(trig)) return true;
                 for(let word of words) {
-                    if(word.length < 3) continue;
-                    for(let trigger of trainedSinhalaTriggers) {
-                        if(fuzzyMatch(word, trigger, 2)) return true;
-                    }
-                    for(let kw of builtinSinhalaKeywords) {
-                        if(kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
-                    }
+                    if(word.length<3) continue;
+                    for(let trig of trainedSinhalaTriggers) if(fuzzyMatch(word,trig,2)) return true;
+                    for(let kw of builtinSinhalaKeywords) if(kw.length>=3 && fuzzyMatch(word,kw,2)) return true;
                 }
                 return false;
             }
-            
             function isEnglishSwitchRequested(recentText) {
                 const words = recentText.toLowerCase().split(/\s+/);
-                for(let kw of englishKeywords) {
-                    if(recentText.includes(kw)) return true;
-                }
-                for(let word of words) {
-                    if(word.length < 3) continue;
-                    for(let kw of englishKeywords) {
-                        if(kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
-                    }
-                }
+                for(let kw of englishKeywords) if(recentText.includes(kw)) return true;
+                for(let word of words) if(word.length>=3) for(let kw of englishKeywords) if(kw.length>=3 && fuzzyMatch(word,kw,2)) return true;
                 return false;
             }
             
-            // ---------- RECOGNITION & SWITCHING ----------
-            function updateLanguageIndicator() {
-                const indicator = document.getElementById('currentRecogLang');
-                if(currentRecognitionLang === 'en-US') indicator.textContent = 'English';
-                else indicator.textContent = 'සිංහල (Sinhala)';
-            }
-            
+            // ---------- RECOGNITION & SWITCHING WITH VOICE ANNOUNCEMENTS ----------
+            function updateLanguageIndicator() { document.getElementById('currentRecogLang').innerHTML = (currentRecognitionLang==='en-US')?'English':'සිංහල (Sinhala)'; }
             function forceRestartRecognitionWithLang(langCode) {
-                if(!meetingActive) return;
-                if(pendingLanguageSwitch) return;
-                pendingLanguageSwitch = true;
-                if(recognition) try { recognition.abort(); } catch(e) {}
-                recognition = null;
-                currentRecognitionLang = langCode;
+                if(!meetingActive || pendingLanguageSwitch) return;
+                pendingLanguageSwitch=true;
+                if(recognition) try{recognition.abort();}catch(e){}
+                recognition=null;
+                currentRecognitionLang=langCode;
                 updateLanguageIndicator();
-                setTimeout(() => {
+                speakAnnouncement(langCode==='en-US'?'English Activated':'Sinhala Activated');
+                setTimeout(()=>{
                     startRecognition();
-                    pendingLanguageSwitch = false;
-                    document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle"></i> 🎙️ Language switched...';
-                    setTimeout(() => {
-                        if(meetingActive) document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
-                    }, 800);
-                }, 100);
+                    pendingLanguageSwitch=false;
+                    document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle"></i> 🎙️ Language switched...';
+                    setTimeout(()=>{if(meetingActive) document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';},800);
+                },100);
             }
-            
             function checkForLanguageSwitchKeywords() {
                 if(!meetingActive) return;
                 let recentText = transcript.slice(0,3).map(l=>l.originalText.toLowerCase()).join(' ');
-                if(isSinhalaSwitchRequested(recentText) && currentRecognitionLang !== 'si-LK') {
-                    console.log("Switching to Sinhala mode due to keyword (or trained trigger):", recentText);
-                    forceRestartRecognitionWithLang('si-LK');
-                } else if(isEnglishSwitchRequested(recentText) && currentRecognitionLang !== 'en-US') {
-                    console.log("Switching to English mode due to keyword:", recentText);
-                    forceRestartRecognitionWithLang('en-US');
-                }
+                if(isSinhalaSwitchRequested(recentText) && currentRecognitionLang!=='si-LK') forceRestartRecognitionWithLang('si-LK');
+                else if(isEnglishSwitchRequested(recentText) && currentRecognitionLang!=='en-US') forceRestartRecognitionWithLang('en-US');
             }
-            
             function startRecognition() {
                 if(!meetingActive) return;
-                if(recognition) { try { recognition.abort(); } catch(e) {} recognition = null; }
-                if(!('webkitSpeechRecognition' in window)) { alert("Speech recognition not supported. Please use Chrome/Edge."); return; }
+                if(recognition) try{recognition.abort();}catch(e){}
+                if(!('webkitSpeechRecognition' in window)){alert("Speech recognition not supported. Please use Chrome/Edge."); return;}
                 const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecog();
-                recognition.continuous = true;
-                recognition.interimResults = true;
+                recognition.continuous=true;
+                recognition.interimResults=true;
                 recognition.lang = currentRecognitionLang;
-                let lastFinalText = "";
-                let keywordCheckTimeout = null;
-                recognition.onstart = () => { 
-                    document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
-                    isRestarting = false;
-                };
-                recognition.onresult = (event) => {
+                let lastFinalText="";
+                let keywordCheckTimeout=null;
+                recognition.onstart = ()=>{ document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)'; isRestarting=false; };
+                recognition.onresult = (event)=>{
                     if(keywordCheckTimeout) clearTimeout(keywordCheckTimeout);
-                    let final = "";
-                    for(let i = event.resultIndex; i < event.results.length; i++) {
-                        if(event.results[i].isFinal) {
-                            final += event.results[i][0].transcript;
-                        }
-                    }
-                    if(final && final.trim().length > 1 && final !== lastFinalText) {
-                        lastFinalText = final;
-                        let text = final.trim();
-                        let timestamp = new Date().toLocaleTimeString();
-                        let speaker = speakers.length === 1 ? speakers[0].name : 'Unknown';
-                        let color = speakers.find(s=>s.name===speaker)?.color || '#667eea';
-                        transcript.unshift({ speaker: speaker, originalText: text, timestamp: timestamp, color: color, lang: currentRecognitionLang === 'si-LK' ? 'sinhala' : 'english' });
+                    let final="";
+                    for(let i=event.resultIndex;i<event.results.length;i++) if(event.results[i].isFinal) final+=event.results[i][0].transcript;
+                    if(final && final.trim().length>1 && final!==lastFinalText){
+                        lastFinalText=final;
+                        let text=final.trim();
+                        let timestamp=new Date().toLocaleTimeString();
+                        let speaker = speakers.length===1?speakers[0].name:'Unknown';
+                        let color = speakers.find(s=>s.name===speaker)?.color||'#667eea';
+                        transcript.unshift({ speaker, originalText:text, timestamp, color, lang:currentRecognitionLang==='si-LK'?'sinhala':'english' });
                         refreshTranscript();
-                        setTimeout(() => { lastFinalText = ""; }, 300);
-                        document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
-                        keywordCheckTimeout = setTimeout(() => checkForLanguageSwitchKeywords(), 500);
+                        setTimeout(()=>{lastFinalText="";},300);
+                        document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
+                        keywordCheckTimeout = setTimeout(()=>checkForLanguageSwitchKeywords(),500);
                     }
                 };
-                recognition.onerror = (e) => { 
-                    if(e.error === 'not-allowed') alert("Microphone permission denied.");
-                    else if(e.error === 'language-not-supported') {
-                        if(currentRecognitionLang === 'si-LK') {
-                            alert("Sinhala speech recognition not supported in this browser. Switching to English.");
-                            forceRestartRecognitionWithLang('en-US');
-                        }
-                    }
-                };
-                recognition.onend = () => { if(meetingActive && !isRestarting && !pendingLanguageSwitch) setTimeout(() => startRecognition(), 500); };
+                recognition.onerror = (e)=>{ if(e.error==='not-allowed') alert("Microphone permission denied."); else if(e.error==='language-not-supported' && currentRecognitionLang==='si-LK') forceRestartRecognitionWithLang('en-US'); };
+                recognition.onend = ()=>{ if(meetingActive && !isRestarting && !pendingLanguageSwitch) setTimeout(()=>startRecognition(),500); };
                 recognition.start();
             }
+            function forceRestartRecognition(){ if(meetingActive){ isRestarting=true; if(recognition) try{recognition.abort();}catch(e){} recognition=null; setTimeout(()=>{ isRestarting=false; startRecognition(); document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle"></i> 🎙️ Restarting...'; setTimeout(()=>{ if(meetingActive) document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';},500); },100); } else alert("Meeting not active."); }
             
-            function forceRestartRecognition() {
-                if(!meetingActive) { alert("Meeting not active."); return; }
-                isRestarting = true;
-                if(recognition) try { recognition.abort(); } catch(e) {}
-                recognition = null;
-                setTimeout(() => { 
-                    isRestarting = false; 
-                    startRecognition(); 
-                    document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle"></i> 🎙️ Restarting...';
-                    setTimeout(() => { 
-                        if(meetingActive) document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
-                    }, 500);
-                }, 100);
-            }
-            
-            // Force language buttons
-            document.getElementById('forceEnglishBtn').addEventListener('click', () => {
-                if(!meetingActive) { alert("Start meeting first"); return; }
-                forceRestartRecognitionWithLang('en-US');
-            });
-            document.getElementById('forceSinhalaBtn').addEventListener('click', () => {
-                if(!meetingActive) { alert("Start meeting first"); return; }
-                forceRestartRecognitionWithLang('si-LK');
-            });
-            
-            // Training UI
-            document.getElementById('addTriggerBtn').addEventListener('click', () => {
-                const input = document.getElementById('newTriggerInput');
-                if(input.value.trim()) {
-                    addTrigger(input.value.trim());
-                    input.value = '';
-                } else alert("Please enter a word or phrase.");
-            });
-            
-            // ---------- MEETING FLOW ----------
+            // ---------- MEETING CONTROLS ----------
             async function startMeeting() {
-                if(!speakers.length) { alert("Register speaker first"); return; }
-                if(!currentOrg) { alert("Select organization"); return; }
+                if(!speakers.length){ alert("Register speaker first"); return; }
+                if(!currentOrg){ alert("Select organization"); return; }
                 try{
                     await navigator.mediaDevices.getUserMedia({ audio: true });
-                    meetingActive = true;
-                    meetingStart = new Date();
-                    meetingEnd = null;
-                    transcript = [];
-                    costCalculated = false;
-                    currentRecognitionLang = 'en-US';
+                    meetingActive=true;
+                    meetingStart=new Date();
+                    meetingEnd=null;
+                    transcript=[];
+                    costCalculated=false;
+                    currentRecognitionLang='en-US';
                     updateLanguageIndicator();
                     startTimer();
                     startRecognition();
                     if(autoTimer) clearInterval(autoTimer);
-                    autoTimer = setInterval(()=>{ if(meetingActive && transcript.length) autoSave(); }, autoSaveInterval*60*1000);
-                    document.getElementById('startMeetingBtn').disabled = true;
-                    document.getElementById('stopMeetingBtn').disabled = false;
-                    document.getElementById('printCostBtn').disabled = false;
-                    document.getElementById('meetingStatus').className = 'status-badge status-active';
-                    document.getElementById('meetingStatus').innerHTML = '<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
+                    autoTimer = setInterval(()=>{ if(meetingActive && transcript.length) autoSave(); }, 60000);
+                    document.getElementById('startMeetingBtn').disabled=true;
+                    document.getElementById('stopMeetingBtn').disabled=false;
+                    document.getElementById('printCostBtn').disabled=false;
+                    document.getElementById('meetingStatus').className='status-badge status-active';
+                    document.getElementById('meetingStatus').innerHTML='<i class="fas fa-circle" style="color:#10b981;"></i> 🎙️ Listening (active)';
                     refreshTranscript();
-                } catch(e) { alert("Microphone permission required"); }
+                } catch(e){ alert("Microphone permission required"); }
             }
-            
             function stopMeeting() {
-                meetingActive = false;
-                isRestarting = true;
-                pendingLanguageSwitch = false;
-                if(recognition) try{ recognition.abort(); }catch(e){}
-                meetingEnd = new Date();
+                meetingActive=false;
+                isRestarting=true;
+                pendingLanguageSwitch=false;
+                if(recognition) try{recognition.abort();}catch(e){}
+                meetingEnd=new Date();
                 updateTimer();
                 if(timerInterval) clearInterval(timerInterval);
                 if(autoTimer) clearInterval(autoTimer);
                 meetingCount++;
-                history.unshift({ id: Date.now(), date: new Date().toLocaleString(), duration: `${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m`, transcript: [...transcript] });
-                if(history.length > 30) history.pop();
+                history.unshift({ id:Date.now(), date:new Date().toLocaleString(), duration:`${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m`, transcript:[...transcript] });
+                if(history.length>30) history.pop();
                 if(currentOrg) saveCurrentOrg();
                 updateUI();
-                document.getElementById('startMeetingBtn').disabled = false;
-                document.getElementById('stopMeetingBtn').disabled = true;
-                document.getElementById('meetingStatus').className = 'status-badge status-inactive';
-                document.getElementById('meetingStatus').innerHTML = 'Stopped';
+                document.getElementById('startMeetingBtn').disabled=false;
+                document.getElementById('stopMeetingBtn').disabled=true;
+                document.getElementById('meetingStatus').className='status-badge status-inactive';
+                document.getElementById('meetingStatus').innerHTML='Stopped';
                 autoSave();
                 alert(`Stopped. ${transcript.length} lines.`);
-                if(document.getElementById('historyModal').style.display === 'flex') showMeetingHistory();
+                if(document.getElementById('historyModal').style.display==='flex') showMeetingHistory();
             }
-            
-            function autoSave() { let blob = new Blob([`PETER AI v36.0 AutoSave\n${new Date().toLocaleString()}\n${transcript.map(t=>`[${t.timestamp}] ${t.speaker}: ${t.originalText}`).join('\n')}`], {type:'text/plain'}); let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Peter_AutoSave_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(blob); }
+            function autoSave(){ let blob=new Blob([`PETER AI v36.4 AutoSave\n${new Date().toLocaleString()}\n${transcript.map(t=>`[${t.timestamp}] ${t.speaker}: ${t.originalText}`).join('\n')}`],{type:'text/plain'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Peter_AutoSave_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(blob); }
             
             let rates = { r0_1:15, r1_2:14, r2_4:12, rAbove:11, perLang:3, allLang:50 };
             function printCost() {
-                if(!meetingEnd) { alert("Stop meeting first"); return; }
-                let base = meetingHours <=1 ? meetingHours*rates.r0_1 : meetingHours<=2 ? meetingHours*rates.r1_2 : meetingHours<=4 ? meetingHours*rates.r2_4 : meetingHours*rates.rAbove;
+                if(!meetingEnd){ alert("Stop meeting first"); return; }
+                let base = meetingHours<=1 ? meetingHours*rates.r0_1 : meetingHours<=2 ? meetingHours*rates.r1_2 : meetingHours<=4 ? meetingHours*rates.r2_4 : meetingHours*rates.rAbove;
                 let uniqueLangs = new Set(transcript.map(e=>e.lang).filter(l=>l && l!=='en' && l!=='english' && l!=='sinhala'));
-                let transCost = uniqueLangs.size >=15 ? rates.allLang : uniqueLangs.size * rates.perLang * meetingHours;
-                meetingCost = base + transCost;
-                costDetailsArr = [`Duration: ${meetingHours.toFixed(2)}h - Base: $${base.toFixed(2)}`, uniqueLangs.size ? `${uniqueLangs.size} language(s) translation: $${transCost.toFixed(2)}` : "No translation", `Subtotal: $${(base + transCost).toFixed(2)}`];
-                costCalculated = true;
-                let costDiv = document.getElementById('costDisplay');
-                costDiv.innerHTML = `<strong>💰 Cost Details</strong><div id="costDetails">${costDetailsArr.join('<br>')}</div><hr><strong>Total: $<span id="costAmount">${meetingCost.toFixed(2)}</span></strong>`;
-                costDiv.style.display = 'block';
+                let transCost = uniqueLangs.size>=15 ? rates.allLang : uniqueLangs.size * rates.perLang * meetingHours;
+                meetingCost = base+transCost;
+                costDetailsArr = [`Duration: ${meetingHours.toFixed(2)}h - Base: $${base.toFixed(2)}`, uniqueLangs.size ? `${uniqueLangs.size} language(s) translation: $${transCost.toFixed(2)}` : "No translation", `Subtotal: $${(base+transCost).toFixed(2)}`];
+                costCalculated=true;
+                let costDiv=document.getElementById('costDisplay');
+                costDiv.innerHTML=`<strong>💰 Cost Details</strong><div id="costDetails">${costDetailsArr.join('<br>')}</div><hr><strong>Total: $<span id="costAmount">${meetingCost.toFixed(2)}</span></strong>`;
+                costDiv.style.display='block';
             }
+            function registerSpeaker(){ let name=prompt("Enter speaker name:"); if(name && name.trim()!==""){ let cleanName=name.trim(); let color=speakerColors[speakers.length%speakerColors.length]; speakers.push({name:cleanName,color}); updateUI(); if(currentOrg) saveCurrentOrg(); alert(`✅ Speaker "${cleanName}" registered!`); } }
+            function showMeetingHistory(){ if(!currentOrg){ alert("Select organization first"); return; } let histDiv=document.getElementById('historyList'); if(!history.length) histDiv.innerHTML='<p>No past meetings</p>'; else { histDiv.innerHTML=''; history.forEach((h,idx)=>{ let div=document.createElement('div'); div.className='history-item'; div.innerHTML=`<div><strong>${h.date}</strong></div><div>${h.duration} | ${h.transcript.length} lines</div>`; div.ondblclick=()=>{ if(confirm(`Load meeting from ${h.date}?`)){ transcript=[...h.transcript]; refreshTranscript(); document.getElementById('historyModal').style.display='none'; alert("Meeting loaded."); } }; histDiv.appendChild(div); }); } document.getElementById('historyModal').style.display='flex'; }
             
-            function registerSpeaker() { let name = prompt("Enter speaker name:"); if(name && name.trim() !== "") { let cleanName = name.trim(); let color = speakerColors[speakers.length % speakerColors.length]; speakers.push({ name: cleanName, color: color }); updateUI(); if(currentOrg) saveCurrentOrg(); alert(`✅ Speaker "${cleanName}" registered!`); } }
-            
-            function showMeetingHistory() {
-                if(!currentOrg){ alert("Select organization first"); return; }
-                let histDiv = document.getElementById('historyList');
-                if(!history.length) histDiv.innerHTML = '<p>No past meetings</p>';
-                else {
-                    histDiv.innerHTML = '';
-                    history.forEach((h, idx) => {
-                        let div = document.createElement('div');
-                        div.className = 'history-item';
-                        div.innerHTML = `<div><strong>${h.date}</strong></div><div>${h.duration} | ${h.transcript.length} lines</div>`;
-                        div.ondblclick = () => {
-                            if(confirm(`Load meeting from ${h.date}?`)) {
-                                transcript = [...h.transcript];
-                                refreshTranscript();
-                                document.getElementById('historyModal').style.display = 'none';
-                                alert("Meeting loaded. You can now generate a PDF report.");
-                            }
-                        };
-                        histDiv.appendChild(div);
-                    });
-                }
-                document.getElementById('historyModal').style.display = 'flex';
-            }
-            
-            // ========== AI FUNCTIONS ==========
-            async function correctText(text, language = 'en-US') {
-                if(!text || text.trim().length === 0) return text;
-                try {
+            // ---------- AI & EMAIL (simplified but fully working) ----------
+            async function correctText(text, language='en-US') {
+                if(!text || text.trim().length===0) return text;
+                try{
                     const response = await fetch('https://api.languagetool.org/v2/check', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ text: text, language: language, enabledOnly: 'false' })
+                        method:'POST',
+                        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                        body:new URLSearchParams({text,language,enabledOnly:'false'})
                     });
                     const data = await response.json();
-                    let corrected = text;
-                    const matches = data.matches.sort((a,b) => b.offset - a.offset);
-                    for(let match of matches) {
-                        if(match.replacements && match.replacements.length > 0) {
+                    let corrected=text;
+                    const matches = data.matches.sort((a,b)=>b.offset-a.offset);
+                    for(let match of matches){
+                        if(match.replacements && match.replacements.length){
                             const replacement = match.replacements[0].value;
-                            const start = match.offset;
-                            const end = match.offset + match.length;
-                            corrected = corrected.slice(0, start) + replacement + corrected.slice(end);
+                            const start=match.offset, end=match.offset+match.length;
+                            corrected = corrected.slice(0,start)+replacement+corrected.slice(end);
                         }
                     }
-                    corrected = corrected.replace(/\s+/g, ' ').replace(/\s\./g, '.').replace(/\s\?/g, '?').replace(/\s\!/g, '!').trim();
-                    return corrected;
-                } catch(e) { return text.replace(/[^\w\s\.\,\!\?\-\'\"]/g, ' ').replace(/\s+/g, ' ').trim(); }
+                    return corrected.replace(/\s+/g,' ').trim();
+                } catch(e){ return text.replace(/[^\w\s\.\,\!\?\-\'\"]/g,' ').replace(/\s+/g,' ').trim(); }
             }
-            
-            function getSpeakersForTopic(keywords) { let involved = new Set(); for(let line of transcript) { let text = line.originalText.toLowerCase(); for(let kw of keywords) if(text.includes(kw)) { involved.add(line.speaker); break; } } return involved.size ? Array.from(involved).join(", ") : "None"; }
-            
-            async function generateAIExecutiveSummary() {
-                if(transcript.length === 0) return "No meeting data.";
-                let fullText = transcript.map(l=>l.originalText).join(' ');
-                let summary = "The meeting covered important operational and strategic matters. ";
-                let topics = [];
+            function getSpeakersForTopic(keywords){ let involved=new Set(); for(let line of transcript){ let txt=line.originalText.toLowerCase(); for(let kw of keywords) if(txt.includes(kw)){ involved.add(line.speaker); break; } } return involved.size?Array.from(involved).join(", "):"None"; }
+            async function generateAIExecutiveSummary(){
+                if(transcript.length===0) return "No meeting data.";
+                let fullText=transcript.map(l=>l.originalText).join(' ');
+                let summary="The meeting covered important operational and strategic matters. ";
+                let topics=[];
                 if(/(project|deadline|timeline)/i.test(fullText)) topics.push("project timelines");
                 if(/(budget|cost|expense)/i.test(fullText)) topics.push("budget considerations");
                 if(/(team|staff|resource)/i.test(fullText)) topics.push("team responsibilities");
-                if(topics.length) summary += "Focus areas: " + topics.join(", ") + ". ";
-                else summary += "Operational updates and next steps were discussed. ";
-                summary += "Key decisions include agreed actions and assignments. The meeting concluded with clear next steps.";
-                let para1 = "The meeting brought together key stakeholders to discuss critical operational and strategic matters. Participants engaged in constructive dialogue, addressing both immediate concerns and long-term objectives. The overall tone was professional, with a focus on finding practical solutions to the challenges presented.";
-                let para2 = summary;
-                let para3 = "The meeting concluded with a clear understanding of the required next steps. Overall, the discussion was productive and provided a solid foundation for moving forward with the initiatives outlined.";
-                let result = para1 + "\n\n" + para2 + "\n\n" + para3;
-                return await correctText(result);
+                if(topics.length) summary+="Focus areas: "+topics.join(", ")+". ";
+                else summary+="Operational updates and next steps were discussed. ";
+                summary+="Key decisions include agreed actions and assignments. The meeting concluded with clear next steps.";
+                let para1="The meeting brought together key stakeholders to discuss critical operational and strategic matters. Participants engaged in constructive dialogue, addressing both immediate concerns and long-term objectives. The overall tone was professional, with a focus on finding practical solutions to the challenges presented.";
+                let para2=summary;
+                let para3="The meeting concluded with a clear understanding of the required next steps. Overall, the discussion was productive and provided a solid foundation for moving forward with the initiatives outlined.";
+                return await correctText(para1+"\n\n"+para2+"\n\n"+para3);
             }
-            
-            async function generateNarrativeReport() {
-                if(transcript.length === 0) return "No conversation recorded.";
-                let paragraphs = [];
-                let currentSpeaker = "";
-                let currentText = "";
-                for(let line of transcript.slice().reverse()) {
-                    let cleanText = line.originalText.trim();
-                    if(!cleanText.endsWith('.') && !cleanText.endsWith('!') && !cleanText.endsWith('?')) cleanText += '.';
-                    if(line.speaker !== currentSpeaker) {
+            async function generateNarrativeReport(){
+                if(transcript.length===0) return "No conversation recorded.";
+                let paragraphs=[];
+                let currentSpeaker="", currentText="";
+                for(let line of transcript.slice().reverse()){
+                    let cleanText=line.originalText.trim();
+                    if(!cleanText.endsWith('.')&&!cleanText.endsWith('!')&&!cleanText.endsWith('?')) cleanText+='.';
+                    if(line.speaker!==currentSpeaker){
                         if(currentText) paragraphs.push(`${currentSpeaker}: ${currentText}`);
-                        currentSpeaker = line.speaker;
-                        currentText = cleanText;
-                    } else { currentText += " " + cleanText; }
+                        currentSpeaker=line.speaker;
+                        currentText=cleanText;
+                    } else currentText+=" "+cleanText;
                 }
                 if(currentText) paragraphs.push(`${currentSpeaker}: ${currentText}`);
-                let narrative = paragraphs.join("\n\n");
-                narrative = narrative.replace(/Kerala/gi, '');
+                let narrative=paragraphs.join("\n\n").replace(/Kerala/gi,'');
                 return await correctText(narrative);
             }
-            
-            function extractActionItemsRaw() {
-                let actions = [];
-                for(let line of transcript.slice().reverse()) {
-                    let text = line.originalText;
-                    let lower = text.toLowerCase();
-                    if(/(will|must|need to|task|action|todo|deadline|responsible)/i.test(lower)) {
-                        let actionText = text.trim();
-                        actionText = actionText.charAt(0).toUpperCase() + actionText.slice(1);
-                        if(!actionText.endsWith(".")) actionText += ".";
-                        if(actionText.length > 120) actionText = actionText.substring(0,117)+"...";
-                        actions.push({ speaker: line.speaker, text: actionText });
+            function extractActionItemsRaw(){
+                let actions=[];
+                for(let line of transcript.slice().reverse()){
+                    let text=line.originalText;
+                    let lower=text.toLowerCase();
+                    if(/(will|must|need to|task|action|todo|deadline|responsible)/i.test(lower)){
+                        let actionText=text.trim();
+                        actionText=actionText.charAt(0).toUpperCase()+actionText.slice(1);
+                        if(!actionText.endsWith(".")) actionText+=".";
+                        if(actionText.length>120) actionText=actionText.substring(0,117)+"...";
+                        actions.push({speaker:line.speaker, text:actionText});
                     }
-                    if(actions.length >= 10) break;
+                    if(actions.length>=10) break;
                 }
-                if(actions.length === 0) actions.push({ speaker: "Team", text: "Continue working on assigned tasks." });
+                if(actions.length===0) actions.push({speaker:"Team", text:"Continue working on assigned tasks."});
                 return actions;
             }
-            
-            function generateAgendaRaw() {
-                if(transcript.length === 0) return ["Review previous actions", "Project status", "Budget review", "Risk assessment", "Set next meeting"];
-                let fullText = transcript.map(l=>l.originalText).join(' ').toLowerCase();
-                let items = [];
+            function generateAgendaRaw(){
+                if(transcript.length===0) return ["Review previous actions","Project status","Budget review","Risk assessment","Set next meeting"];
+                let fullText=transcript.map(l=>l.originalText).join(' ').toLowerCase();
+                let items=[];
                 if(/(review|status update)/i.test(fullText)) items.push("Review of previous action items");
                 if(/(project|timeline|deadline)/i.test(fullText)) items.push("Project timeline review");
                 if(/(budget|cost|expense)/i.test(fullText)) items.push("Budget and financial review");
                 if(/(risk|issue|problem)/i.test(fullText)) items.push("Risk assessment");
-                if(items.length < 3) items.push("Open discussion");
+                if(items.length<3) items.push("Open discussion");
                 items.push("Set next meeting date");
                 return [...new Set(items)].slice(0,7);
             }
-            
-            function generateDeepStudyRaw() {
+            function generateDeepStudyRaw(){
                 let safety=[], development=[], difficulties=[], dangers=[], profits=[], losses=[], regrets=[], appreciations=[], suggestions=[];
-                for(let line of transcript) {
-                    let l = line.originalText.toLowerCase();
+                for(let line of transcript){
+                    let l=line.originalText.toLowerCase();
                     if(/(safety|secure|danger|hazard)/i.test(l)) safety.push(line.originalText);
                     if(/(develop|learn|skill|training|upskill)/i.test(l)) development.push(line.originalText);
                     if(/(difficult|hard|challenge|complex|tough)/i.test(l)) difficulties.push(line.originalText);
@@ -877,295 +675,255 @@
                     if(/(thank|appreciate|grateful|well done|good job|excellent)/i.test(l)) appreciations.push(line.originalText);
                     if(/(suggest|propose|recommend|advise|improve)/i.test(l)) suggestions.push(line.originalText);
                 }
-                let advice = "Based on the conversation, the following actions are recommended: ";
-                if(safety.length) advice += "Address safety concerns immediately. ";
-                if(difficulties.length) advice += "Allocate additional resources to overcome difficulties. ";
-                if(dangers.length) advice += "Implement a risk mitigation plan. ";
-                if(losses.length) advice += "Review financial controls to prevent potential losses. ";
-                if(regrets.length) advice += "Conduct a lessons-learned session. ";
-                if(suggestions.length) advice += "Evaluate and implement the suggestions made. ";
-                if(development.length) advice += "Invest in training and skill development. ";
-                if(profits.length) advice += "Explore the profit opportunities mentioned. ";
-                if(advice === "Based on the conversation, the following actions are recommended: ") advice += "Continue regular monitoring and maintain clear communication.";
-                let guidance = "Focus on clear communication and documented decisions. Ensure that all action items are followed up in a timely manner.";
+                let advice="Based on the conversation, the following actions are recommended: ";
+                if(safety.length) advice+="Address safety concerns immediately. ";
+                if(difficulties.length) advice+="Allocate additional resources to overcome difficulties. ";
+                if(dangers.length) advice+="Implement a risk mitigation plan. ";
+                if(losses.length) advice+="Review financial controls to prevent potential losses. ";
+                if(regrets.length) advice+="Conduct a lessons-learned session. ";
+                if(suggestions.length) advice+="Evaluate and implement the suggestions made. ";
+                if(development.length) advice+="Invest in training and skill development. ";
+                if(profits.length) advice+="Explore the profit opportunities mentioned. ";
+                if(advice==="Based on the conversation, the following actions are recommended: ") advice+="Continue regular monitoring and maintain clear communication.";
+                let guidance="Focus on clear communication and documented decisions. Ensure that all action items are followed up in a timely manner.";
                 return {
-                    guidance: guidance, safety: safety.length ? safety.slice(0,3).join("; ") : "No specific safety issues were raised.",
-                    development: development.length ? development.slice(0,3).join("; ") : "No skill development topics were discussed.",
-                    difficulties: difficulties.length ? difficulties.slice(0,3).join("; ") : "No major difficulties were mentioned.",
-                    dangers: dangers.length ? dangers.slice(0,3).join("; ") : "No significant risks were highlighted.",
-                    profits: profits.length ? profits.slice(0,3).join("; ") : "No profit opportunities were identified.",
-                    losses: losses.length ? losses.slice(0,3).join("; ") : "No potential losses were identified.",
-                    regrets: regrets.length ? regrets.slice(0,3).join("; ") : "No regrets were recorded.",
-                    appreciations: appreciations.length ? appreciations.slice(0,3).join("; ") : "No appreciations were recorded.",
-                    suggestions: suggestions.length ? suggestions.slice(0,3).join("; ") : "No specific suggestions were offered.",
-                    advice: advice,
-                    safetyAssignees: getSpeakersForTopic(["safety","danger","hazard"]),
-                    difficultiesAssignees: getSpeakersForTopic(["difficult","hard","challenge"]),
-                    dangersAssignees: getSpeakersForTopic(["risk","danger","threat"]),
-                    profitsAssignees: getSpeakersForTopic(["profit","revenue","opportunity"]),
-                    lossesAssignees: getSpeakersForTopic(["loss","decline","downturn"]),
-                    regretsAssignees: getSpeakersForTopic(["regret","unfortunately","should have"]),
-                    suggestionsAssignees: getSpeakersForTopic(["suggest","propose","recommend"])
+                    guidance, safety:safety.length?safety.slice(0,3).join("; "):"No specific safety issues were raised.",
+                    development:development.length?development.slice(0,3).join("; "):"No skill development topics were discussed.",
+                    difficulties:difficulties.length?difficulties.slice(0,3).join("; "):"No major difficulties were mentioned.",
+                    dangers:dangers.length?dangers.slice(0,3).join("; "):"No significant risks were highlighted.",
+                    profits:profits.length?profits.slice(0,3).join("; "):"No profit opportunities were identified.",
+                    losses:losses.length?losses.slice(0,3).join("; "):"No potential losses were identified.",
+                    regrets:regrets.length?regrets.slice(0,3).join("; "):"No regrets were recorded.",
+                    appreciations:appreciations.length?appreciations.slice(0,3).join("; "):"No appreciations were recorded.",
+                    suggestions:suggestions.length?suggestions.slice(0,3).join("; "):"No specific suggestions were offered.",
+                    advice,
+                    safetyAssignees:getSpeakersForTopic(["safety","danger","hazard"]),
+                    difficultiesAssignees:getSpeakersForTopic(["difficult","hard","challenge"]),
+                    dangersAssignees:getSpeakersForTopic(["risk","danger","threat"]),
+                    profitsAssignees:getSpeakersForTopic(["profit","revenue","opportunity"]),
+                    lossesAssignees:getSpeakersForTopic(["loss","decline","downturn"]),
+                    regretsAssignees:getSpeakersForTopic(["regret","unfortunately","should have"]),
+                    suggestionsAssignees:getSpeakersForTopic(["suggest","propose","recommend"])
                 };
             }
-            
-            function analyzeHiddenProblemsRaw() {
-                let fullText = transcript.map(l=>l.originalText).join(' ').toLowerCase();
-                let issues = [];
+            function analyzeHiddenProblemsRaw(){
+                let fullText=transcript.map(l=>l.originalText).join(' ').toLowerCase();
+                let issues=[];
                 if(/(problem|issue|challenge|difficulty)/i.test(fullText)) issues.push("Unresolved challenges were mentioned – management attention may be required.");
                 if(/(delay|behind schedule|late)/i.test(fullText)) issues.push("Timeline delays were discussed – corrective actions should be taken.");
-                if(issues.length === 0) issues.push("No significant hidden risks were detected.");
-                let hiddenGood = [];
+                if(issues.length===0) issues.push("No significant hidden risks were detected.");
+                let hiddenGood=[];
                 if(/(excellent|great|success|achievement)/i.test(fullText)) hiddenGood.push("Positive achievements were noted – these should be recognised.");
                 else hiddenGood.push("No explicit praise or unspoken achievements were identified.");
-                let withheld = [];
+                let withheld=[];
                 if(/(maybe|not sure|hesitant)/i.test(fullText)) withheld.push("Some participants expressed uncertainty – ideas may have been withheld.");
                 else withheld.push("Participants appeared to express their views openly.");
-                let secret = [];
+                let secret=[];
                 if(/(confidential|private|off the record)/i.test(fullText)) secret.push("Sensitive information was mentioned – ensure proper handling.");
                 else secret.push("No secret or off-record discussions were detected.");
-                let creators = [];
+                let creators=[];
                 if(/(blame|fault)/i.test(fullText)) creators.push("Some speakers exhibited blame-oriented language – focus on solutions.");
                 else creators.push("The conversation was generally solution-oriented.");
-                let assignees = getSpeakersForTopic(["problem","issue","challenge","delay","blame"]);
+                let assignees=getSpeakersForTopic(["problem","issue","challenge","delay","blame"]);
                 return { issues, hiddenGood, withheld, secret, creators, assignees };
             }
             
-            // ========== EMAIL ==========
-            async function sendEmail() {
-                if(!transcript.length) { alert("No meeting data to send."); return; }
+            async function sendEmail(){
+                if(!transcript.length){ alert("No meeting data to send."); return; }
                 const checkboxes = document.querySelectorAll('#emailSections input:checked');
-                if(checkboxes.length === 0) { alert("Please select at least one section."); return; }
-                document.getElementById('emailStatus').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Preparing email...';
-                let emailBody = `Dear Team,\n\nPlease find below the key insights from the recent meeting "${office.type || 'Meeting'}". The AI has analyzed the conversation and extracted the following important information:\n\n`;
-                for(let cb of checkboxes) {
-                    const section = cb.value;
-                    switch(section) {
-                        case 'transcript':
-                            emailBody += "\n--- TRANSCRIPT ---\n";
-                            for(let entry of transcript.slice().reverse()) emailBody += `[${entry.timestamp}] ${entry.speaker}: ${entry.originalText}\n`;
-                            break;
-                        case 'summary':
-                            let summary = await generateAIExecutiveSummary();
-                            emailBody += "\n--- EXECUTIVE SUMMARY ---\n" + summary + "\n";
-                            break;
-                        case 'narrative':
-                            let narrative = await generateNarrativeReport();
-                            emailBody += "\n--- NARRATIVE REPORT ---\n" + narrative + "\n";
-                            break;
-                        case 'actions':
-                            let actions = extractActionItemsRaw();
-                            emailBody += "\n--- ACTION ITEMS ---\n";
-                            actions.forEach((a,i) => emailBody += `${i+1}. ${a.text} (${a.speaker})\n`);
-                            break;
-                        case 'agenda':
-                            let agenda = generateAgendaRaw();
-                            emailBody += "\n--- PROPOSED NEXT MEETING AGENDA ---\n";
-                            agenda.forEach((a,i) => emailBody += `${i+1}. ${a}\n`);
-                            break;
-                        case 'deepstudy':
-                            let deep = generateDeepStudyRaw();
-                            emailBody += "\n--- AI DEEP STUDY ---\n";
-                            emailBody += `Guidance: ${deep.guidance}\nSafety: ${deep.safety}\nDevelopment: ${deep.development}\nDifficulties: ${deep.difficulties}\nDangers/Risks: ${deep.dangers}\nProfits: ${deep.profits}\nLosses: ${deep.losses}\nRegrets: ${deep.regrets}\nAppreciations: ${deep.appreciations}\nSuggestions: ${deep.suggestions}\nAdvice: ${deep.advice}\n`;
-                            break;
-                        case 'hidden':
-                            let hidden = analyzeHiddenProblemsRaw();
-                            emailBody += "\n--- HIDDEN PROBLEMS & SECRET IDEAS ---\n";
-                            emailBody += `Issues: ${hidden.issues.join(' ')}\nHidden Good: ${hidden.hiddenGood.join(' ')}\nWithheld Ideas: ${hidden.withheld.join(' ')}\nSecret Info: ${hidden.secret.join(' ')}\nNegative Influence: ${hidden.creators.join(' ')}\nInvolved: ${hidden.assignees}\n`;
-                            break;
-                        case 'confidence':
-                            let conf = window.meetingConfidence;
-                            emailBody += "\n--- MEETING CONFIDENCE ANALYSIS ---\n";
-                            emailBody += `Positive: ${conf.green}% | Neutral: ${conf.yellow}% | Negative: ${conf.red}%\nPositive indicators: ${conf.posCount}, Negative indicators: ${conf.negCount}, Neutral: ${conf.neutralCount}\n`;
-                            break;
+                if(checkboxes.length===0){ alert("Please select at least one section."); return; }
+                document.getElementById('emailStatus').innerHTML='<i class="fas fa-spinner fa-pulse"></i> Preparing email...';
+                let emailBody=`Dear Team,\n\nPlease find below the key insights from the recent meeting "${office.type||'Meeting'}".\n\n`;
+                for(let cb of checkboxes){
+                    const section=cb.value;
+                    switch(section){
+                        case 'transcript': emailBody+="\n--- TRANSCRIPT ---\n"+transcript.slice().reverse().map(e=>`[${e.timestamp}] ${e.speaker}: ${e.originalText}`).join('\n')+"\n"; break;
+                        case 'summary': emailBody+="\n--- EXECUTIVE SUMMARY ---\n"+(await generateAIExecutiveSummary())+"\n"; break;
+                        case 'narrative': emailBody+="\n--- NARRATIVE REPORT ---\n"+(await generateNarrativeReport())+"\n"; break;
+                        case 'actions': let acts=extractActionItemsRaw(); emailBody+="\n--- ACTION ITEMS ---\n"+acts.map((a,i)=>`${i+1}. ${a.text} (${a.speaker})`).join('\n')+"\n"; break;
+                        case 'agenda': let agenda=generateAgendaRaw(); emailBody+="\n--- PROPOSED NEXT MEETING AGENDA ---\n"+agenda.map((a,i)=>`${i+1}. ${a}`).join('\n')+"\n"; break;
+                        case 'deepstudy': let deep=generateDeepStudyRaw(); emailBody+=`\n--- AI DEEP STUDY ---\nGuidance: ${deep.guidance}\nSafety: ${deep.safety}\nDevelopment: ${deep.development}\nDifficulties: ${deep.difficulties}\nDangers/Risks: ${deep.dangers}\nProfits: ${deep.profits}\nLosses: ${deep.losses}\nRegrets: ${deep.regrets}\nAppreciations: ${deep.appreciations}\nSuggestions: ${deep.suggestions}\nAdvice: ${deep.advice}\n`; break;
+                        case 'hidden': let hidden=analyzeHiddenProblemsRaw(); emailBody+=`\n--- HIDDEN PROBLEMS & SECRET IDEAS ---\nIssues: ${hidden.issues.join(' ')}\nHidden Good: ${hidden.hiddenGood.join(' ')}\nWithheld Ideas: ${hidden.withheld.join(' ')}\nSecret Info: ${hidden.secret.join(' ')}\nNegative Influence: ${hidden.creators.join(' ')}\nInvolved: ${hidden.assignees}\n`; break;
+                        case 'confidence': let conf=window.meetingConfidence; emailBody+=`\n--- MEETING CONFIDENCE ANALYSIS ---\nPositive: ${conf.green}% | Neutral: ${conf.yellow}% | Negative: ${conf.red}%\nPositive indicators: ${conf.posCount}, Negative: ${conf.negCount}, Neutral: ${conf.neutralCount}\n`; break;
                     }
                 }
-                emailBody += "\n---\nThis email was generated automatically by Peter AI Super Pro.";
-                const subject = encodeURIComponent(`Meeting Report - ${office.name || 'Meeting'} - ${new Date().toLocaleDateString()}`);
-                const body = encodeURIComponent(emailBody);
-                window.location.href = `mailto:?subject=${subject}&body=${body}`;
-                document.getElementById('emailStatus').innerHTML = '✅ Email client opened.';
+                emailBody+="\n---\nThis email was generated automatically by Peter AI Super Pro.";
+                window.location.href=`mailto:?subject=${encodeURIComponent(`Meeting Report - ${office.name||'Meeting'} - ${new Date().toLocaleDateString()}`)}&body=${encodeURIComponent(emailBody)}`;
+                document.getElementById('emailStatus').innerHTML='✅ Email client opened.';
                 setTimeout(()=>document.getElementById('emailStatus').innerHTML='',5000);
             }
             
-            // ========== VOICE READING ==========
-            let currentUtterance = null;
-            function stopReading() { if(currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; document.getElementById('voiceStatus').innerHTML = '⏹️ Stopped.'; } }
-            async function readSelectedSections() {
+            // ---------- VOICE READING ----------
+            let currentUtterance=null;
+            function stopReading(){ if(currentUtterance){ window.speechSynthesis.cancel(); currentUtterance=null; document.getElementById('voiceStatus').innerHTML='⏹️ Stopped.'; } }
+            async function readSelectedSections(){
                 stopReading();
-                const checkboxes = document.querySelectorAll('#voiceSections input:checked');
-                if(checkboxes.length === 0) { document.getElementById('voiceStatus').innerHTML = '⚠️ Select sections.'; return; }
-                document.getElementById('voiceStatus').innerHTML = '📢 Preparing...';
-                let fullText = "";
-                for(let cb of checkboxes) {
-                    switch(cb.value) {
-                        case 'transcript': if(transcript.length) for(let e of transcript.slice().reverse()) fullText += `At ${e.timestamp}, ${e.speaker} said: ${e.originalText}. `; break;
-                        case 'summary': fullText += "Executive Summary. " + (await generateAIExecutiveSummary()) + " "; break;
-                        case 'narrative': let narr = await generateNarrativeReport(); fullText += "Narrative Report. " + narr + " "; break;
-                        case 'actions': let acts = extractActionItemsRaw(); fullText += "Action items. " + acts.map((a,i)=>`${i+1}. ${a.text} `).join(" ") + " "; break;
-                        case 'agenda': let agenda = generateAgendaRaw(); fullText += "Proposed Agenda: " + agenda.map((a,i)=>`${i+1}. ${a}`).join(" ") + " "; break;
-                        case 'deepstudy': let deep = generateDeepStudyRaw(); fullText += `AI Deep Study. Guidance: ${deep.guidance}. Safety: ${deep.safety}. Development: ${deep.development}. Difficulties: ${deep.difficulties}. Dangers: ${deep.dangers}. Profits: ${deep.profits}. Losses: ${deep.losses}. Regrets: ${deep.regrets}. Appreciations: ${deep.appreciations}. Suggestions: ${deep.suggestions}. Advice: ${deep.advice}. `; break;
-                        case 'hidden': let hidden = analyzeHiddenProblemsRaw(); fullText += `Hidden problems. ${hidden.issues.join(' ')} ${hidden.hiddenGood.join(' ')} ${hidden.withheld.join(' ')} ${hidden.secret.join(' ')} ${hidden.creators.join(' ')} `; break;
-                        case 'receipt': if(costCalculated && meetingCost>0) fullText += `Payment receipt. ${costDetailsArr.join(' ')} Total ${meetingCost.toFixed(2)} dollars. `; break;
+                const checkboxes=document.querySelectorAll('#voiceSections input:checked');
+                if(checkboxes.length===0){ document.getElementById('voiceStatus').innerHTML='⚠️ Select sections.'; return; }
+                document.getElementById('voiceStatus').innerHTML='📢 Preparing...';
+                let fullText="";
+                for(let cb of checkboxes){
+                    switch(cb.value){
+                        case 'transcript': if(transcript.length) for(let e of transcript.slice().reverse()) fullText+=`At ${e.timestamp}, ${e.speaker} said: ${e.originalText}. `; break;
+                        case 'summary': fullText+="Executive Summary. "+(await generateAIExecutiveSummary())+" "; break;
+                        case 'narrative': fullText+="Narrative Report. "+(await generateNarrativeReport())+" "; break;
+                        case 'actions': let acts=extractActionItemsRaw(); fullText+="Action items. "+acts.map((a,i)=>`${i+1}. ${a.text} `).join(" ")+" "; break;
+                        case 'agenda': let agenda=generateAgendaRaw(); fullText+="Proposed Agenda: "+agenda.map((a,i)=>`${i+1}. ${a}`).join(" ")+" "; break;
+                        case 'deepstudy': let deep=generateDeepStudyRaw(); fullText+=`AI Deep Study. Guidance: ${deep.guidance}. Safety: ${deep.safety}. Development: ${deep.development}. Difficulties: ${deep.difficulties}. Dangers: ${deep.dangers}. Profits: ${deep.profits}. Losses: ${deep.losses}. Regrets: ${deep.regrets}. Appreciations: ${deep.appreciations}. Suggestions: ${deep.suggestions}. Advice: ${deep.advice}. `; break;
+                        case 'hidden': let hidden=analyzeHiddenProblemsRaw(); fullText+=`Hidden problems. ${hidden.issues.join(' ')} ${hidden.hiddenGood.join(' ')} ${hidden.withheld.join(' ')} ${hidden.secret.join(' ')} ${hidden.creators.join(' ')} `; break;
+                        case 'receipt': if(costCalculated && meetingCost>0) fullText+=`Payment receipt. ${costDetailsArr.join(' ')} Total ${meetingCost.toFixed(2)} dollars. `; break;
                     }
                 }
-                if(fullText.trim() === "") { document.getElementById('voiceStatus').innerHTML = '❌ No text.'; return; }
-                const selectedLang = document.getElementById('voiceLanguageSelect').value;
-                const targetCode = voiceLangMap[selectedLang] || 'en-US';
-                let matchedVoice = getBestVoiceForLang(targetCode);
-                let utterance = new SpeechSynthesisUtterance(fullText);
-                utterance.rate = 0.9;
-                if(matchedVoice) { utterance.voice = matchedVoice; utterance.lang = matchedVoice.lang; document.getElementById('voiceStatusMsg').innerHTML = `🔊 Using ${matchedVoice.name}`; }
-                else { utterance.lang = targetCode; document.getElementById('voiceStatusMsg').innerHTML = `⚠️ No voice for ${selectedLang}. Using default.`; }
-                utterance.onstart = () => document.getElementById('voiceStatus').innerHTML = '🔊 Reading...';
-                utterance.onend = () => { document.getElementById('voiceStatus').innerHTML = '✅ Done.'; currentUtterance = null; if(confirm("Thank you! Read another?")) readSelectedSections(); };
-                utterance.onerror = () => { document.getElementById('voiceStatus').innerHTML = '❌ Error.'; };
-                currentUtterance = utterance;
+                if(fullText.trim()===""){ document.getElementById('voiceStatus').innerHTML='❌ No text.'; return; }
+                const selectedLang=document.getElementById('voiceLanguageSelect').value;
+                const targetCode=voiceLangMap[selectedLang]||'en-US';
+                let matchedVoice=getBestVoiceForLang(targetCode);
+                let utterance=new SpeechSynthesisUtterance(fullText);
+                utterance.rate=0.9;
+                if(matchedVoice){ utterance.voice=matchedVoice; utterance.lang=matchedVoice.lang; document.getElementById('voiceStatusMsg').innerHTML=`🔊 Using ${matchedVoice.name}`; }
+                else{ utterance.lang=targetCode; document.getElementById('voiceStatusMsg').innerHTML=`⚠️ No voice for ${selectedLang}. Using default.`; }
+                utterance.onstart=()=>document.getElementById('voiceStatus').innerHTML='🔊 Reading...';
+                utterance.onend=()=>{ document.getElementById('voiceStatus').innerHTML='✅ Done.'; currentUtterance=null; if(confirm("Thank you! Read another?")) readSelectedSections(); };
+                utterance.onerror=()=>document.getElementById('voiceStatus').innerHTML='❌ Error.';
+                currentUtterance=utterance;
                 window.speechSynthesis.speak(utterance);
             }
             
-            // ========== PDF GENERATION ==========
+            // ---------- PDF GENERATION (Sinhala support using html2pdf) ----------
             async function generateReport() {
-                if(!transcript.length) { alert("No meeting data."); return; }
-                const incTranscript = document.getElementById('incTranscript').checked;
-                const incSummary = document.getElementById('incSummary').checked;
-                const incNarrative = document.getElementById('incNarrative').checked;
-                const incActions = document.getElementById('incActions').checked;
-                const incAgenda = document.getElementById('incAgenda').checked;
-                const incDeepStudy = document.getElementById('incDeepStudy').checked;
-                const incHidden = document.getElementById('incHidden').checked;
-                const incConfidence = document.getElementById('incConfidence').checked;
-                const incReceipt = document.getElementById('incReceipt').checked;
-                const aiEnabled = document.getElementById('aiSuggestYes').checked;
-                const problemsEnabled = document.getElementById('checkProblemsYes').checked;
+                if(!transcript.length){ alert("No meeting data."); return; }
+                const incTranscript=document.getElementById('incTranscript').checked;
+                const incSummary=document.getElementById('incSummary').checked;
+                const incNarrative=document.getElementById('incNarrative').checked;
+                const incActions=document.getElementById('incActions').checked;
+                const incAgenda=document.getElementById('incAgenda').checked;
+                const incDeepStudy=document.getElementById('incDeepStudy').checked;
+                const incHidden=document.getElementById('incHidden').checked;
+                const incConfidence=document.getElementById('incConfidence').checked;
+                const incReceipt=document.getElementById('incReceipt').checked;
+                const aiEnabled=document.getElementById('aiSuggestYes').checked;
+                const problemsEnabled=document.getElementById('checkProblemsYes').checked;
                 
-                document.getElementById('reportStatus').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> AI correcting...';
-                let executiveSummary = incSummary ? await generateAIExecutiveSummary() : "";
-                let narrativeReport = incNarrative ? await generateNarrativeReport() : "";
-                let actionItems = incActions ? extractActionItemsRaw() : [];
-                let agenda = incAgenda ? generateAgendaRaw() : [];
-                let deepStudyRaw = (incDeepStudy && aiEnabled) ? generateDeepStudyRaw() : null;
-                let hiddenRaw = (incHidden && problemsEnabled) ? analyzeHiddenProblemsRaw() : null;
-                let confidence = incConfidence ? window.meetingConfidence : null;
-                
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const now = new Date();
-                const entries = [...transcript].reverse();
-                const attendeeStr = speakers.map(s=>s.name).join(', ');
-                updateConfidenceBar();
-                let conf = window.meetingConfidence || { green:33, yellow:34, red:33, posCount:0, negCount:0, neutralCount:0 };
-                
-                let totalPageCharge = 0, chargeDetails = [];
-                if(incTranscript) { totalPageCharge += pagePrices.transcript; chargeDetails.push({ name: "Transcript", amount: pagePrices.transcript }); }
-                if(incSummary) { totalPageCharge += pagePrices.summary; chargeDetails.push({ name: "Executive Summary", amount: pagePrices.summary }); }
-                if(incNarrative) { totalPageCharge += pagePrices.narrative; chargeDetails.push({ name: "Narrative Report", amount: pagePrices.narrative }); }
-                if(incActions) { totalPageCharge += pagePrices.actions; chargeDetails.push({ name: "Action Items", amount: pagePrices.actions }); }
-                if(incAgenda) { totalPageCharge += pagePrices.agenda; chargeDetails.push({ name: "Proposed Agenda", amount: pagePrices.agenda }); }
-                if(incDeepStudy && aiEnabled) { totalPageCharge += pagePrices.deepstudy; chargeDetails.push({ name: "AI Deep Study", amount: pagePrices.deepstudy }); }
-                if(incHidden && problemsEnabled) { totalPageCharge += pagePrices.hidden; chargeDetails.push({ name: "Hidden Problems", amount: pagePrices.hidden }); }
-                if(incConfidence) { totalPageCharge += pagePrices.confidence; chargeDetails.push({ name: "Meeting Confidence", amount: pagePrices.confidence }); }
-                
-                let currentPage = 1, y = 0;
-                function drawBorder(pageNum) { doc.setPage(pageNum); doc.setDrawColor(0,0,0); doc.rect(8, 8, 194, 285); }
-                function drawHeader(pageNum, title) {
-                    doc.setPage(pageNum);
-                    doc.setFillColor(96, 165, 250);
-                    doc.rect(20, 10, 170, 45, 'F');
-                    doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.setTextColor(28,60,90);
-                    doc.text("Peter AI Super Pro - Meeting Report", 20, 20);
-                    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(0,0,0);
-                    doc.text(`Organization: ${office.name || 'N/A'}  |  Meeting: ${office.type || 'General'}`, 20, 30);
-                    doc.text(`Date: ${now.toLocaleDateString()}  |  Time: ${now.toLocaleTimeString()}  |  Duration: ${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m`, 20, 36);
-                    doc.text(`Attendees: ${attendeeStr}`, 20, 42);
-                    doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
-                    doc.text(title, 20, 52);
-                    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(0,0,0);
-                    doc.line(20, 54, 190, 54);
-                    return 58;
-                }
-                function drawFooter(pageNum, total) {
-                    doc.setPage(pageNum);
-                    doc.setFontSize(7); doc.setTextColor(100,100,100);
-                    doc.text(`Generated: ${now.toLocaleString()}`, 20, 285);
-                    doc.text(`Page ${pageNum} of ${total}`, 105, 285, {align:'center'});
-                    doc.text("Software Developed By: Pesala Jayawardene | © 2025 Peter AI Super Pro", 105, 291, {align:'center'});
-                }
-                function writeLine(text, indent = 0, bold = false) {
-                    if(bold) doc.setFont("helvetica","bold");
-                    else doc.setFont("helvetica","normal");
-                    const lines = doc.splitTextToSize(text, 170 - indent);
-                    for(let line of lines) {
-                        if(y + 5 > 275) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Continued"); if(bold) doc.setFont("helvetica","bold"); else doc.setFont("helvetica","normal"); }
-                        doc.text(line, 20 + indent, y);
-                        y += 5;
+                document.getElementById('reportStatus').innerHTML='<i class="fas fa-spinner fa-pulse"></i> Generating PDF with Sinhala support...';
+                try{
+                    let executiveSummary = incSummary ? await generateAIExecutiveSummary() : "";
+                    let narrativeReport = incNarrative ? await generateNarrativeReport() : "";
+                    let actionItems = incActions ? extractActionItemsRaw() : [];
+                    let agenda = incAgenda ? generateAgendaRaw() : [];
+                    let deepStudyRaw = (incDeepStudy && aiEnabled) ? generateDeepStudyRaw() : null;
+                    let hiddenRaw = (incHidden && problemsEnabled) ? analyzeHiddenProblemsRaw() : null;
+                    let confidence = incConfidence ? window.meetingConfidence : null;
+                    const now = new Date();
+                    const entries = [...transcript].reverse();
+                    const attendeeStr = speakers.map(s=>s.name).join(', ');
+                    
+                    let htmlContent = `<div style="font-family: 'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', sans-serif; font-size: 12pt; line-height: 1.4; padding: 20px;">
+                        <h1 style="color: #1e3a8a;">Peter AI Super Pro - Meeting Report</h1>
+                        <p><strong>Organization:</strong> ${office.name||'N/A'} &nbsp;|&nbsp; <strong>Meeting:</strong> ${office.type||'General'}</p>
+                        <p><strong>Date:</strong> ${now.toLocaleDateString()} &nbsp;|&nbsp; <strong>Time:</strong> ${now.toLocaleTimeString()} &nbsp;|&nbsp; <strong>Duration:</strong> ${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m</p>
+                        <p><strong>Attendees:</strong> ${attendeeStr}</p><hr>`;
+                    if(incTranscript){
+                        htmlContent+=`<h2>Meeting Transcript</h2>`;
+                        let lineNum=1;
+                        for(let entry of entries){
+                            htmlContent+=`<div style="margin-bottom:8px;"><strong>${lineNum}. [${entry.timestamp}] ${entry.speaker}:</strong><br><span style="margin-left:15px;">${escapeHtml(entry.originalText)}</span></div>`;
+                            lineNum++;
+                        }
                     }
-                }
-                drawBorder(1);
-                if(incTranscript) {
-                    y = drawHeader(1, "Meeting Transcript");
-                    let lineNum = 1;
-                    for(let entry of entries) {
-                        writeLine(`${lineNum}. [${entry.timestamp}] ${entry.speaker}:`, 0, true);
-                        writeLine(entry.originalText, 5, false);
-                        if(y < 275) { doc.setDrawColor(200,200,200); doc.line(20, y-2, 190, y-2); }
-                        y += 2; lineNum++;
+                    if(incSummary && executiveSummary) htmlContent+=`<h2>AI Executive Summary</h2><div>${escapeHtml(executiveSummary).replace(/\n/g,'<br>')}</div>`;
+                    if(incNarrative && narrativeReport) htmlContent+=`<h2>Narrative Report</h2><div>${escapeHtml(narrativeReport).replace(/\n/g,'<br>')}</div>`;
+                    if(incActions && actionItems.length) htmlContent+=`<h2>Action Items</h2><ul>${actionItems.map((a,i)=>`<li>${escapeHtml(a.text)} (${escapeHtml(a.speaker)})</li>`).join('')}</ul>`;
+                    if(incAgenda && agenda.length) htmlContent+=`<h2>Proposed Next Meeting Agenda</h2><ul>${agenda.map(a=>`<li>${escapeHtml(a)}</li>`).join('')}</ul>`;
+                    if(incDeepStudy && aiEnabled && deepStudyRaw) htmlContent+=`<h2>AI Deep Study</h2><p><strong>Guidance:</strong> ${escapeHtml(deepStudyRaw.guidance)}</p><p><strong>Safety:</strong> ${escapeHtml(deepStudyRaw.safety)}</p><p><strong>Development:</strong> ${escapeHtml(deepStudyRaw.development)}</p><p><strong>Difficulties:</strong> ${escapeHtml(deepStudyRaw.difficulties)}</p><p><strong>Dangers/Risks:</strong> ${escapeHtml(deepStudyRaw.dangers)}</p><p><strong>Profits:</strong> ${escapeHtml(deepStudyRaw.profits)}</p><p><strong>Losses:</strong> ${escapeHtml(deepStudyRaw.losses)}</p><p><strong>Regrets:</strong> ${escapeHtml(deepStudyRaw.regrets)}</p><p><strong>Appreciations:</strong> ${escapeHtml(deepStudyRaw.appreciations)}</p><p><strong>Suggestions:</strong> ${escapeHtml(deepStudyRaw.suggestions)}</p><p><strong>Advice:</strong> ${escapeHtml(deepStudyRaw.advice)}</p>`;
+                    if(incHidden && problemsEnabled && hiddenRaw) htmlContent+=`<h2>Hidden Problems & Secret Ideas</h2><p><strong>Potential Hidden Problems:</strong> ${escapeHtml(hiddenRaw.issues.join(' '))}</p><p><strong>Hidden Good Things:</strong> ${escapeHtml(hiddenRaw.hiddenGood.join(' '))}</p><p><strong>Withheld Ideas:</strong> ${escapeHtml(hiddenRaw.withheld.join(' '))}</p><p><strong>Secret Information:</strong> ${escapeHtml(hiddenRaw.secret.join(' '))}</p><p><strong>Negative Influence:</strong> ${escapeHtml(hiddenRaw.creators.join(' '))}</p><p><strong>Involved:</strong> ${escapeHtml(hiddenRaw.assignees)}</p>`;
+                    if(incConfidence && confidence) htmlContent+=`<h2>Meeting Confidence Analysis</h2><div style="background:#e2e8f0; border-radius:20px; height:30px; width:100%; margin:10px 0; display:flex; overflow:hidden;"><div style="background:#10b981; width:${confidence.green}%; text-align:center; color:white;">${Math.round(confidence.green)}%</div><div style="background:#f59e0b; width:${confidence.yellow}%; text-align:center; color:white;">${Math.round(confidence.yellow)}%</div><div style="background:#ef4444; width:${confidence.red}%; text-align:center; color:white;">${Math.round(confidence.red)}%</div></div><p>Positive indicators: ${confidence.posCount}, Negative: ${confidence.negCount}, Neutral: ${confidence.neutralCount}</p><p><strong>Recommendation:</strong> ${confidence.red>40?"Significant negative indicators – review meeting dynamics.":(confidence.green>50?"Meeting was positive and productive.":"Meeting was neutral – focus on clear action items.")}</p>`;
+                    if(incReceipt && costCalculated && meetingCost>0){
+                        let totalPageCharge=0, chargeDetails=[];
+                        if(incTranscript){ totalPageCharge+=pagePrices.transcript; chargeDetails.push({name:"Transcript",amount:pagePrices.transcript}); }
+                        if(incSummary){ totalPageCharge+=pagePrices.summary; chargeDetails.push({name:"Executive Summary",amount:pagePrices.summary}); }
+                        if(incNarrative){ totalPageCharge+=pagePrices.narrative; chargeDetails.push({name:"Narrative Report",amount:pagePrices.narrative}); }
+                        if(incActions){ totalPageCharge+=pagePrices.actions; chargeDetails.push({name:"Action Items",amount:pagePrices.actions}); }
+                        if(incAgenda){ totalPageCharge+=pagePrices.agenda; chargeDetails.push({name:"Proposed Agenda",amount:pagePrices.agenda}); }
+                        if(incDeepStudy && aiEnabled){ totalPageCharge+=pagePrices.deepstudy; chargeDetails.push({name:"AI Deep Study",amount:pagePrices.deepstudy}); }
+                        if(incHidden && problemsEnabled){ totalPageCharge+=pagePrices.hidden; chargeDetails.push({name:"Hidden Problems",amount:pagePrices.hidden}); }
+                        if(incConfidence){ totalPageCharge+=pagePrices.confidence; chargeDetails.push({name:"Meeting Confidence",amount:pagePrices.confidence}); }
+                        htmlContent+=`<h2>Payment Receipt</h2><p><strong>Organization:</strong> ${office.name||'N/A'}</p><p><strong>Invoice Date:</strong> ${now.toLocaleDateString()}</p><p><strong>Meeting Date:</strong> ${meetingStart?meetingStart.toLocaleDateString():'N/A'}</p><p><strong>Duration:</strong> ${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m</p><p><strong>Total Lines:</strong> ${transcript.length}</p><table style="width:100%; border-collapse:collapse; margin:10px 0;"><tr><th style="border:1px solid #ddd; padding:5px;">Page</th><th style="border:1px solid #ddd; padding:5px;">Charge</th></tr>${chargeDetails.map(d=>`<tr><td style="border:1px solid #ddd; padding:5px;">${d.name}</td><td style="border:1px solid #ddd; padding:5px;">$${d.amount.toFixed(2)}</td></tr>`).join('')}<tr><td style="border:1px solid #ddd; padding:5px;"><strong>Total Page Charges</strong></td><td style="border:1px solid #ddd; padding:5px;"><strong>$${totalPageCharge.toFixed(2)}</strong></td></tr></table><p><strong>Meeting Charges:</strong></p><ul>${costDetailsArr.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ul><p class="receipt-total"><strong>GRAND TOTAL DUE: $${(meetingCost+totalPageCharge).toFixed(2)}</strong></p><p style="font-size:10px;">This is a computer generated receipt. Signature is not required.</p>`;
                     }
-                }
-                if(incSummary && executiveSummary) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Ai Executive Summary"); let paragraphs = executiveSummary.split(/\n\n/); for(let para of paragraphs) { let lines = doc.splitTextToSize(para, 170); for(let line of lines) { if(y + 5 > 275) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Executive Summary (continued)"); } doc.text(line, 20, y); y += 5; } y += 3; } }
-                if(incNarrative && narrativeReport) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Narrative Report"); let paragraphs = narrativeReport.split(/\n\n/); for(let para of paragraphs) { let lines = doc.splitTextToSize(para, 170); for(let line of lines) { if(y + 5 > 275) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Narrative Report (continued)"); } doc.text(line, 20, y); y += 5; } y += 3; } }
-                if(incActions && actionItems.length) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Action Items"); for(let i=0; i<actionItems.length; i++) { writeLine(`${i+1}. ${actionItems[i].text} (${actionItems[i].speaker})`, 5, false); } }
-                if(incAgenda && agenda.length) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Proposed Next Meeting Agenda"); for(let i=0; i<agenda.length; i++) { writeLine(`${i+1}. ${agenda[i]}`, 5, false); } }
-                if(incDeepStudy && aiEnabled && deepStudyRaw) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Ai Deep Study"); let sections = ["1. Guidance","2. Safety","3. Development","4. Difficulties","5. Dangers/Risks","6. Profits","7. Losses","8. Regrets","9. Appreciations","10. Suggestions","11. Advice"]; let keys = ["guidance","safety","development","difficulties","dangers","profits","losses","regrets","appreciations","suggestions","advice"]; for(let i=0; i<sections.length; i++) { writeLine(sections[i] + ":", 0, true); writeLine(deepStudyRaw[keys[i]] || "Not discussed.", 5, false); y += 2; } }
-                if(incHidden && problemsEnabled && hiddenRaw) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Hidden Problems & Secret Ideas"); let sections = ["1. Potential Hidden Problems","2. Hidden Good Things","3. Withheld Ideas","4. Secret Information","5. Negative Influence"]; let keys = ["issues","hiddenGood","withheld","secret","creators"]; for(let i=0; i<sections.length; i++) { let text = Array.isArray(hiddenRaw[keys[i]]) ? hiddenRaw[keys[i]].join(" ") : hiddenRaw[keys[i]]; if(i===0 && hiddenRaw.assignees) text += ` (Involved: ${hiddenRaw.assignees})`; writeLine(sections[i] + ":", 0, true); writeLine(text, 5, false); y += 2; } }
-                if(incConfidence && confidence) { doc.addPage(); currentPage++; drawBorder(currentPage); y = drawHeader(currentPage, "Meeting Confidence Analysis"); let barY = y; doc.setDrawColor(200,200,200); doc.rect(20, barY, 170, 25); let greenWidth = 170 * (conf.green / 100); let yellowWidth = 170 * (conf.yellow / 100); let redWidth = 170 * (conf.red / 100); doc.setFillColor(16,185,129); doc.rect(20, barY, greenWidth, 25, 'F'); doc.setFillColor(245,158,11); doc.rect(20+greenWidth, barY, yellowWidth, 25, 'F'); doc.setFillColor(239,68,68); doc.rect(20+greenWidth+yellowWidth, barY, redWidth, 25, 'F'); doc.setFontSize(10); doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); if(greenWidth > 20) doc.text(`${Math.round(conf.green)}%`, 20 + greenWidth/2 - 5, barY + 17); if(yellowWidth > 20) doc.text(`${Math.round(conf.yellow)}%`, 20 + greenWidth + yellowWidth/2 - 5, barY + 17); if(redWidth > 20) doc.text(`${Math.round(conf.red)}%`, 20 + greenWidth + yellowWidth + redWidth/2 - 5, barY + 17); doc.setTextColor(0,0,0); doc.setFontSize(9); y = barY + 30; writeLine(`Positive indicators: ${conf.posCount}`, 0, false); writeLine(`Negative indicators: ${conf.negCount}`, 0, false); writeLine(`Neutral statements: ${conf.neutralCount}`, 0, false); y += 3; let recommendation = conf.red > 40 ? "Significant negative indicators – review meeting dynamics." : (conf.green > 50 ? "Meeting was positive and productive." : "Meeting was neutral – focus on clear action items."); writeLine(`Recommendation: ${recommendation}`, 0, false); }
-                if(incReceipt && costCalculated && meetingCost>0) {
-                    doc.addPage(); currentPage++; drawBorder(currentPage);
-                    let yR = 30;
-                    doc.setFontSize(16); doc.setFont("helvetica","bold"); doc.setTextColor(96,165,250); doc.text("Payment Receipt", 20, yR); doc.setTextColor(0,0,0); yR+=12;
-                    doc.setFontSize(9);
-                    doc.text(`Organization: ${office.name || 'N/A'}`, 25, yR); yR+=6;
-                    doc.text(`Invoice Date: ${now.toLocaleDateString()}`, 25, yR); yR+=6;
-                    doc.text(`Meeting Date: ${meetingStart ? meetingStart.toLocaleDateString() : 'N/A'}`, 25, yR); yR+=6;
-                    doc.text(`Duration: ${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m`, 25, yR); yR+=8;
-                    doc.text(`Total Lines: ${transcript.length}`, 25, yR); yR+=5;
-                    doc.text(`-`.repeat(30), 25, yR); yR+=6;
-                    doc.setFont("helvetica","bold"); doc.text("Page Charges:", 25, yR); yR+=5;
-                    doc.setFont("helvetica","normal");
-                    const leftX = 30, rightX = 150;
-                    for(let d of chargeDetails) { doc.text(d.name + ":", leftX, yR); doc.text(`$${d.amount.toFixed(2)}`, rightX, yR); yR += 5; }
-                    doc.text(`Total Page Charges:`, leftX, yR); doc.text(`$${totalPageCharge.toFixed(2)}`, rightX, yR); yR += 8;
-                    doc.setFont("helvetica","bold"); doc.text("Meeting Charges:", 25, yR); yR+=5;
-                    doc.setFont("helvetica","normal");
-                    for(let d of costDetailsArr) { doc.text(d, 30, yR); yR+=5; }
-                    yR+=5;
-                    doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(40,167,69);
-                    doc.text(`GRAND TOTAL DUE: $${(meetingCost + totalPageCharge).toFixed(2)}`, 25, yR);
-                    yR+=8;
-                    doc.setFontSize(8); doc.setTextColor(100,100,100);
-                    doc.text("This is a computer generated receipt. Signature is not required.", 25, yR);
-                }
-                let totalPages = doc.internal.getNumberOfPages();
-                for(let i=1;i<=totalPages;i++) { drawFooter(i, totalPages); drawBorder(i); }
-                reportCount++; if(currentOrg) saveCurrentOrg(); updateUI();
-                doc.save(`Peter_AI_Report_${now.toISOString().slice(0,19)}.pdf`);
-                document.getElementById('reportStatus').innerHTML = '✅ Report generated!';
-                setTimeout(()=>document.getElementById('reportStatus').innerHTML='Ready',3000);
+                    htmlContent+=`<hr><p style="text-align:center; font-size:9px;">Generated by Peter AI Super Pro v36.4 | Developed by Pesala Jayawardene</p></div>`;
+                    const container = document.getElementById('pdfReportContainer');
+                    container.innerHTML = htmlContent;
+                    const opt = { margin: [0.5,0.5,0.5,0.5], filename: `Peter_AI_Report_${now.toISOString().slice(0,19)}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+                    await html2pdf().set(opt).from(container).save();
+                    reportCount++; if(currentOrg) saveCurrentOrg(); updateUI();
+                    document.getElementById('reportStatus').innerHTML = '✅ Report generated with Sinhala fonts!';
+                    setTimeout(()=>document.getElementById('reportStatus').innerHTML='Ready',3000);
+                } catch(e){ console.error(e); alert("PDF generation error: "+e.message); document.getElementById('reportStatus').innerHTML = '❌ Error'; }
+                finally { document.getElementById('pdfReportContainer').innerHTML = ''; }
             }
             
-            // Admin handlers
-            function loadPagePrices() { let saved = localStorage.getItem('peter_page_prices'); if(saved) { let prices = JSON.parse(saved); pagePrices = { ...pagePrices, ...prices }; } document.getElementById('priceTranscript').value = pagePrices.transcript; document.getElementById('priceSummary').value = pagePrices.summary; document.getElementById('priceNarrative').value = pagePrices.narrative; document.getElementById('priceActions').value = pagePrices.actions; document.getElementById('priceAgenda').value = pagePrices.agenda; document.getElementById('priceDeepStudy').value = pagePrices.deepstudy; document.getElementById('priceHidden').value = pagePrices.hidden; document.getElementById('priceConfidence').value = pagePrices.confidence; }
-            function savePagePrices() { pagePrices.transcript = parseFloat(document.getElementById('priceTranscript').value); pagePrices.summary = parseFloat(document.getElementById('priceSummary').value); pagePrices.narrative = parseFloat(document.getElementById('priceNarrative').value); pagePrices.actions = parseFloat(document.getElementById('priceActions').value); pagePrices.agenda = parseFloat(document.getElementById('priceAgenda').value); pagePrices.deepstudy = parseFloat(document.getElementById('priceDeepStudy').value); pagePrices.hidden = parseFloat(document.getElementById('priceHidden').value); pagePrices.confidence = parseFloat(document.getElementById('priceConfidence').value); localStorage.setItem('peter_page_prices', JSON.stringify(pagePrices)); document.getElementById('pagePriceStatus').innerHTML = '✅ Saved!'; setTimeout(()=>document.getElementById('pagePriceStatus').innerHTML='',2000); }
-            function loadAdminSettings() { let saved = localStorage.getItem('peter_rates'); if(saved) rates = JSON.parse(saved); document.getElementById('rate0_1').value = rates.r0_1; document.getElementById('rate1_2').value = rates.r1_2; document.getElementById('rate2_4').value = rates.r2_4; document.getElementById('rateAbove4').value = rates.rAbove; document.getElementById('perLanguageRate').value = rates.perLang; document.getElementById('allLanguagesRate').value = rates.allLang; loadPagePrices(); }
-            document.getElementById('saveRatesBtn').onclick = ()=>{ rates.r0_1=parseFloat(document.getElementById('rate0_1').value); rates.r1_2=parseFloat(document.getElementById('rate1_2').value); rates.r2_4=parseFloat(document.getElementById('rate2_4').value); rates.rAbove=parseFloat(document.getElementById('rateAbove4').value); localStorage.setItem('peter_rates',JSON.stringify(rates)); alert('Rates saved'); };
-            document.getElementById('saveTranslationRatesBtn').onclick = ()=>{ rates.perLang=parseFloat(document.getElementById('perLanguageRate').value); rates.allLang=parseFloat(document.getElementById('allLanguagesRate').value); localStorage.setItem('peter_rates',JSON.stringify(rates)); alert('Translation saved'); };
+            // ---------- ADMIN & PAGE PRICES ----------
+            function loadPagePrices(){ let saved=localStorage.getItem('peter_page_prices'); if(saved){ let prices=JSON.parse(saved); pagePrices={...pagePrices,...prices}; } document.getElementById('priceTranscript').value=pagePrices.transcript; document.getElementById('priceSummary').value=pagePrices.summary; document.getElementById('priceNarrative').value=pagePrices.narrative; document.getElementById('priceActions').value=pagePrices.actions; document.getElementById('priceAgenda').value=pagePrices.agenda; document.getElementById('priceDeepStudy').value=pagePrices.deepstudy; document.getElementById('priceHidden').value=pagePrices.hidden; document.getElementById('priceConfidence').value=pagePrices.confidence; }
+            function savePagePrices(){ pagePrices.transcript=parseFloat(document.getElementById('priceTranscript').value); pagePrices.summary=parseFloat(document.getElementById('priceSummary').value); pagePrices.narrative=parseFloat(document.getElementById('priceNarrative').value); pagePrices.actions=parseFloat(document.getElementById('priceActions').value); pagePrices.agenda=parseFloat(document.getElementById('priceAgenda').value); pagePrices.deepstudy=parseFloat(document.getElementById('priceDeepStudy').value); pagePrices.hidden=parseFloat(document.getElementById('priceHidden').value); pagePrices.confidence=parseFloat(document.getElementById('priceConfidence').value); localStorage.setItem('peter_page_prices',JSON.stringify(pagePrices)); document.getElementById('pagePriceStatus').innerHTML='✅ Saved!'; setTimeout(()=>document.getElementById('pagePriceStatus').innerHTML='',2000); }
+            function loadAdminSettings(){ let saved=localStorage.getItem('peter_rates'); if(saved) rates=JSON.parse(saved); document.getElementById('rate0_1').value=rates.r0_1; document.getElementById('rate1_2').value=rates.r1_2; document.getElementById('rate2_4').value=rates.r2_4; document.getElementById('rateAbove4').value=rates.rAbove; document.getElementById('perLanguageRate').value=rates.perLang; document.getElementById('allLanguagesRate').value=rates.allLang; loadPagePrices(); }
+            function initAdminTabs(){ document.querySelectorAll('.admin-tab').forEach(tab=>{ tab.onclick=()=>{ document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('active')); document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active'); }; }); }
+            
+            // ---------- EVENT BINDINGS ----------
+            document.getElementById('toggleUsername').addEventListener('click',function(){ let u=document.getElementById('loginUsername'); if(u.type==='password'){ u.type='text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); } else{ u.type='password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); } });
+            document.getElementById('togglePassword').addEventListener('click',function(){ let p=document.getElementById('loginPassword'); if(p.type==='password'){ p.type='text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); } else{ p.type='password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); } });
+            document.getElementById('loginBtn').onclick = () => {
+                const u = document.getElementById('loginUsername').value;
+                const p = document.getElementById('loginPassword').value;
+                if(validUsers[u] && validUsers[u] === p) {
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    try {
+                        loadOrgs();
+                        loadAdminSettings();
+                        updateUI();
+                        setTimeout(() => { if(window.speechSynthesis) window.speechSynthesis.getVoices(); }, 500);
+                    } catch(e) { console.error(e); alert("App started but some features may be limited."); }
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                    setTimeout(() => document.getElementById('loginError').style.display = 'none', 2000);
+                }
+            };
+            document.getElementById('logoutBtn').onclick = () => { if(meetingActive) stopMeeting(); document.getElementById('mainApp').style.display='none'; document.getElementById('loginOverlay').style.display='flex'; };
+            document.getElementById('orgSelector').onchange = (e) => { if(e.target.value) loadOrg(e.target.value); };
+            document.getElementById('newOrgBtn').onclick = () => { let n=prompt("Organization name:"); if(n && !allOrgs[n]){ allOrgs[n]={ speakers:[], office:{name:n,address:'',type:''}, meetingCount:0, reportCount:0, currentLang:'en', history:[] }; saveOrgs(); refreshOrgSelector(); document.getElementById('orgSelector').value=n; loadOrg(n); } };
+            document.getElementById('saveOrgDataBtn').onclick = () => saveCurrentOrg();
+            document.getElementById('deleteOrgBtn').onclick = () => { if(currentOrg && confirm(`Delete ${currentOrg}?`)){ delete allOrgs[currentOrg]; saveOrgs(); refreshOrgSelector(); currentOrg=null; speakers=[]; transcript=[]; updateUI(); } };
+            document.getElementById('historyBtn').onclick = showMeetingHistory;
+            document.getElementById('closeHistoryBtn').onclick = () => document.getElementById('historyModal').style.display='none';
+            document.getElementById('registerBtn').onclick = registerSpeaker;
+            document.getElementById('clearSpeakersBtn').onclick = () => { if(confirm("Clear all speakers?")){ speakers=[]; updateUI(); if(currentOrg) saveCurrentOrg(); } };
+            document.getElementById('startMeetingBtn').onclick = startMeeting;
+            document.getElementById('stopMeetingBtn').onclick = stopMeeting;
+            document.getElementById('printCostBtn').onclick = printCost;
+            document.getElementById('officeInfoBtn').onclick = () => { document.getElementById('officeName').value=office.name; document.getElementById('officeAddress').value=office.address; document.getElementById('meetingType').value=office.type; document.getElementById('officeModal').style.display='flex'; };
+            document.getElementById('saveOfficeBtn').onclick = () => { office={ name:document.getElementById('officeName').value, address:document.getElementById('officeAddress').value, type:document.getElementById('meetingType').value }; if(currentOrg) saveCurrentOrg(); displayOffice(); document.getElementById('officeModal').style.display='none'; };
+            document.getElementById('closeOfficeBtn').onclick = () => document.getElementById('officeModal').style.display='none';
+            document.getElementById('langSelectBtn').onclick = () => { let grid=document.getElementById('languageGrid'); grid.innerHTML=''; for(let [code,name] of Object.entries(languages)){ let btn=document.createElement('button'); btn.className='speaker-tag'; btn.style.background='#667eea'; btn.innerText=name; btn.onclick=()=>{ currentLang=code; updateLanguageDisplay(); if(currentOrg) saveCurrentOrg(); document.getElementById('langModal').style.display='none'; if(meetingActive) alert("Restart meeting for new language."); }; grid.appendChild(btn); } document.getElementById('langModal').style.display='flex'; };
+            document.getElementById('closeLangBtn').onclick = () => document.getElementById('langModal').style.display='none';
+            document.getElementById('languageDisplay').onclick = () => document.getElementById('langSelectBtn').click();
+            document.getElementById('forceEnglishBtn').onclick = () => { if(meetingActive) forceRestartRecognitionWithLang('en-US'); else alert("Start meeting first"); };
+            document.getElementById('forceSinhalaBtn').onclick = () => { if(meetingActive) forceRestartRecognitionWithLang('si-LK'); else alert("Start meeting first"); };
+            document.getElementById('forceRestartBtn').onclick = forceRestartRecognition;
+            document.getElementById('transcriptRestartBtn').onclick = forceRestartRecognition;
+            document.getElementById('adminBtn').onclick = () => { document.getElementById('adminModal').style.display='flex'; initAdminTabs(); loadAdminSettings(); };
+            document.getElementById('closeAdminBtn').onclick = () => document.getElementById('adminModal').style.display='none';
+            document.getElementById('saveRatesBtn').onclick = () => { rates.r0_1=parseFloat(document.getElementById('rate0_1').value); rates.r1_2=parseFloat(document.getElementById('rate1_2').value); rates.r2_4=parseFloat(document.getElementById('rate2_4').value); rates.rAbove=parseFloat(document.getElementById('rateAbove4').value); localStorage.setItem('peter_rates',JSON.stringify(rates)); alert('Rates saved'); };
+            document.getElementById('saveTranslationRatesBtn').onclick = () => { rates.perLang=parseFloat(document.getElementById('perLanguageRate').value); rates.allLang=parseFloat(document.getElementById('allLanguagesRate').value); localStorage.setItem('peter_rates',JSON.stringify(rates)); alert('Translation saved'); };
             document.getElementById('savePagePricesBtn').onclick = savePagePrices;
-            document.getElementById('masterResetBtn').onclick = ()=>{ if(confirm("RESET ALL DATA?")){ localStorage.clear(); location.reload(); } };
-            function initAdminTabs() { document.querySelectorAll('.admin-tab').forEach(tab => { tab.onclick = () => { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active'); }; }); }
-            
-            // Eye toggles
-            document.getElementById('toggleUsername').addEventListener('click', function() { let u = document.getElementById('loginUsername'); if(u.type === 'password') { u.type = 'text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); } else { u.type = 'password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); } });
-            document.getElementById('togglePassword').addEventListener('click', function() { let p = document.getElementById('loginPassword'); if(p.type === 'password') { p.type = 'text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); } else { p.type = 'password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); } });
-            
-            // Event bindings
-            document.getElementById('l
+            document.getElementById('masterResetBtn').onclick = () => { if(confirm("RESET ALL DATA?")){ localStorage.clear(); location.reload(); } };
+            document.getElementById('addTriggerBtn').onclick = () => { let inp=document.getElementById('newTriggerInput'); if(inp.value.trim()) addTrigger(inp.value.trim()); inp.value=''; else alert("Enter a phrase"); };
+            document.getElementById('generateReportBtn').onclick = async()=>{ let btn=document.getElementById('generateReportBtn'); if(btn.disabled) return; btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-pulse"></i> Generating...'; try{ await generateReport(); } catch(e){ console.error(e); alert("PDF error: "+e.message); document.getElementById('reportStatus').innerHTML='❌ Error'; } finally{ btn.disabled=false; btn.innerHTML='<i class="fas fa-file-pdf"></i> Generate PDF'; } };
+            document.getElementById('sendEmailBtn').onclick = sendEmail;
+            document.getElementById('readSelectedBtn').onclick = readSelectedSections;
+            document.getElementById('stopReadingBtn').onclick = stopReading;
+            document.getElementById('refreshVoicesBtn').onclick = () => { window.speechSynthesis.getVoices(); setTimeout(refreshVoicesList,200); };
+            window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display='none'; };
+            setTimeout(() => { if(window.speechSynthesis) window.speechSynthesis.getVoices(); }, 1000);
+        })();
+    </script>
+</body>
+</html>
