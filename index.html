@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Peter AI Super Pro v43.0 – Fixed Syntax</title>
+    <title>Peter AI Super Pro v44.0 – Fully Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* All styles from previous version – kept exactly the same */
+        /* All styles – same as before, kept complete */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter','Noto Sans Sinhala','Noto Sans Tamil',sans-serif; background:#f0f4f8; color:#1e293b; }
         .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#667eea,#764ba2); z-index:10000; display:flex; justify-content:center; align-items:center; }
@@ -56,7 +56,7 @@
 <div id="loginOverlay" class="login-overlay">
     <div class="login-container">
         <div class="login-icon"><i class="fas fa-microphone-alt"></i></div>
-        <h2>Peter AI Super Pro v43.0</h2>
+        <h2>Peter AI Super Pro v44.0</h2>
         <div class="input-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Enter username"></div>
         <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter password"></div>
         <button class="login-btn" id="loginBtn">Login</button>
@@ -65,7 +65,6 @@
 </div>
 
 <div id="mainApp" class="main-app">
-    <!-- Dashboard content (same as before) – full HTML included -->
     <div class="dashboard">
         <div class="top-bar"><div><strong>Peter AI Pro</strong><br><small>Bilingual Auto-Switch | Sinhala PDF</small></div><button id="logoutBtn" class="btn btn-secondary">Logout</button></div>
         <div class="stats-grid">
@@ -207,12 +206,12 @@
     
     function escapeHtml(t) { if (!t) return ''; return t.replace(/[&<>]/g, function(m) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]; }); }
     
-    function showStatus(msg) { const div = document.getElementById('orgStatus'); if (div) { div.innerHTML = msg; setTimeout(function() { div.innerHTML = ''; }, 1500); } }
+    function showStatus(msg) { const div = document.getElementById('orgStatus'); if (div) { div.innerHTML = msg; setTimeout(function() { if (document.getElementById('orgStatus')) document.getElementById('orgStatus').innerHTML = ''; }, 1500); } }
     
     // ==================== STORAGE ====================
     function saveOrgs() { localStorage.setItem('peter_orgs', JSON.stringify(allOrgs)); }
     function loadOrgs() { allOrgs = JSON.parse(localStorage.getItem('peter_orgs') || '{}'); refreshOrgSelector(); }
-    function refreshOrgSelector() { const sel = document.getElementById('orgSelector'); sel.innerHTML = '<option value="">-- Select Organization --</option>'; for (let o in allOrgs) { sel.innerHTML += '<option value="' + o + '">' + escapeHtml(o) + '</option>'; } }
+    function refreshOrgSelector() { const sel = document.getElementById('orgSelector'); if (!sel) return; sel.innerHTML = '<option value="">-- Select Organization --</option>'; for (let o in allOrgs) { sel.innerHTML += '<option value="' + o + '">' + escapeHtml(o) + '</option>'; } }
     function saveCurrentOrg() { if (!currentOrg) return; allOrgs[currentOrg] = { speakers, office, meetingCount, reportCount, currentLang, history }; saveOrgs(); showStatus('✅ Saved'); }
     function loadOrg(org) {
         if (!allOrgs[org]) return;
@@ -229,10 +228,14 @@
     }
     
     function updateUI() {
-        document.getElementById('speakerCount').innerText = speakers.length;
-        document.getElementById('meetingCount').innerText = meetingCount;
-        document.getElementById('reportCount').innerText = reportCount;
-        document.getElementById('langCount').innerText = Object.keys(languages).length;
+        const speakerCountEl = document.getElementById('speakerCount');
+        const meetingCountEl = document.getElementById('meetingCount');
+        const reportCountEl = document.getElementById('reportCount');
+        const langCountEl = document.getElementById('langCount');
+        if (speakerCountEl) speakerCountEl.innerText = speakers.length;
+        if (meetingCountEl) meetingCountEl.innerText = meetingCount;
+        if (reportCountEl) reportCountEl.innerText = reportCount;
+        if (langCountEl) langCountEl.innerText = Object.keys(languages).length;
         refreshSpeakersList();
         refreshTranscript();
         displayOffice();
@@ -241,7 +244,8 @@
     function refreshSpeakersList() {
         const container = document.getElementById('speakersList');
         const quick = document.getElementById('quickAssignList');
-        if (!speakers.length) { container.innerHTML = 'No speakers'; quick.innerHTML = ''; return; }
+        if (!container) return;
+        if (!speakers.length) { container.innerHTML = 'No speakers'; if (quick) quick.innerHTML = ''; return; }
         let html = '';
         for (let i=0; i<speakers.length; i++) {
             const s = speakers[i];
@@ -249,35 +253,40 @@
             html += '<span class="speaker-tag" style="background:' + color + '">' + escapeHtml(s.name) + '</span>';
         }
         container.innerHTML = html;
-        quick.innerHTML = '<strong>Quick Assign:</strong> ';
-        for (let i=0; i<speakers.length; i++) {
-            const s = speakers[i];
-            const btn = document.createElement('button');
-            btn.className = 'speaker-tag';
-            btn.style.background = s.color || speakerColors[i % speakerColors.length];
-            btn.innerText = s.name;
-            btn.onclick = (function(speaker) {
-                return function() {
-                    for (let j=transcript.length-1; j>=0; j--) {
-                        if (transcript[j].speaker === 'Unknown') {
-                            transcript[j].speaker = speaker.name;
-                            transcript[j].color = speaker.color;
-                            refreshTranscript();
-                            break;
+        if (quick) {
+            quick.innerHTML = '<strong>Quick Assign:</strong> ';
+            for (let i=0; i<speakers.length; i++) {
+                const s = speakers[i];
+                const btn = document.createElement('button');
+                btn.className = 'speaker-tag';
+                btn.style.background = s.color || speakerColors[i % speakerColors.length];
+                btn.innerText = s.name;
+                btn.onclick = (function(speaker) {
+                    return function() {
+                        for (let j=transcript.length-1; j>=0; j--) {
+                            if (transcript[j].speaker === 'Unknown') {
+                                transcript[j].speaker = speaker.name;
+                                transcript[j].color = speaker.color;
+                                refreshTranscript();
+                                break;
+                            }
                         }
-                    }
-                };
-            })(s);
-            quick.appendChild(btn);
+                    };
+                })(s);
+                quick.appendChild(btn);
+            }
         }
     }
     
     function refreshTranscript() {
         const area = document.getElementById('transcriptArea');
+        const lineSpan = document.getElementById('lineCounter');
+        const pageSpan = document.getElementById('pageCounter');
+        if (!area) return;
         if (!transcript.length) {
             area.innerHTML = 'Start a meeting';
-            document.getElementById('lineCounter').innerText = '0';
-            document.getElementById('pageCounter').innerText = '0';
+            if (lineSpan) lineSpan.innerText = '0';
+            if (pageSpan) pageSpan.innerText = '0';
             return;
         }
         let html = '';
@@ -286,8 +295,8 @@
             html += '<div class="transcript-line"><strong>' + escapeHtml(e.speaker) + '</strong> <small>' + e.timestamp + '</small><br>' + escapeHtml(e.originalText) + '</div>';
         }
         area.innerHTML = html;
-        document.getElementById('lineCounter').innerText = transcript.length;
-        document.getElementById('pageCounter').innerText = Math.ceil(transcript.length / 25);
+        if (lineSpan) lineSpan.innerText = transcript.length;
+        if (pageSpan) pageSpan.innerText = Math.ceil(transcript.length / 25);
     }
     
     function displayOffice() {
@@ -305,7 +314,8 @@
         const h = String(Math.floor(ms/3600000)).padStart(2,'0');
         const m = String(Math.floor((ms%3600000)/60000)).padStart(2,'0');
         const s = String(Math.floor((ms%60000)/1000)).padStart(2,'0');
-        document.getElementById('timerDisplay').innerHTML = h + ':' + m + ':' + s;
+        const timerDisplay = document.getElementById('timerDisplay');
+        if (timerDisplay) timerDisplay.innerHTML = h + ':' + m + ':' + s;
         meetingHours = ms / 3600000;
     }
     
@@ -396,7 +406,7 @@
     // ==================== RECOGNITION ====================
     function updateLanguageIndicator() {
         const span = document.getElementById('currentRecogLang');
-        span.innerHTML = (currentRecognitionLang === 'en-US') ? 'English' : 'සිංහල';
+        if (span) span.innerHTML = (currentRecognitionLang === 'en-US') ? 'English' : 'සිංහල';
     }
     
     function forceRestartRecognitionWithLang(langCode) {
@@ -410,9 +420,10 @@
         setTimeout(function() {
             startRecognition();
             pendingLanguageSwitch = false;
-            document.getElementById('meetingStatus').innerHTML = 'Language switched...';
+            const meetingStatusDiv = document.getElementById('meetingStatus');
+            if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Language switched...';
             setTimeout(function() {
-                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+                if (meetingActive && meetingStatusDiv) meetingStatusDiv.innerHTML = 'Listening';
             }, 800);
         }, 100);
     }
@@ -445,7 +456,8 @@
         let lastFinal = '';
         let timeout = null;
         recognition.onstart = function() {
-            document.getElementById('meetingStatus').innerHTML = 'Listening';
+            const meetingStatusDiv = document.getElementById('meetingStatus');
+            if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Listening';
             isRestarting = false;
         };
         recognition.onresult = function(event) {
@@ -467,7 +479,8 @@
                 transcript.unshift({ speaker: speaker, originalText: text, timestamp: timestamp, color: color, lang: langTag });
                 refreshTranscript();
                 setTimeout(function() { lastFinal = ''; }, 300);
-                document.getElementById('meetingStatus').innerHTML = 'Listening';
+                const meetingStatusDiv = document.getElementById('meetingStatus');
+                if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Listening';
                 timeout = setTimeout(function() { checkForLanguageSwitchKeywords(); }, 500);
             }
         };
@@ -493,9 +506,10 @@
         setTimeout(function() {
             isRestarting = false;
             startRecognition();
-            document.getElementById('meetingStatus').innerHTML = 'Restarting...';
+            const meetingStatusDiv = document.getElementById('meetingStatus');
+            if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Restarting...';
             setTimeout(function() {
-                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+                if (meetingActive && meetingStatusDiv) meetingStatusDiv.innerHTML = 'Listening';
             }, 500);
         }, 100);
     }
@@ -519,10 +533,14 @@
             autoTimer = setInterval(function() {
                 if (meetingActive && transcript.length) autoSave();
             }, 60000);
-            document.getElementById('startMeetingBtn').disabled = true;
-            document.getElementById('stopMeetingBtn').disabled = false;
-            document.getElementById('printCostBtn').disabled = false;
-            document.getElementById('meetingStatus').innerHTML = 'Listening';
+            const startBtn = document.getElementById('startMeetingBtn');
+            const stopBtn = document.getElementById('stopMeetingBtn');
+            const costBtn = document.getElementById('printCostBtn');
+            if (startBtn) startBtn.disabled = true;
+            if (stopBtn) stopBtn.disabled = false;
+            if (costBtn) costBtn.disabled = false;
+            const meetingStatusDiv = document.getElementById('meetingStatus');
+            if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Listening';
             refreshTranscript();
         } catch(e) { alert('Microphone permission required'); }
     }
@@ -546,9 +564,12 @@
         if (history.length > 30) history.pop();
         if (currentOrg) saveCurrentOrg();
         updateUI();
-        document.getElementById('startMeetingBtn').disabled = false;
-        document.getElementById('stopMeetingBtn').disabled = true;
-        document.getElementById('meetingStatus').innerHTML = 'Stopped';
+        const startBtn = document.getElementById('startMeetingBtn');
+        const stopBtn = document.getElementById('stopMeetingBtn');
+        if (startBtn) startBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = true;
+        const meetingStatusDiv = document.getElementById('meetingStatus');
+        if (meetingStatusDiv) meetingStatusDiv.innerHTML = 'Stopped';
         autoSave();
         alert('Stopped. ' + transcript.length + ' lines.');
         if (document.getElementById('historyModal').style.display === 'flex') showMeetingHistory();
@@ -591,8 +612,10 @@
         ];
         costCalculated = true;
         const costDiv = document.getElementById('costDisplay');
-        costDiv.innerHTML = '<strong>💰 Cost Details</strong><br>' + costDetailsArr.join('<br>') + '<hr><strong>Total: $' + meetingCost.toFixed(2) + '</strong>';
-        costDiv.style.display = 'block';
+        if (costDiv) {
+            costDiv.innerHTML = '<strong>💰 Cost Details</strong><br>' + costDetailsArr.join('<br>') + '<hr><strong>Total: $' + meetingCost.toFixed(2) + '</strong>';
+            costDiv.style.display = 'block';
+        }
     }
     
     function registerSpeaker() {
@@ -610,6 +633,7 @@
     function showMeetingHistory() {
         if (!currentOrg) { alert('Select organization first'); return; }
         const histDiv = document.getElementById('historyList');
+        if (!histDiv) return;
         if (!history.length) {
             histDiv.innerHTML = '<p>No past meetings</p>';
         } else {
@@ -633,7 +657,8 @@
                 histDiv.appendChild(div);
             }
         }
-        document.getElementById('historyModal').style.display = 'flex';
+        const modal = document.getElementById('historyModal');
+        if (modal) modal.style.display = 'flex';
     }
     
     // ==================== AI FUNCTIONS (simplified but working) ====================
@@ -727,7 +752,8 @@
         if (currentUtterance) {
             window.speechSynthesis.cancel();
             currentUtterance = null;
-            document.getElementById('voiceStatus').innerHTML = 'Stopped.';
+            const voiceStatusDiv = document.getElementById('voiceStatus');
+            if (voiceStatusDiv) voiceStatusDiv.innerHTML = 'Stopped.';
         }
     }
     async function readSelectedSections() {
@@ -765,17 +791,18 @@
         }
         if (fullText.trim() === '') { alert('No text to read.'); return; }
         const langSelect = document.getElementById('voiceLangSelect');
-        const targetLang = langSelect.value === 'si' ? 'si-LK' : 'en-US';
+        const targetLang = langSelect ? (langSelect.value === 'si' ? 'si-LK' : 'en-US') : 'en-US';
         const utterance = new SpeechSynthesisUtterance(fullText);
         utterance.rate = 0.9;
         utterance.lang = targetLang;
-        utterance.onstart = function() { document.getElementById('voiceStatus').innerHTML = '🔊 Reading...'; };
+        utterance.onstart = function() { const vs = document.getElementById('voiceStatus'); if (vs) vs.innerHTML = '🔊 Reading...'; };
         utterance.onend = function() {
-            document.getElementById('voiceStatus').innerHTML = '✅ Done.';
+            const vs = document.getElementById('voiceStatus');
+            if (vs) vs.innerHTML = '✅ Done.';
             currentUtterance = null;
             if (confirm('Thank you! Read another?')) readSelectedSections();
         };
-        utterance.onerror = function() { document.getElementById('voiceStatus').innerHTML = '❌ Error.'; };
+        utterance.onerror = function() { const vs = document.getElementById('voiceStatus'); if (vs) vs.innerHTML = '❌ Error.'; };
         currentUtterance = utterance;
         window.speechSynthesis.speak(utterance);
     }
@@ -845,6 +872,7 @@
         }
         html += '<hr><p style="text-align:center;">Generated by Peter AI Super Pro</p></div>';
         const container = document.getElementById('pdfReportContainer');
+        if (!container) return;
         container.innerHTML = html;
         const opt = { margin: 0.5, filename: 'Peter_Report_' + Date.now() + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
         await html2pdf().set(opt).from(container).save();
@@ -852,20 +880,29 @@
         if (currentOrg) saveCurrentOrg();
         updateUI();
         alert('PDF generated!');
-        document.getElementById('reportStatus').innerHTML = '✅ PDF ready';
-        setTimeout(function() { document.getElementById('reportStatus').innerHTML = ''; }, 3000);
+        const reportStatusDiv = document.getElementById('reportStatus');
+        if (reportStatusDiv) {
+            reportStatusDiv.innerHTML = '✅ PDF ready';
+            setTimeout(function() { if (reportStatusDiv) reportStatusDiv.innerHTML = ''; }, 3000);
+        }
     }
     
     // ==================== ADMIN ====================
     function loadAdminSettings() {
         const saved = localStorage.getItem('peter_rates');
         if (saved) rates = JSON.parse(saved);
-        document.getElementById('rate0_1').value = rates.r0_1;
-        document.getElementById('rate1_2').value = rates.r1_2;
-        document.getElementById('rate2_4').value = rates.r2_4;
-        document.getElementById('rateAbove4').value = rates.rAbove;
-        document.getElementById('perLangRate').value = rates.perLang;
-        document.getElementById('allLangRate').value = rates.allLang;
+        const rate0 = document.getElementById('rate0_1');
+        const rate1 = document.getElementById('rate1_2');
+        const rate2 = document.getElementById('rate2_4');
+        const rateA = document.getElementById('rateAbove4');
+        const perLang = document.getElementById('perLangRate');
+        const allLang = document.getElementById('allLangRate');
+        if (rate0) rate0.value = rates.r0_1;
+        if (rate1) rate1.value = rates.r1_2;
+        if (rate2) rate2.value = rates.r2_4;
+        if (rateA) rateA.value = rates.rAbove;
+        if (perLang) perLang.value = rates.perLang;
+        if (allLang) allLang.value = rates.allLang;
     }
     function saveAdminSettings() {
         rates.r0_1 = parseFloat(document.getElementById('rate0_1').value);
@@ -878,26 +915,115 @@
         alert('Rates saved');
     }
     
-    // ==================== EVENT BINDINGS ====================
+    // ==================== CREATE MISSING ELEMENTS ====================
+    function createMissingElements() {
+        // Create office info button if missing
+        if (!document.getElementById('officeInfoBtn')) {
+            const container = document.querySelector('.card-details');
+            if (container) {
+                const btn = document.createElement('button');
+                btn.id = 'officeInfoBtn';
+                btn.className = 'btn btn-primary';
+                btn.innerText = 'Edit Office Info';
+                container.appendChild(btn);
+                btn.onclick = function() {
+                    document.getElementById('officeName').value = office.name;
+                    document.getElementById('officeAddress').value = office.address;
+                    document.getElementById('meetingType').value = office.type;
+                    const modal = document.getElementById('officeModal');
+                    if (modal) modal.style.display = 'flex';
+                };
+            }
+        }
+        // Create office info display div if missing
+        if (!document.getElementById('officeInfoDisplay')) {
+            const container = document.querySelector('.card-details');
+            if (container) {
+                const div = document.createElement('div');
+                div.id = 'officeInfoDisplay';
+                div.style.background = '#eef2ff';
+                div.style.padding = '10px';
+                div.style.borderRadius = '16px';
+                div.style.marginTop = '10px';
+                div.style.display = 'none';
+                container.appendChild(div);
+            }
+        }
+        // Create language selection button if missing
+        if (!document.getElementById('langSelectBtn')) {
+            const container = document.querySelector('.card-details');
+            if (container) {
+                const btn = document.createElement('button');
+                btn.id = 'langSelectBtn';
+                btn.className = 'btn btn-primary';
+                btn.innerText = 'Language';
+                container.appendChild(btn);
+                btn.onclick = function() {
+                    const grid = document.getElementById('languageGrid');
+                    if (!grid) return;
+                    grid.innerHTML = '';
+                    for (let [code, name] of Object.entries(languages)) {
+                        const b = document.createElement('button');
+                        b.className = 'speaker-tag';
+                        b.innerText = name;
+                        b.onclick = (function(c) {
+                            return function() {
+                                currentLang = c;
+                                updateUI();
+                                const modal = document.getElementById('langModal');
+                                if (modal) modal.style.display = 'none';
+                                if (meetingActive) alert('Restart meeting for new language.');
+                            };
+                        })(code);
+                        grid.appendChild(b);
+                    }
+                    const modal = document.getElementById('langModal');
+                    if (modal) modal.style.display = 'flex';
+                };
+            }
+        }
+        // Create email sections if missing
+        if (!document.querySelector('#emailSections')) {
+            const container = document.querySelector('.email-selector');
+            if (container) {
+                const div = document.createElement('div');
+                div.id = 'emailSections';
+                div.className = 'checkbox-group';
+                div.innerHTML = '<label><input type="checkbox" value="transcript"> Transcript</label><label><input type="checkbox" value="summary"> Summary</label><label><input type="checkbox" value="narrative"> Narrative</label><label><input type="checkbox" value="actions"> Actions</label><label><input type="checkbox" value="agenda"> Agenda</label><label><input type="checkbox" value="deepstudy"> Deep Study</label><label><input type="checkbox" value="hidden"> Hidden</label><label><input type="checkbox" value="confidence"> Confidence</label>';
+                container.appendChild(div);
+            }
+        }
+    }
+    
+    // ==================== BIND EVENTS (with null checks) ====================
     function bindEvents() {
-        document.getElementById('logoutBtn').onclick = function() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.onclick = function() {
             if (meetingActive) stopMeeting();
             document.getElementById('mainApp').style.display = 'none';
             document.getElementById('loginOverlay').style.display = 'flex';
         };
-        document.getElementById('orgSelector').onchange = function(e) { if (e.target.value) loadOrg(e.target.value); };
-        document.getElementById('newOrgBtn').onclick = function() {
+        
+        const orgSelector = document.getElementById('orgSelector');
+        if (orgSelector) orgSelector.onchange = function(e) { if (e.target.value) loadOrg(e.target.value); };
+        
+        const newOrgBtn = document.getElementById('newOrgBtn');
+        if (newOrgBtn) newOrgBtn.onclick = function() {
             const n = prompt('Organization name:');
             if (n && !allOrgs[n]) {
                 allOrgs[n] = { speakers: [], office: { name: n, address: '', type: '' }, meetingCount: 0, reportCount: 0, currentLang: 'en', history: [] };
                 saveOrgs();
                 refreshOrgSelector();
-                document.getElementById('orgSelector').value = n;
+                if (orgSelector) orgSelector.value = n;
                 loadOrg(n);
             }
         };
-        document.getElementById('saveOrgBtn').onclick = function() { if (currentOrg) saveCurrentOrg(); else alert('No organization selected'); };
-        document.getElementById('delOrgBtn').onclick = function() {
+        
+        const saveOrgBtn = document.getElementById('saveOrgBtn');
+        if (saveOrgBtn) saveOrgBtn.onclick = function() { if (currentOrg) saveCurrentOrg(); else alert('No organization selected'); };
+        
+        const delOrgBtn = document.getElementById('delOrgBtn');
+        if (delOrgBtn) delOrgBtn.onclick = function() {
             if (currentOrg && confirm('Delete ' + currentOrg + '?')) {
                 delete allOrgs[currentOrg];
                 saveOrgs();
@@ -908,137 +1034,138 @@
                 updateUI();
             }
         };
-        document.getElementById('historyBtn').onclick = showMeetingHistory;
-        document.getElementById('closeHistoryBtn').onclick = function() { document.getElementById('historyModal').style.display = 'none'; };
-        document.getElementById('registerBtn').onclick = registerSpeaker;
-        document.getElementById('startMeetingBtn').onclick = startMeeting;
-        document.getElementById('stopMeetingBtn').onclick = stopMeeting;
-        document.getElementById('printCostBtn').onclick = printCost;
-        document.getElementById('forceEnglishBtn').onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('en-US'); else alert('Start meeting first'); };
-        document.getElementById('forceSinhalaBtn').onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('si-LK'); else alert('Start meeting first'); };
-        document.getElementById('adminBtn').onclick = function() { document.getElementById('adminModal').style.display = 'flex'; loadAdminSettings(); };
-        document.getElementById('closeAdminBtn').onclick = function() { document.getElementById('adminModal').style.display = 'none'; };
-        document.getElementById('saveAdminBtn').onclick = saveAdminSettings;
-        document.getElementById('addTriggerBtn').onclick = function() { const inp = document.getElementById('newTriggerInput'); if (inp.value.trim()) addTrigger(inp.value.trim()); inp.value = ''; };
-        document.getElementById('generateReportBtn').onclick = generateReport;
-        document.getElementById('sendEmailBtn').onclick = sendEmail;
-        document.getElementById('readSelectedBtn').onclick = readSelectedSections;
-        document.getElementById('stopReadingBtn').onclick = stopReading;
-        document.getElementById('officeInfoBtn').onclick = function() {
+        
+        const historyBtn = document.getElementById('historyBtn');
+        if (historyBtn) historyBtn.onclick = showMeetingHistory;
+        
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        if (closeHistoryBtn) closeHistoryBtn.onclick = function() { const modal = document.getElementById('historyModal'); if (modal) modal.style.display = 'none'; };
+        
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) registerBtn.onclick = registerSpeaker;
+        
+        const startBtn = document.getElementById('startMeetingBtn');
+        if (startBtn) startBtn.onclick = startMeeting;
+        
+        const stopBtn = document.getElementById('stopMeetingBtn');
+        if (stopBtn) stopBtn.onclick = stopMeeting;
+        
+        const costBtn = document.getElementById('printCostBtn');
+        if (costBtn) costBtn.onclick = printCost;
+        
+        const forceEnglish = document.getElementById('forceEnglishBtn');
+        if (forceEnglish) forceEnglish.onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('en-US'); else alert('Start meeting first'); };
+        
+        const forceSinhala = document.getElementById('forceSinhalaBtn');
+        if (forceSinhala) forceSinhala.onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('si-LK'); else alert('Start meeting first'); };
+        
+        const adminBtn = document.getElementById('adminBtn');
+        if (adminBtn) adminBtn.onclick = function() { const modal = document.getElementById('adminModal'); if (modal) modal.style.display = 'flex'; loadAdminSettings(); };
+        
+        const closeAdminBtn = document.getElementById('closeAdminBtn');
+        if (closeAdminBtn) closeAdminBtn.onclick = function() { const modal = document.getElementById('adminModal'); if (modal) modal.style.display = 'none'; };
+        
+        const saveAdminBtn = document.getElementById('saveAdminBtn');
+        if (saveAdminBtn) saveAdminBtn.onclick = saveAdminSettings;
+        
+        const addTriggerBtn = document.getElementById('addTriggerBtn');
+        if (addTriggerBtn) addTriggerBtn.onclick = function() { const inp = document.getElementById('newTriggerInput'); if (inp && inp.value.trim()) addTrigger(inp.value.trim()); if (inp) inp.value = ''; };
+        
+        const generateBtn = document.getElementById('generateReportBtn');
+        if (generateBtn) generateBtn.onclick = generateReport;
+        
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        if (sendEmailBtn) sendEmailBtn.onclick = sendEmail;
+        
+        const readBtn = document.getElementById('readSelectedBtn');
+        if (readBtn) readBtn.onclick = readSelectedSections;
+        
+        const stopReadBtn = document.getElementById('stopReadingBtn');
+        if (stopReadBtn) stopReadBtn.onclick = stopReading;
+        
+        const officeInfoBtn = document.getElementById('officeInfoBtn');
+        if (officeInfoBtn) officeInfoBtn.onclick = function() {
             document.getElementById('officeName').value = office.name;
             document.getElementById('officeAddress').value = office.address;
             document.getElementById('meetingType').value = office.type;
-            document.getElementById('officeModal').style.display = 'flex';
+            const modal = document.getElementById('officeModal');
+            if (modal) modal.style.display = 'flex';
         };
-        document.getElementById('saveOfficeBtn').onclick = function() {
+        
+        const saveOfficeBtn = document.getElementById('saveOfficeBtn');
+        if (saveOfficeBtn) saveOfficeBtn.onclick = function() {
             office.name = document.getElementById('officeName').value;
             office.address = document.getElementById('officeAddress').value;
             office.type = document.getElementById('meetingType').value;
             if (currentOrg) saveCurrentOrg();
             displayOffice();
-            document.getElementById('officeModal').style.display = 'none';
+            const modal = document.getElementById('officeModal');
+            if (modal) modal.style.display = 'none';
         };
-        document.getElementById('closeOfficeBtn').onclick = function() { document.getElementById('officeModal').style.display = 'none'; };
-        document.getElementById('langSelectBtn').onclick = function() {
+        
+        const closeOfficeBtn = document.getElementById('closeOfficeBtn');
+        if (closeOfficeBtn) closeOfficeBtn.onclick = function() { const modal = document.getElementById('officeModal'); if (modal) modal.style.display = 'none'; };
+        
+        const langSelectBtn = document.getElementById('langSelectBtn');
+        if (langSelectBtn) langSelectBtn.onclick = function() {
             const grid = document.getElementById('languageGrid');
+            if (!grid) return;
             grid.innerHTML = '';
             for (let [code, name] of Object.entries(languages)) {
                 const btn = document.createElement('button');
                 btn.className = 'speaker-tag';
                 btn.innerText = name;
-                btn.onclick = (function(c) {
-                    return function() {
-                        currentLang = c;
-                        updateUI();
-                        document.getElementById('langModal').style.display = 'none';
-                        if (meetingActive) alert('Restart meeting for new language.');
-                    };
-                })(code);
+                btn.onclick = (function(c) { return function() { currentLang = c; updateUI(); const modal = document.getElementById('langModal'); if (modal) modal.style.display = 'none'; if (meetingActive) alert('Restart meeting for new language.'); }; })(code);
                 grid.appendChild(btn);
             }
-            document.getElementById('langModal').style.display = 'flex';
+            const modal = document.getElementById('langModal');
+            if (modal) modal.style.display = 'flex';
         };
-        document.getElementById('closeLangBtn').onclick = function() { document.getElementById('langModal').style.display = 'none'; };
-        document.getElementById('languageDisplay').onclick = function() { document.getElementById('langSelectBtn').click(); };
-        document.getElementById('forceRestartBtn').onclick = forceRestartRecognition;
-        document.getElementById('transcriptRestartBtn').onclick = forceRestartRecognition;
-        document.getElementById('refreshVoicesBtn').onclick = function() { window.speechSynthesis.getVoices(); };
         
-        // Create missing elements if not present
-        if (!document.getElementById('officeInfoBtn')) {
-            const btn = document.createElement('button');
-            btn.id = 'officeInfoBtn';
-            btn.className = 'btn btn-primary';
-            btn.innerText = 'Edit Office Info';
-            document.querySelector('.card-details')?.appendChild(btn);
-            btn.onclick = function() {
-                document.getElementById('officeName').value = office.name;
-                document.getElementById('officeAddress').value = office.address;
-                document.getElementById('meetingType').value = office.type;
-                document.getElementById('officeModal').style.display = 'flex';
-            };
-        }
-        if (!document.getElementById('officeInfoDisplay')) {
-            const div = document.createElement('div');
-            div.id = 'officeInfoDisplay';
-            div.style.background = '#eef2ff';
-            div.style.padding = '10px';
-            div.style.borderRadius = '16px';
-            div.style.marginTop = '10px';
-            div.style.display = 'none';
-            document.querySelector('.card-details')?.appendChild(div);
-        }
-        if (!document.getElementById('langSelectBtn')) {
-            const btn = document.createElement('button');
-            btn.id = 'langSelectBtn';
-            btn.className = 'btn btn-primary';
-            btn.innerText = 'Language';
-            document.querySelector('.card-details')?.appendChild(btn);
-            btn.onclick = function() {
-                const grid = document.getElementById('languageGrid');
-                grid.innerHTML = '';
-                for (let [code, name] of Object.entries(languages)) {
-                    const b = document.createElement('button');
-                    b.className = 'speaker-tag';
-                    b.innerText = name;
-                    b.onclick = (function(c) { return function() { currentLang = c; updateUI(); document.getElementById('langModal').style.display = 'none'; if (meetingActive) alert('Restart meeting for new language.'); }; })(code);
-                    grid.appendChild(b);
-                }
-                document.getElementById('langModal').style.display = 'flex';
-            };
-        }
-        if (!document.getElementById('emailSections')) {
-            const div = document.getElementById('emailSections');
-            if (div) {
-                div.innerHTML = '<label><input type="checkbox" value="transcript"> Transcript</label><label><input type="checkbox" value="summary"> Summary</label><label><input type="checkbox" value="narrative"> Narrative</label><label><input type="checkbox" value="actions"> Actions</label><label><input type="checkbox" value="agenda"> Agenda</label><label><input type="checkbox" value="deepstudy"> Deep Study</label><label><input type="checkbox" value="hidden"> Hidden</label><label><input type="checkbox" value="confidence"> Confidence</label>';
+        const closeLangBtn = document.getElementById('closeLangBtn');
+        if (closeLangBtn) closeLangBtn.onclick = function() { const modal = document.getElementById('langModal'); if (modal) modal.style.display = 'none'; };
+        
+        const languageDisplay = document.getElementById('languageDisplay');
+        if (languageDisplay) languageDisplay.onclick = function() { if (langSelectBtn) langSelectBtn.click(); };
+        
+        const forceRestartBtn = document.getElementById('forceRestartBtn');
+        if (forceRestartBtn) forceRestartBtn.onclick = forceRestartRecognition;
+        
+        const transcriptRestartBtn = document.getElementById('transcriptRestartBtn');
+        if (transcriptRestartBtn) transcriptRestartBtn.onclick = forceRestartRecognition;
+        
+        const refreshVoicesBtn = document.getElementById('refreshVoicesBtn');
+        if (refreshVoicesBtn) refreshVoicesBtn.onclick = function() { window.speechSynthesis.getVoices(); };
+    }
+    
+    // ==================== INITIALISATION ====================
+    function init() {
+        loadOrgs();
+        loadAdminSettings();
+        createMissingElements();  // ensure all needed elements exist
+        updateUI();
+        bindEvents();
+        // Initialise voice status display if missing
+        if (!document.getElementById('voiceStatus')) {
+            const container = document.querySelector('.card-voice:last-of-type');
+            if (container) {
+                const div = document.createElement('div');
+                div.id = 'voiceStatus';
+                div.style.fontSize = '11px';
+                div.style.marginTop = '8px';
+                container.appendChild(div);
             }
         }
-    }
-    
-    // ==================== INIT ====================
-    loadOrgs();
-    loadAdminSettings();
-    updateUI();
-    bindEvents();
-    
-    // Add small status divs
-    if (!document.getElementById('orgStatus')) {
-        const orgDiv = document.createElement('div');
-        orgDiv.id = 'orgStatus';
-        orgDiv.style.fontSize = '12px';
-        orgDiv.style.marginTop = '8px';
-        document.querySelector('.card-org')?.appendChild(orgDiv);
-    }
-    if (!document.getElementById('voiceStatus')) {
-        const voiceDiv = document.createElement('div');
-        voiceDiv.id = 'voiceStatus';
-        voiceDiv.style.fontSize = '11px';
-        voiceDiv.style.marginTop = '8px';
-        document.querySelector('.card-voice:last-of-type')?.appendChild(voiceDiv);
-    }
-    if (!document.getElementById('reportStatus')) {
-        const repDiv = document.getElementById('reportStatus');
-        if (repDiv) repDiv.style.marginTop = '8px';
+        if (!document.getElementById('reportStatus')) {
+            const container = document.querySelector('.card-report');
+            if (container) {
+                const div = document.createElement('div');
+                div.id = 'reportStatus';
+                div.style.marginTop = '8px';
+                container.appendChild(div);
+            }
+        }
+        if (window.speechSynthesis) window.speechSynthesis.getVoices();
     }
     
     // ==================== LOGIN HANDLER ====================
@@ -1048,12 +1175,7 @@
         if (validUsers[user] && validUsers[user] === pass) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            // Re-initialise app after login (already called above, but just in case)
-            loadOrgs();
-            loadAdminSettings();
-            updateUI();
-            bindEvents();
-            if (window.speechSynthesis) window.speechSynthesis.getVoices();
+            init();
         } else {
             const err = document.getElementById('loginError');
             err.style.display = 'block';
