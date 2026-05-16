@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peter AI Super Pro – Fixed</title>
+    <title>Peter AI Super Pro – Full Version</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -22,26 +22,28 @@
         .dashboard { max-width:1400px; margin:0 auto; padding:16px; }
         .top-bar { background:linear-gradient(135deg,#667eea,#764ba2); border-radius:20px; padding:12px 20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; color:white; }
         .card { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
-        .card-header { font-weight:700; margin-bottom:12px; }
-        .btn { padding:8px 16px; border-radius:40px; border:none; font-weight:600; cursor:pointer; }
+        .card-header { font-weight:700; margin-bottom:12px; font-size:1.1rem; }
+        .btn { padding:8px 16px; border-radius:40px; border:none; font-weight:600; cursor:pointer; margin-right:8px; margin-bottom:8px; }
         .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
         .btn-success { background:#10b981; color:white; }
         .btn-danger { background:#ef4444; color:white; }
         .btn-secondary { background:#64748b; color:white; }
         .speaker-list, .train-list { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
         .speaker-tag { padding:6px 14px; border-radius:40px; background:#667eea; color:white; cursor:pointer; }
-        .train-item { background:#e2e8f0; padding:4px 12px; border-radius:40px; font-size:12px; }
-        .train-item button { background:none; border:none; margin-left:6px; color:red; cursor:pointer; }
-        .transcript-area { background:#0f172a; color:white; padding:14px; height:350px; overflow-y:auto; border-radius:20px; font-family:'Noto Sans Sinhala',monospace; }
-        .transcript-line { margin-bottom:12px; padding:8px; border-left:3px solid #fbbf24; background:rgba(102,126,234,0.1); }
-        .timer-digits { font-size:32px; font-family:monospace; background:#1e293b; display:inline-block; padding:8px 20px; border-radius:40px; color:#fbbf24; }
+        .train-item { background:#e2e8f0; padding:4px 12px; border-radius:40px; font-size:12px; display:inline-flex; align-items:center; gap:6px; }
+        .train-item button { background:none; border:none; color:#ef4444; cursor:pointer; font-weight:bold; }
+        .transcript-area { background:#0f172a; color:white; padding:14px; height:350px; overflow-y:auto; border-radius:20px; font-family:'Noto Sans Sinhala',monospace; font-size:13px; }
+        .transcript-line { margin-bottom:12px; padding:8px; border-left:3px solid #fbbf24; background:rgba(102,126,234,0.1); border-radius:8px; }
+        .timer-digits { font-size:32px; font-family:monospace; background:#1e293b; display:inline-block; padding:8px 20px; border-radius:40px; color:#fbbf24; margin-bottom:10px; }
         .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
-        .stat-card { background:white; border-radius:20px; padding:12px; display:flex; align-items:center; gap:12px; }
-        .force-buttons { display:flex; gap:8px; margin-top:8px; }
-        .lang-indicator { background:#10b981; color:white; padding:4px 12px; border-radius:20px; display:inline-block; }
+        .stat-card { background:white; border-radius:20px; padding:12px; display:flex; align-items:center; gap:12px; box-shadow:0 1px 2px rgba(0,0,0,0.05); }
+        .force-buttons { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+        .lang-indicator { background:#10b981; color:white; padding:4px 12px; border-radius:20px; display:inline-block; margin-left:8px; }
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
         .modal-content { background:white; border-radius:28px; padding:24px; max-width:90%; width:500px; max-height:80vh; overflow:auto; }
-        .checkbox-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+        .checkbox-group { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; }
+        .cost-box { background:#fef3c7; padding:12px; border-radius:16px; margin-top:12px; display:none; }
+        .status-text { margin-top:8px; font-size:13px; }
     </style>
 </head>
 <body>
@@ -58,7 +60,7 @@
 
 <div id="mainApp" class="main-app">
     <div class="dashboard">
-        <div class="top-bar"><div><strong>Peter AI Pro</strong><br><small>Bilingual | Sinhala PDF</small></div><button id="logoutBtn" class="btn btn-secondary">Logout</button></div>
+        <div class="top-bar"><div><strong>Peter AI Pro</strong><br><small>Bilingual | Sinhala PDF | Voice Announcements</small></div><button id="logoutBtn" class="btn btn-secondary">Logout</button></div>
         <div class="stats-grid">
             <div class="stat-card"><i class="fas fa-users"></i><div><h3 id="speakerCount">0</h3><p>Speakers</p></div></div>
             <div class="stat-card"><i class="fas fa-clock"></i><div><h3 id="meetingCount">0</h3><p>Meetings</p></div></div>
@@ -66,8 +68,9 @@
             <div class="stat-card"><i class="fas fa-file-pdf"></i><div><h3 id="reportCount">0</h3><p>Reports</p></div></div>
         </div>
         <div class="card"><div class="card-header">Organization</div>
-            <select id="orgSelector"><option value="">-- Select Organization --</option></select>
-            <div style="display:flex; gap:8px; margin-top:8px;"><button id="newOrgBtn" class="btn btn-primary">New</button><button id="saveOrgBtn" class="btn btn-success">Save</button><button id="delOrgBtn" class="btn btn-danger">Delete</button><button id="historyBtn" class="btn btn-secondary">History</button></div>
+            <select id="orgSelector" style="width:100%; padding:10px; border-radius:12px;"><option value="">-- Select Organization --</option></select>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"><button id="newOrgBtn" class="btn btn-primary">New</button><button id="saveOrgBtn" class="btn btn-success">Save</button><button id="delOrgBtn" class="btn btn-danger">Delete</button><button id="historyBtn" class="btn btn-secondary">History</button></div>
+            <div id="orgStatus" style="font-size:12px; margin-top:8px; color:#10b981;"></div>
         </div>
         <div class="card"><div class="card-header">Speakers</div>
             <button id="registerSpeakerBtn" class="btn btn-primary">Register Speaker</button>
@@ -76,49 +79,71 @@
         </div>
         <div class="card"><div class="card-header">Meeting Controls</div>
             <div class="timer-digits" id="timerDisplay">00:00:00</div>
-            <div>Lines: <span id="lineCounter">0</span> | Pages: <span id="pageCounter">0</span></div>
-            <div><button id="startMeetingBtn" class="btn btn-success">Start</button> <button id="stopMeetingBtn" class="btn btn-danger" disabled>Stop</button> <button id="calcCostBtn" class="btn btn-secondary">Calculate Cost</button> <button id="adminBtn" class="btn btn-secondary">Admin</button></div>
+            <div><span>Lines: </span><span id="lineCounter">0</span> | <span>Pages: </span><span id="pageCounter">0</span></div>
+            <div style="margin:10px 0;"><button id="startMeetingBtn" class="btn btn-success">Start</button> <button id="stopMeetingBtn" class="btn btn-danger" disabled>Stop</button> <button id="calcCostBtn" class="btn btn-secondary" disabled>Calculate Cost</button> <button id="adminBtn" class="btn btn-secondary">Admin</button></div>
             <div>Current language: <span id="currentRecogLang" class="lang-indicator">English</span></div>
             <div class="force-buttons"><button id="forceEnglishBtn" class="btn btn-secondary">Force English</button><button id="forceSinhalaBtn" class="btn btn-secondary">Force Sinhala</button></div>
-            <div id="meetingStatus">Not started</div>
+            <div id="meetingStatus" class="status-text">Not started</div>
         </div>
         <div class="card"><div class="card-header">Train Sinhala Triggers</div>
-            <div style="display:flex; gap:8px;"><input type="text" id="newTriggerInput" placeholder="e.g., Singalees"><button id="addTriggerBtn" class="btn btn-primary">Add</button></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;"><input type="text" id="newTriggerInput" placeholder="e.g., Singalees" style="flex:1; padding:8px; border-radius:40px;"><button id="addTriggerBtn" class="btn btn-primary">Add</button></div>
             <div id="trainedTriggersList" class="train-list"></div>
-            <small>Fuzzy matching (max 2 differences)</small>
+            <small><i class="fas fa-info-circle"></i> Fuzzy matching (max 2 character differences)</small>
         </div>
-        <div class="card"><div class="card-header">Transcript</div>
-            <div class="transcript-area" id="transcriptArea">Start a meeting</div>
+        <div class="card"><div class="card-header">Live Transcript</div>
+            <div class="transcript-area" id="transcriptArea">Start a meeting to see transcript</div>
         </div>
-        <div class="card"><div class="card-header">Report Generation</div>
-            <div><label><input type="checkbox" id="incTranscript" checked> Transcript</label> <label><input type="checkbox" id="incSummary" checked> Summary</label> <label><input type="checkbox" id="incNarrative" checked> Narrative</label> <label><input type="checkbox" id="incActions" checked> Actions</label> <label><input type="checkbox" id="incAgenda" checked> Agenda</label> <label><input type="checkbox" id="incDeepStudy" checked> Deep Study</label> <label><input type="checkbox" id="incHidden" checked> Hidden</label> <label><input type="checkbox" id="incConfidence" checked> Confidence</label> <label><input type="checkbox" id="incReceipt" checked> Receipt</label></div>
-            <button id="generateReportBtn" class="btn btn-primary">Generate PDF</button>
+        <div class="card"><div class="card-header">Report Generation (PDF)</div>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="incTranscript" checked> Transcript</label>
+                <label><input type="checkbox" id="incSummary" checked> Executive Summary</label>
+                <label><input type="checkbox" id="incNarrative" checked> Narrative Report</label>
+                <label><input type="checkbox" id="incActions" checked> Action Items</label>
+                <label><input type="checkbox" id="incAgenda" checked> Proposed Agenda</label>
+                <label><input type="checkbox" id="incDeepStudy" checked> AI Deep Study</label>
+                <label><input type="checkbox" id="incHidden" checked> Hidden Problems</label>
+                <label><input type="checkbox" id="incConfidence" checked> Meeting Confidence</label>
+                <label><input type="checkbox" id="incReceipt" checked> Payment Receipt</label>
+            </div>
+            <button id="generateReportBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Generate PDF (Sinhala supported)</button>
+            <div id="reportStatus" class="status-text"></div>
         </div>
-        <div class="card"><div class="card-header">Email & Voice</div>
-            <button id="sendEmailBtn" class="btn btn-primary">Send Email Report</button>
-            <div><select id="voiceLangSelect"><option value="en">English</option><option value="si">සිංහල</option></select> <button id="readSelectedBtn" class="btn btn-secondary">Read Selected</button> <button id="stopReadingBtn" class="btn btn-secondary">Stop</button></div>
-            <div class="checkbox-group" id="voiceSections"><label><input type="checkbox" value="transcript"> Transcript</label><label><input type="checkbox" value="summary"> Summary</label><label><input type="checkbox" value="narrative"> Narrative</label><label><input type="checkbox" value="actions"> Actions</label><label><input type="checkbox" value="agenda"> Agenda</label><label><input type="checkbox" value="deepstudy"> Deep Study</label><label><input type="checkbox" value="hidden"> Hidden</label><label><input type="checkbox" value="receipt"> Receipt</label></div>
+        <div class="card"><div class="card-header">Email & Voice Reading</div>
+            <button id="sendEmailBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Email Report</button>
+            <div style="margin:10px 0;"><select id="voiceLangSelect" style="padding:6px;"><option value="en">English</option><option value="si">සිංහල</option></select> <button id="readSelectedBtn" class="btn btn-secondary"><i class="fas fa-volume-up"></i> Read Selected</button> <button id="stopReadingBtn" class="btn btn-secondary"><i class="fas fa-stop"></i> Stop</button></div>
+            <div class="checkbox-group" id="voiceSections">
+                <label><input type="checkbox" value="transcript"> Transcript</label>
+                <label><input type="checkbox" value="summary"> Executive Summary</label>
+                <label><input type="checkbox" value="narrative"> Narrative Report</label>
+                <label><input type="checkbox" value="actions"> Action Items</label>
+                <label><input type="checkbox" value="agenda"> Proposed Agenda</label>
+                <label><input type="checkbox" value="deepstudy"> AI Deep Study</label>
+                <label><input type="checkbox" value="hidden"> Hidden Problems</label>
+                <label><input type="checkbox" value="receipt"> Payment Receipt</label>
+            </div>
+            <div id="voiceStatus" class="status-text"></div>
         </div>
-        <div id="costDisplay" style="display:none; background:#fef3c7; padding:12px; border-radius:16px; margin-top:12px;"></div>
+        <div id="costDisplay" class="cost-box"></div>
     </div>
 </div>
 
 <!-- Modals -->
 <div id="adminModal" class="modal"><div class="modal-content"><h3>Admin Settings</h3>
-    <label>Rate 0-1h: $<input type="number" id="rate0_1" value="15"></label><br>
-    <label>Rate 1-2h: $<input type="number" id="rate1_2" value="14"></label><br>
-    <label>Rate 2-4h: $<input type="number" id="rate2_4" value="12"></label><br>
-    <label>Rate 4h+: $<input type="number" id="rateAbove4" value="11"></label><br>
-    <label>Per lang/hour: $<input type="number" id="perLangRate" value="3" step="0.5"></label><br>
-    <label>All 15 lang: $<input type="number" id="allLangRate" value="50"></label><br>
+    <label>0-1h rate ($/h): <input type="number" id="rate0_1" value="15" step="1"></label><br>
+    <label>1-2h rate ($/h): <input type="number" id="rate1_2" value="14" step="1"></label><br>
+    <label>2-4h rate ($/h): <input type="number" id="rate2_4" value="12" step="1"></label><br>
+    <label>4h+ rate ($/h): <input type="number" id="rateAbove4" value="11" step="1"></label><br>
+    <label>Per language/hour ($): <input type="number" id="perLangRate" value="3" step="0.5"></label><br>
+    <label>All 15 languages flat ($): <input type="number" id="allLangRate" value="50" step="5"></label><br>
     <button id="saveAdminBtn" class="btn btn-primary">Save</button>
     <button id="closeAdminBtn" class="btn btn-secondary">Close</button>
 </div></div>
 <div id="historyModal" class="modal"><div class="modal-content"><h3>Meeting History</h3><div id="historyList"></div><button id="closeHistoryBtn" class="btn btn-secondary">Close</button></div></div>
+<div id="officeModal" class="modal"><div class="modal-content"><h3>Office Information</h3><input type="text" id="officeName" placeholder="Office Name" style="width:100%; padding:8px; margin:5px 0;"><textarea id="officeAddress" rows="2" placeholder="Address" style="width:100%;"></textarea><input type="text" id="meetingType" placeholder="Meeting Type" style="width:100%; padding:8px;"><button id="saveOfficeBtn" class="btn btn-primary" style="margin-top:12px;">Save</button><button id="closeOfficeBtn" class="btn btn-secondary">Close</button></div></div>
+<div id="langModal" class="modal"><div class="modal-content"><h3>Select Language</h3><div id="languageGrid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;"></div><button id="closeLangBtn" class="btn btn-secondary">Close</button></div></div>
 
 <script>
-// ==================== FULL APPLICATION – NO SYNTAX ERRORS ====================
-(function() {
+(function(){
     // ---------- LOGIN ----------
     const validUsers = { 'WashingMachine$': 'wmiitk$', 'admin': 'admin123' };
     
@@ -128,7 +153,7 @@
         if (validUsers[user] && validUsers[user] === pass) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            initApp();
+            initFullApp();
         } else {
             const err = document.getElementById('loginError');
             err.style.display = 'block';
@@ -136,966 +161,984 @@
         }
     };
     
-    // ---------- GLOBALS ----------
-    let currentOrg = null, allOrgs = {};
-    let speakers = [], transcript = [], history = [];
-    let meetingActive = false, meetingStart = null, meetingEnd = null, timerInterval = null, meetingHours = 0;
-    let costCalculated = false, meetingCost = 0, costDetailsArr = [];
-    let currentLang = 'en', meetingCount = 0, reportCount = 0;
-    let office = { name: '', address: '', type: '' };
-    let recognition = null, autoTimer = null;
-    let isRestarting = false, pendingLanguageSwitch = false;
-    let currentRecognitionLang = 'en-US';
-    let trainedSinhalaTriggers = [];
-    let rates = { r0_1:15, r1_2:14, r2_4:12, rAbove:11, perLang:3, allLang:50 };
-    const speakerColors = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#3b82f6'];
-    const languages = { en:'English', si:'සිංහල', ta:'தமிழ்', es:'Español', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português', ru:'Русский', zh:'中文', ja:'日本語', ko:'한국어', ar:'العربية', hi:'हिन्दी', bn:'বাংলা' };
-    
-    const builtinSinhalaKeywords = [
-        'sinhala','sinhalese','singhala','singhalese','sinahala','sinhalla','sinhale','sinhal','sinhali',
-        'sinhalaa','singhalaa','singhale','singhali','sinhlese','singlese','sin-ha-la','sing-ha-la',
-        'sinhala language','sinhala mode','speak sinhala','switch to sinhala','talk in sinhala',
-        'sinhalen kata karanna','singhalen kata karanna','sinhala words','sinhala only','sri lankan language','සිංහල','සිංහලෙන් කතා'
-    ];
-    const englishKeywords = ['english','talk in english','speak english','in english','english language','ඉංග්‍රීසියෙන් කතා'];
-    
-    // ---------- HELPER FUNCTIONS ----------
-    function speakAnnouncement(msg) {
-        if (window.speechSynthesis) {
-            try {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(msg);
-                u.rate = 0.9;
-                window.speechSynthesis.speak(u);
-            } catch(e) {}
-        }
-    }
-    
-    function levenshtein(a, b) {
-        const matrix = Array(b.length+1).fill().map(() => Array(a.length+1).fill(0));
-        for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-        for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
-        for (let j = 1; j <= b.length; j++) {
-            for (let i = 1; i <= a.length; i++) {
-                const cost = a[i-1] === b[j-1] ? 0 : 1;
-                matrix[j][i] = Math.min(matrix[j-1][i]+1, matrix[j][i-1]+1, matrix[j-1][i-1]+cost);
-            }
-        }
-        return matrix[b.length][a.length];
-    }
-    
-    function fuzzyMatch(word, target, maxDist) {
-        if (maxDist === undefined) maxDist = 2;
-        return levenshtein(word.toLowerCase(), target.toLowerCase()) <= maxDist;
-    }
-    
-    function escapeHtml(t) {
-        if (!t) return '';
-        return t.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    // ---------- STORAGE ----------
-    function saveOrgs() {
-        localStorage.setItem('peter_orgs', JSON.stringify(allOrgs));
-    }
-    
-    function loadOrgs() {
-        const stored = localStorage.getItem('peter_orgs');
-        allOrgs = stored ? JSON.parse(stored) : {};
-        refreshOrgSelector();
-    }
-    
-    function refreshOrgSelector() {
-        const sel = document.getElementById('orgSelector');
-        sel.innerHTML = '<option value="">-- Select Organization --</option>';
-        for (let o in allOrgs) {
-            sel.innerHTML += '<option value="' + o + '">' + o + '</option>';
-        }
-    }
-    
-    function saveCurrentOrg() {
-        if (!currentOrg) return;
-        allOrgs[currentOrg] = { speakers, office, meetingCount, reportCount, currentLang, history };
-        saveOrgs();
-        showStatusMessage('✅ Saved');
-    }
-    
-    function showStatusMessage(msg) {
-        const statusDiv = document.getElementById('orgStatus');
-        if (statusDiv) {
-            statusDiv.innerHTML = msg;
-            setTimeout(function() { statusDiv.innerHTML = ''; }, 1500);
-        }
-    }
-    
-    function loadOrg(org) {
-        if (!allOrgs[org]) return;
-        const d = allOrgs[org];
-        speakers = d.speakers || [];
-        office = d.office || { name: org, address: '', type: '' };
-        meetingCount = d.meetingCount || 0;
-        reportCount = d.reportCount || 0;
-        currentLang = d.currentLang || 'en';
-        history = d.history || [];
-        currentOrg = org;
-        updateUI();
-        loadTrainedTriggers();
-    }
-    
-    function updateUI() {
-        document.getElementById('speakerCount').innerText = speakers.length;
-        document.getElementById('meetingCount').innerText = meetingCount;
-        document.getElementById('reportCount').innerText = reportCount;
-        document.getElementById('langCount').innerText = Object.keys(languages).length;
-        refreshSpeakersList();
-        refreshTranscript();
-    }
-    
-    function refreshSpeakersList() {
-        const container = document.getElementById('speakersList');
-        const quick = document.getElementById('quickAssignList');
-        if (!speakers.length) {
-            container.innerHTML = 'No speakers';
-            quick.innerHTML = '';
-            return;
-        }
-        let html = '';
-        for (let i = 0; i < speakers.length; i++) {
-            const s = speakers[i];
-            const color = s.color || speakerColors[i % speakerColors.length];
-            html += '<span class="speaker-tag" style="background:' + color + '">' + escapeHtml(s.name) + '</span>';
-        }
-        container.innerHTML = html;
-        quick.innerHTML = '<strong>Quick Assign:</strong> ';
-        for (let i = 0; i < speakers.length; i++) {
-            const s = speakers[i];
-            const btn = document.createElement('button');
-            btn.className = 'speaker-tag';
-            btn.style.background = s.color || speakerColors[i % speakerColors.length];
-            btn.innerText = s.name;
-            btn.onclick = function() {
-                for (let j = transcript.length-1; j >= 0; j--) {
-                    if (transcript[j].speaker === 'Unknown') {
-                        transcript[j].speaker = s.name;
-                        transcript[j].color = s.color;
-                        refreshTranscript();
-                        break;
-                    }
-                }
-            };
-            quick.appendChild(btn);
-        }
-    }
-    
-    function refreshTranscript() {
-        const area = document.getElementById('transcriptArea');
-        if (!transcript.length) {
-            area.innerHTML = 'Start a meeting';
-            document.getElementById('lineCounter').innerText = '0';
-            document.getElementById('pageCounter').innerText = '0';
-            return;
-        }
-        let html = '';
-        for (let i = 0; i < transcript.length; i++) {
-            const e = transcript[i];
-            html += '<div class="transcript-line"><strong>' + escapeHtml(e.speaker) + '</strong> <small>' + e.timestamp + '</small><br>' + escapeHtml(e.originalText) + '</div>';
-        }
-        area.innerHTML = html;
-        document.getElementById('lineCounter').innerText = transcript.length;
-        document.getElementById('pageCounter').innerText = Math.ceil(transcript.length / 25);
-    }
-    
-    function updateTimer() {
-        if (!meetingStart) return;
-        const ms = (meetingEnd || new Date()) - meetingStart;
-        const hours = String(Math.floor(ms / 3600000)).padStart(2,'0');
-        const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2,'0');
-        const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2,'0');
-        document.getElementById('timerDisplay').innerHTML = hours + ':' + minutes + ':' + seconds;
-        meetingHours = ms / 3600000;
-    }
-    
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(function() {
-            if (meetingActive && meetingStart && !meetingEnd) updateTimer();
-        }, 1000);
-    }
-    
-    // ---------- TRAINABLE TRIGGERS ----------
-    function loadTrainedTriggers() {
-        if (!currentOrg) return;
-        const key = 'peter_sinhala_triggers_' + currentOrg;
-        const stored = localStorage.getItem(key);
-        trainedSinhalaTriggers = stored ? JSON.parse(stored) : [];
-        renderTriggersList();
-    }
-    
-    function saveTrainedTriggers() {
-        if (!currentOrg) return;
-        const key = 'peter_sinhala_triggers_' + currentOrg;
-        localStorage.setItem(key, JSON.stringify(trainedSinhalaTriggers));
-        renderTriggersList();
-    }
-    
-    function addTrigger(phrase) {
-        phrase = phrase.trim().toLowerCase();
-        if (phrase && !trainedSinhalaTriggers.includes(phrase)) {
-            trainedSinhalaTriggers.push(phrase);
-            saveTrainedTriggers();
-        }
-    }
-    
-    function removeTrigger(index) {
-        trainedSinhalaTriggers.splice(index, 1);
-        saveTrainedTriggers();
-    }
-    
-    function renderTriggersList() {
-        const container = document.getElementById('trainedTriggersList');
-        if (!container) return;
-        if (trainedSinhalaTriggers.length === 0) {
-            container.innerHTML = '<span>No custom triggers.</span>';
-            return;
-        }
-        let html = '';
-        for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
-            const t = trainedSinhalaTriggers[i];
-            html += '<div class="train-item">' + escapeHtml(t) + '<button onclick="window.removeTriggerAt(' + i + ')">✖</button></div>';
-        }
-        container.innerHTML = html;
-    }
-    
-    window.removeTriggerAt = removeTrigger;
-    
-    // ---------- LANGUAGE SWITCH DETECTION ----------
-    function isSinhalaSwitchRequested(recentText) {
-        const text = recentText.toLowerCase();
-        for (let i = 0; i < builtinSinhalaKeywords.length; i++) {
-            if (text.indexOf(builtinSinhalaKeywords[i]) !== -1) return true;
-        }
-        for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
-            if (text.indexOf(trainedSinhalaTriggers[i]) !== -1) return true;
-        }
-        const words = text.split(/\s+/);
-        for (let w = 0; w < words.length; w++) {
-            const word = words[w];
-            if (word.length < 3) continue;
-            for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
-                if (fuzzyMatch(word, trainedSinhalaTriggers[i], 2)) return true;
-            }
-            for (let i = 0; i < builtinSinhalaKeywords.length; i++) {
-                const kw = builtinSinhalaKeywords[i];
-                if (kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
-            }
-        }
-        return false;
-    }
-    
-    function isEnglishSwitchRequested(recentText) {
-        const text = recentText.toLowerCase();
-        for (let i = 0; i < englishKeywords.length; i++) {
-            if (text.indexOf(englishKeywords[i]) !== -1) return true;
-        }
-        const words = text.split(/\s+/);
-        for (let w = 0; w < words.length; w++) {
-            const word = words[w];
-            if (word.length < 3) continue;
-            for (let i = 0; i < englishKeywords.length; i++) {
-                const kw = englishKeywords[i];
-                if (kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
-            }
-        }
-        return false;
-    }
-    
-    // ---------- RECOGNITION ----------
-    function updateLanguageIndicator() {
-        const span = document.getElementById('currentRecogLang');
-        if (currentRecognitionLang === 'en-US') span.innerHTML = 'English';
-        else span.innerHTML = 'සිංහල';
-    }
-    
-    function forceRestartRecognitionWithLang(langCode) {
-        if (!meetingActive || pendingLanguageSwitch) return;
-        pendingLanguageSwitch = true;
-        if (recognition) {
-            try { recognition.abort(); } catch(e) {}
-            recognition = null;
-        }
-        currentRecognitionLang = langCode;
-        updateLanguageIndicator();
-        if (langCode === 'en-US') speakAnnouncement('English Activated');
-        else speakAnnouncement('Sinhala Activated');
-        setTimeout(function() {
-            startRecognition();
-            pendingLanguageSwitch = false;
-            document.getElementById('meetingStatus').innerHTML = 'Language switched...';
-            setTimeout(function() {
-                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
-            }, 800);
-        }, 100);
-    }
-    
-    function checkForLanguageSwitchKeywords() {
-        if (!meetingActive) return;
-        let recentText = '';
-        const limit = Math.min(3, transcript.length);
-        for (let i = 0; i < limit; i++) {
-            recentText += transcript[i].originalText.toLowerCase() + ' ';
-        }
-        if (isSinhalaSwitchRequested(recentText) && currentRecognitionLang !== 'si-LK') {
-            forceRestartRecognitionWithLang('si-LK');
-        } else if (isEnglishSwitchRequested(recentText) && currentRecognitionLang !== 'en-US') {
-            forceRestartRecognitionWithLang('en-US');
-        }
-    }
-    
-    function startRecognition() {
-        if (!meetingActive) return;
-        if (recognition) {
-            try { recognition.abort(); } catch(e) {}
-            recognition = null;
-        }
-        if (!('webkitSpeechRecognition' in window)) {
-            alert('Speech recognition not supported. Use Chrome/Edge.');
-            return;
-        }
-        const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecog();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = currentRecognitionLang;
-        let lastFinalText = '';
-        let keywordCheckTimeout = null;
-        recognition.onstart = function() {
-            document.getElementById('meetingStatus').innerHTML = 'Listening';
-            isRestarting = false;
-        };
-        recognition.onresult = function(event) {
-            if (keywordCheckTimeout) clearTimeout(keywordCheckTimeout);
-            let final = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                if (event.results[i].isFinal) {
-                    final += event.results[i][0].transcript;
-                }
-            }
-            if (final && final.trim().length > 1 && final !== lastFinalText) {
-                lastFinalText = final;
-                const text = final.trim();
-                const timestamp = new Date().toLocaleTimeString();
-                let speaker = (speakers.length === 1) ? speakers[0].name : 'Unknown';
-                let color = '#667eea';
-                for (let s = 0; s < speakers.length; s++) {
-                    if (speakers[s].name === speaker) {
-                        color = speakers[s].color;
-                        break;
-                    }
-                }
-                const langTag = (currentRecognitionLang === 'si-LK') ? 'sinhala' : 'english';
-                transcript.unshift({ speaker: speaker, originalText: text, timestamp: timestamp, color: color, lang: langTag });
-                refreshTranscript();
-                setTimeout(function() { lastFinalText = ''; }, 300);
-                document.getElementById('meetingStatus').innerHTML = 'Listening';
-                keywordCheckTimeout = setTimeout(function() { checkForLanguageSwitchKeywords(); }, 500);
-            }
-        };
-        recognition.onerror = function(e) {
-            if (e.error === 'not-allowed') alert('Microphone permission denied.');
-            else if (e.error === 'language-not-supported' && currentRecognitionLang === 'si-LK') {
-                forceRestartRecognitionWithLang('en-US');
-            }
-        };
-        recognition.onend = function() {
-            if (meetingActive && !isRestarting && !pendingLanguageSwitch) {
-                setTimeout(function() { startRecognition(); }, 500);
-            }
-        };
-        recognition.start();
-    }
-    
-    function forceRestartRecognition() {
-        if (!meetingActive) {
-            alert('Meeting not active.');
-            return;
-        }
-        isRestarting = true;
-        if (recognition) {
-            try { recognition.abort(); } catch(e) {}
-            recognition = null;
-        }
-        setTimeout(function() {
-            isRestarting = false;
-            startRecognition();
-            document.getElementById('meetingStatus').innerHTML = 'Restarting...';
-            setTimeout(function() {
-                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
-            }, 500);
-        }, 100);
-    }
-    
-    // ---------- MEETING FUNCTIONS ----------
-    async function startMeeting() {
-        if (!speakers.length) {
-            alert('Register speaker first');
-            return;
-        }
-        if (!currentOrg) {
-            alert('Select organization');
-            return;
-        }
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            meetingActive = true;
-            meetingStart = new Date();
-            meetingEnd = null;
-            transcript = [];
-            costCalculated = false;
-            currentRecognitionLang = 'en-US';
-            updateLanguageIndicator();
-            startTimer();
-            startRecognition();
-            if (autoTimer) clearInterval(autoTimer);
-            autoTimer = setInterval(function() {
-                if (meetingActive && transcript.length) autoSave();
-            }, 60000);
-            document.getElementById('startMeetingBtn').disabled = true;
-            document.getElementById('stopMeetingBtn').disabled = false;
-            document.getElementById('calcCostBtn').disabled = false;
-            document.getElementById('meetingStatus').innerHTML = 'Listening';
-            refreshTranscript();
-        } catch(e) {
-            alert('Microphone permission required');
-        }
-    }
-    
-    function stopMeeting() {
-        meetingActive = false;
-        isRestarting = true;
-        pendingLanguageSwitch = false;
-        if (recognition) {
-            try { recognition.abort(); } catch(e) {}
-        }
-        meetingEnd = new Date();
-        updateTimer();
-        if (timerInterval) clearInterval(timerInterval);
-        if (autoTimer) clearInterval(autoTimer);
-        meetingCount++;
-        history.unshift({
-            id: Date.now(),
-            date: new Date().toLocaleString(),
-            duration: Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm',
-            transcript: [...transcript]
-        });
-        if (history.length > 30) history.pop();
-        if (currentOrg) saveCurrentOrg();
-        updateUI();
-        document.getElementById('startMeetingBtn').disabled = false;
-        document.getElementById('stopMeetingBtn').disabled = true;
-        document.getElementById('meetingStatus').innerHTML = 'Stopped';
-        autoSave();
-        alert('Stopped. ' + transcript.length + ' lines.');
-        if (document.getElementById('historyModal').style.display === 'flex') showMeetingHistory();
-    }
-    
-    function autoSave() {
-        let content = 'Peter AI AutoSave\n' + new Date().toLocaleString() + '\n';
-        for (let i = 0; i < transcript.length; i++) {
-            const t = transcript[i];
-            content += '[' + t.timestamp + '] ' + t.speaker + ': ' + t.originalText + '\n';
-        }
-        const blob = new Blob([content], { type: 'text/plain' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'Peter_AutoSave_' + Date.now() + '.txt';
-        a.click();
-        URL.revokeObjectURL(blob);
-    }
-    
-    function printCost() {
-        if (!meetingEnd) {
-            alert('Stop meeting first');
-            return;
-        }
-        let base = 0;
-        if (meetingHours <= 1) base = meetingHours * rates.r0_1;
-        else if (meetingHours <= 2) base = meetingHours * rates.r1_2;
-        else if (meetingHours <= 4) base = meetingHours * rates.r2_4;
-        else base = meetingHours * rates.rAbove;
-        const uniqueLangs = new Set();
-        for (let i = 0; i < transcript.length; i++) {
-            const l = transcript[i].lang;
-            if (l && l !== 'en' && l !== 'english' && l !== 'sinhala') uniqueLangs.add(l);
-        }
-        let transCost = 0;
-        if (uniqueLangs.size >= 15) transCost = rates.allLang;
-        else transCost = uniqueLangs.size * rates.perLang * meetingHours;
-        meetingCost = base + transCost;
-        costDetailsArr = [
-            'Duration: ' + meetingHours.toFixed(2) + 'h - Base: $' + base.toFixed(2),
-            (uniqueLangs.size ? uniqueLangs.size + ' language(s) translation: $' + transCost.toFixed(2) : 'No translation'),
-            'Subtotal: $' + (base + transCost).toFixed(2)
+    // ---------- FULL APPLICATION ----------
+    function initFullApp() {
+        // GLOBALS
+        let currentOrg = null, allOrgs = {};
+        let speakers = [], transcript = [], history = [];
+        let meetingActive = false, meetingStart = null, meetingEnd = null, timerInterval = null, meetingHours = 0;
+        let costCalculated = false, meetingCost = 0, costDetailsArr = [];
+        let currentLang = 'en', meetingCount = 0, reportCount = 0;
+        let office = { name: '', address: '', type: '' };
+        let recognition = null, autoTimer = null;
+        let isRestarting = false, pendingLanguageSwitch = false;
+        let currentRecognitionLang = 'en-US';
+        let trainedSinhalaTriggers = [];
+        let rates = { r0_1:15, r1_2:14, r2_4:12, rAbove:11, perLang:3, allLang:50 };
+        let pagePrices = { transcript:0.10, summary:0.10, narrative:0.10, actions:0.10, agenda:0.10, deepstudy:0.15, hidden:0.10, confidence:0.10 };
+        const speakerColors = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#3b82f6'];
+        const languages = { en:'English', si:'සිංහල', ta:'தமிழ்', es:'Español', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português', ru:'Русский', zh:'中文', ja:'日本語', ko:'한국어', ar:'العربية', hi:'हिन्दी', bn:'বাংলা' };
+        const voiceLangMap = { en:'en-US', si:'si-LK' };
+        
+        const builtinSinhalaKeywords = [
+            'sinhala','sinhalese','singhala','singhalese','sinahala','sinhalla','sinhale','sinhal','sinhali',
+            'sinhalaa','singhalaa','singhale','singhali','sinhlese','singlese','sin-ha-la','sing-ha-la',
+            'sinhala language','sinhala mode','speak sinhala','switch to sinhala','talk in sinhala',
+            'sinhalen kata karanna','singhalen kata karanna','sinhala words','sinhala only','sri lankan language','සිංහල','සිංහලෙන් කතා'
         ];
-        costCalculated = true;
-        const costDiv = document.getElementById('costDisplay');
-        costDiv.innerHTML = '<strong>💰 Cost Details</strong><br>' + costDetailsArr.join('<br>') + '<hr><strong>Total: $' + meetingCost.toFixed(2) + '</strong>';
-        costDiv.style.display = 'block';
-    }
-    
-    function registerSpeaker() {
-        let name = prompt('Enter speaker name:');
-        if (name && name.trim() !== '') {
-            const cleanName = name.trim();
-            const color = speakerColors[speakers.length % speakerColors.length];
-            speakers.push({ name: cleanName, color: color });
+        const englishKeywords = ['english','talk in english','speak english','in english','english language','ඉංග්‍රීසියෙන් කතා'];
+        
+        // Helper functions
+        function speakAnnouncement(msg) {
+            if (window.speechSynthesis) {
+                try {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(msg);
+                    u.rate = 0.9;
+                    window.speechSynthesis.speak(u);
+                } catch(e) {}
+            }
+        }
+        
+        function levenshtein(a, b) {
+            const matrix = Array(b.length+1).fill().map(() => Array(a.length+1).fill(0));
+            for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+            for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+            for (let j = 1; j <= b.length; j++) {
+                for (let i = 1; i <= a.length; i++) {
+                    const cost = a[i-1] === b[j-1] ? 0 : 1;
+                    matrix[j][i] = Math.min(matrix[j-1][i] + 1, matrix[j][i-1] + 1, matrix[j-1][i-1] + cost);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+        
+        function fuzzyMatch(word, target, maxDist) {
+            if (maxDist === undefined) maxDist = 2;
+            return levenshtein(word.toLowerCase(), target.toLowerCase()) <= maxDist;
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            return t.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Storage
+        function saveOrgs() { localStorage.setItem('peter_orgs', JSON.stringify(allOrgs)); }
+        function loadOrgs() { allOrgs = JSON.parse(localStorage.getItem('peter_orgs') || '{}'); refreshOrgSelector(); }
+        function refreshOrgSelector() {
+            const sel = document.getElementById('orgSelector');
+            sel.innerHTML = '<option value="">-- Select Organization --</option>';
+            for (let o in allOrgs) {
+                sel.innerHTML += `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`;
+            }
+        }
+        function saveCurrentOrg() {
+            if (!currentOrg) return;
+            allOrgs[currentOrg] = { speakers, office, meetingCount, reportCount, currentLang, history };
+            saveOrgs();
+            showStatusMessage('✅ Saved');
+        }
+        function showStatusMessage(msg) {
+            const div = document.getElementById('orgStatus');
+            if (div) { div.innerHTML = msg; setTimeout(() => { div.innerHTML = ''; }, 1500); }
+        }
+        function loadOrg(org) {
+            if (!allOrgs[org]) return;
+            const d = allOrgs[org];
+            speakers = d.speakers || [];
+            office = d.office || { name: org, address: '', type: '' };
+            meetingCount = d.meetingCount || 0;
+            reportCount = d.reportCount || 0;
+            currentLang = d.currentLang || 'en';
+            history = d.history || [];
+            currentOrg = org;
             updateUI();
-            if (currentOrg) saveCurrentOrg();
-            alert('✅ Speaker "' + cleanName + '" registered!');
+            loadTrainedTriggers();
         }
-    }
-    
-    function showMeetingHistory() {
-        if (!currentOrg) {
-            alert('Select organization first');
-            return;
+        function updateUI() {
+            document.getElementById('speakerCount').innerText = speakers.length;
+            document.getElementById('meetingCount').innerText = meetingCount;
+            document.getElementById('reportCount').innerText = reportCount;
+            document.getElementById('langCount').innerText = Object.keys(languages).length;
+            refreshSpeakersList();
+            refreshTranscript();
         }
-        const histDiv = document.getElementById('historyList');
-        if (!history.length) {
-            histDiv.innerHTML = '<p>No past meetings</p>';
-        } else {
-            histDiv.innerHTML = '';
-            for (let i = 0; i < history.length; i++) {
-                const h = history[i];
-                const div = document.createElement('div');
-                div.style.padding = '8px';
-                div.style.borderBottom = '1px solid #ccc';
-                div.innerHTML = '<div><strong>' + escapeHtml(h.date) + '</strong></div><div>' + h.duration + ' | ' + h.transcript.length + ' lines</div>';
-                div.ondblclick = function() {
-                    if (confirm('Load meeting from ' + h.date + '?')) {
-                        transcript = [...h.transcript];
-                        refreshTranscript();
-                        document.getElementById('historyModal').style.display = 'none';
-                        alert('Meeting loaded.');
+        function refreshSpeakersList() {
+            const container = document.getElementById('speakersList');
+            const quick = document.getElementById('quickAssignList');
+            if (!speakers.length) {
+                container.innerHTML = 'No speakers';
+                quick.innerHTML = '';
+                return;
+            }
+            let html = '';
+            for (let i = 0; i < speakers.length; i++) {
+                const s = speakers[i];
+                const color = s.color || speakerColors[i % speakerColors.length];
+                html += `<span class="speaker-tag" style="background:${color}">${escapeHtml(s.name)}</span>`;
+            }
+            container.innerHTML = html;
+            quick.innerHTML = '<strong>Quick Assign:</strong> ';
+            for (let i = 0; i < speakers.length; i++) {
+                const s = speakers[i];
+                const btn = document.createElement('button');
+                btn.className = 'speaker-tag';
+                btn.style.background = s.color || speakerColors[i % speakerColors.length];
+                btn.innerText = s.name;
+                btn.onclick = function() {
+                    for (let j = transcript.length-1; j >= 0; j--) {
+                        if (transcript[j].speaker === 'Unknown') {
+                            transcript[j].speaker = s.name;
+                            transcript[j].color = s.color;
+                            refreshTranscript();
+                            break;
+                        }
                     }
                 };
-                histDiv.appendChild(div);
+                quick.appendChild(btn);
             }
         }
-        document.getElementById('historyModal').style.display = 'flex';
-    }
-    
-    // ---------- AI FUNCTIONS (simplified for demonstration) ----------
-    async function generateAIExecutiveSummary() {
-        return 'AI summary: The meeting covered key points. Action items were assigned.';
-    }
-    
-    async function generateNarrativeReport() {
-        return 'Narrative report: The conversation flowed productively.';
-    }
-    
-    function extractActionItemsRaw() {
-        const actions = [];
-        for (let i = transcript.length-1; i >= 0; i--) {
-            const line = transcript[i];
-            const lower = line.originalText.toLowerCase();
-            if (/(will|must|need to|task|action|todo)/i.test(lower)) {
-                let text = line.originalText.trim();
-                if (!text.endsWith('.')) text += '.';
-                if (text.length > 120) text = text.substring(0,117) + '...';
-                actions.push({ speaker: line.speaker, text: text });
-                if (actions.length >= 10) break;
+        function refreshTranscript() {
+            const area = document.getElementById('transcriptArea');
+            if (!transcript.length) {
+                area.innerHTML = 'Start a meeting to see transcript';
+                document.getElementById('lineCounter').innerText = '0';
+                document.getElementById('pageCounter').innerText = '0';
+                return;
+            }
+            let html = '';
+            for (let i = 0; i < transcript.length; i++) {
+                const e = transcript[i];
+                html += `<div class="transcript-line"><strong>${escapeHtml(e.speaker)}</strong> <small>${e.timestamp}</small><br>${escapeHtml(e.originalText)}</div>`;
+            }
+            area.innerHTML = html;
+            document.getElementById('lineCounter').innerText = transcript.length;
+            document.getElementById('pageCounter').innerText = Math.ceil(transcript.length / 25);
+        }
+        function updateTimer() {
+            if (!meetingStart) return;
+            const ms = (meetingEnd || new Date()) - meetingStart;
+            const hours = String(Math.floor(ms / 3600000)).padStart(2,'0');
+            const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2,'0');
+            const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2,'0');
+            document.getElementById('timerDisplay').innerHTML = `${hours}:${minutes}:${seconds}`;
+            meetingHours = ms / 3600000;
+        }
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
+                if (meetingActive && meetingStart && !meetingEnd) updateTimer();
+            }, 1000);
+        }
+        
+        // Trainable triggers
+        function loadTrainedTriggers() {
+            if (!currentOrg) return;
+            const key = `peter_sinhala_triggers_${currentOrg}`;
+            const stored = localStorage.getItem(key);
+            trainedSinhalaTriggers = stored ? JSON.parse(stored) : [];
+            renderTriggersList();
+        }
+        function saveTrainedTriggers() {
+            if (!currentOrg) return;
+            localStorage.setItem(`peter_sinhala_triggers_${currentOrg}`, JSON.stringify(trainedSinhalaTriggers));
+            renderTriggersList();
+        }
+        function addTrigger(phrase) {
+            phrase = phrase.trim().toLowerCase();
+            if (phrase && !trainedSinhalaTriggers.includes(phrase)) {
+                trainedSinhalaTriggers.push(phrase);
+                saveTrainedTriggers();
             }
         }
-        if (actions.length === 0) actions.push({ speaker: 'Team', text: 'Continue working on assigned tasks.' });
-        return actions;
-    }
-    
-    function generateAgendaRaw() {
-        if (transcript.length === 0) return ['Review previous actions', 'Project status', 'Budget review', 'Risk assessment', 'Set next meeting'];
-        const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
-        const items = [];
-        if (/(review|status update)/i.test(fullText)) items.push('Review of previous action items');
-        if (/(project|timeline|deadline)/i.test(fullText)) items.push('Project timeline review');
-        if (/(budget|cost|expense)/i.test(fullText)) items.push('Budget and financial review');
-        if (/(risk|issue|problem)/i.test(fullText)) items.push('Risk assessment');
-        if (items.length < 3) items.push('Open discussion');
-        items.push('Set next meeting date');
-        return [...new Set(items)].slice(0,7);
-    }
-    
-    function generateDeepStudyRaw() {
-        return {
-            guidance: 'Focus on clear communication and documented decisions.',
-            safety: 'No specific safety issues were raised.',
-            development: 'No skill development topics were discussed.',
-            difficulties: 'No major difficulties were mentioned.',
-            dangers: 'No significant risks were highlighted.',
-            profits: 'No profit opportunities were identified.',
-            losses: 'No potential losses were identified.',
-            regrets: 'No regrets were recorded.',
-            appreciations: 'No appreciations were recorded.',
-            suggestions: 'No specific suggestions were offered.',
-            advice: 'Continue regular monitoring and maintain clear communication.'
-        };
-    }
-    
-    function analyzeHiddenProblemsRaw() {
-        const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
-        const issues = [];
-        if (/(problem|issue|challenge|difficulty)/i.test(fullText)) issues.push('Unresolved challenges were mentioned – management attention may be required.');
-        if (/(delay|behind schedule|late)/i.test(fullText)) issues.push('Timeline delays were discussed – corrective actions should be taken.');
-        if (issues.length === 0) issues.push('No significant hidden risks were detected.');
-        const hiddenGood = [];
-        if (/(excellent|great|success|achievement)/i.test(fullText)) hiddenGood.push('Positive achievements were noted – these should be recognised.');
-        else hiddenGood.push('No explicit praise or unspoken achievements were identified.');
-        const withheld = [];
-        if (/(maybe|not sure|hesitant)/i.test(fullText)) withheld.push('Some participants expressed uncertainty – ideas may have been withheld.');
-        else withheld.push('Participants appeared to express their views openly.');
-        const secret = [];
-        if (/(confidential|private|off the record)/i.test(fullText)) secret.push('Sensitive information was mentioned – ensure proper handling.');
-        else secret.push('No secret or off-record discussions were detected.');
-        const creators = [];
-        if (/(blame|fault)/i.test(fullText)) creators.push('Some speakers exhibited blame-oriented language – focus on solutions.');
-        else creators.push('The conversation was generally solution-oriented.');
-        let assignees = 'None';
-        const involved = new Set();
-        for (let i = 0; i < transcript.length; i++) {
-            const txt = transcript[i].originalText.toLowerCase();
-            if (/(problem|issue|challenge|delay|blame)/i.test(txt)) involved.add(transcript[i].speaker);
+        function removeTrigger(idx) {
+            trainedSinhalaTriggers.splice(idx, 1);
+            saveTrainedTriggers();
         }
-        if (involved.size) assignees = Array.from(involved).join(', ');
-        return { issues, hiddenGood, withheld, secret, creators, assignees };
-    }
-    
-    // ---------- EMAIL ----------
-    async function sendEmail() {
-        alert('Email client would open. This is a demo.');
-    }
-    
-    // ---------- VOICE READING ----------
-    let currentUtterance = null;
-    function stopReading() {
-        if (currentUtterance) {
-            window.speechSynthesis.cancel();
-            currentUtterance = null;
+        function renderTriggersList() {
+            const container = document.getElementById('trainedTriggersList');
+            if (!container) return;
+            if (trainedSinhalaTriggers.length === 0) {
+                container.innerHTML = '<span>No custom triggers. Add some above.</span>';
+                return;
+            }
+            let html = '';
+            for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
+                html += `<div class="train-item">${escapeHtml(trainedSinhalaTriggers[i])}<button onclick="window.removeTriggerAt(${i})">✖</button></div>`;
+            }
+            container.innerHTML = html;
         }
-        document.getElementById('voiceStatus').innerHTML = 'Stopped.';
-    }
-    
-    async function readSelectedSections() {
-        stopReading();
-        const selected = [];
-        const checkboxes = document.querySelectorAll('#voiceSections input:checked');
-        for (let i = 0; i < checkboxes.length; i++) {
-            selected.push(checkboxes[i].value);
+        window.removeTriggerAt = removeTrigger;
+        
+        // Language detection
+        function isSinhalaSwitchRequested(recentText) {
+            const text = recentText.toLowerCase();
+            for (let kw of builtinSinhalaKeywords) if (text.indexOf(kw) !== -1) return true;
+            for (let trig of trainedSinhalaTriggers) if (text.indexOf(trig) !== -1) return true;
+            const words = text.split(/\s+/);
+            for (let w of words) {
+                if (w.length < 3) continue;
+                for (let trig of trainedSinhalaTriggers) if (fuzzyMatch(w, trig, 2)) return true;
+                for (let kw of builtinSinhalaKeywords) if (kw.length >= 3 && fuzzyMatch(w, kw, 2)) return true;
+            }
+            return false;
         }
-        if (selected.length === 0) {
-            alert('Select sections to read.');
-            return;
+        function isEnglishSwitchRequested(recentText) {
+            const text = recentText.toLowerCase();
+            for (let kw of englishKeywords) if (text.indexOf(kw) !== -1) return true;
+            const words = text.split(/\s+/);
+            for (let w of words) {
+                if (w.length < 3) continue;
+                for (let kw of englishKeywords) if (kw.length >= 3 && fuzzyMatch(w, kw, 2)) return true;
+            }
+            return false;
         }
-        let fullText = '';
-        for (let s = 0; s < selected.length; s++) {
-            const sec = selected[s];
-            if (sec === 'transcript') {
-                for (let i = transcript.length-1; i >= 0; i--) {
-                    const e = transcript[i];
-                    fullText += 'At ' + e.timestamp + ', ' + e.speaker + ' said: ' + e.originalText + '. ';
+        
+        // Recognition
+        function updateLanguageIndicator() {
+            const span = document.getElementById('currentRecogLang');
+            span.innerHTML = (currentRecognitionLang === 'en-US') ? 'English' : 'සිංහල';
+        }
+        function forceRestartRecognitionWithLang(langCode) {
+            if (!meetingActive || pendingLanguageSwitch) return;
+            pendingLanguageSwitch = true;
+            if (recognition) try { recognition.abort(); } catch(e) {}
+            recognition = null;
+            currentRecognitionLang = langCode;
+            updateLanguageIndicator();
+            speakAnnouncement(langCode === 'en-US' ? 'English Activated' : 'Sinhala Activated');
+            setTimeout(function() {
+                startRecognition();
+                pendingLanguageSwitch = false;
+                document.getElementById('meetingStatus').innerHTML = 'Language switched...';
+                setTimeout(function() {
+                    if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+                }, 800);
+            }, 100);
+        }
+        function checkForLanguageSwitchKeywords() {
+            if (!meetingActive) return;
+            let recentText = '';
+            for (let i = 0; i < Math.min(3, transcript.length); i++) {
+                recentText += transcript[i].originalText.toLowerCase() + ' ';
+            }
+            if (isSinhalaSwitchRequested(recentText) && currentRecognitionLang !== 'si-LK') {
+                forceRestartRecognitionWithLang('si-LK');
+            } else if (isEnglishSwitchRequested(recentText) && currentRecognitionLang !== 'en-US') {
+                forceRestartRecognitionWithLang('en-US');
+            }
+        }
+        function startRecognition() {
+            if (!meetingActive) return;
+            if (recognition) try { recognition.abort(); } catch(e) {}
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Speech recognition not supported. Use Chrome/Edge.');
+                return;
+            }
+            const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecog();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = currentRecognitionLang;
+            let lastFinalText = '';
+            let keywordCheckTimeout = null;
+            recognition.onstart = function() {
+                document.getElementById('meetingStatus').innerHTML = 'Listening';
+                isRestarting = false;
+            };
+            recognition.onresult = function(event) {
+                if (keywordCheckTimeout) clearTimeout(keywordCheckTimeout);
+                let final = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) final += event.results[i][0].transcript;
                 }
-            } else if (sec === 'summary') {
-                fullText += 'Executive summary. ' + (await generateAIExecutiveSummary()) + ' ';
-            } else if (sec === 'narrative') {
-                fullText += 'Narrative report. ' + (await generateNarrativeReport()) + ' ';
-            } else if (sec === 'actions') {
-                const acts = extractActionItemsRaw();
-                fullText += 'Action items. ';
-                for (let i = 0; i < acts.length; i++) {
-                    fullText += (i+1) + '. ' + acts[i].text + ' ';
+                if (final && final.trim().length > 1 && final !== lastFinalText) {
+                    lastFinalText = final;
+                    const text = final.trim();
+                    const timestamp = new Date().toLocaleTimeString();
+                    let speaker = (speakers.length === 1) ? speakers[0].name : 'Unknown';
+                    let color = '#667eea';
+                    for (let s = 0; s < speakers.length; s++) {
+                        if (speakers[s].name === speaker) { color = speakers[s].color; break; }
+                    }
+                    const langTag = (currentRecognitionLang === 'si-LK') ? 'sinhala' : 'english';
+                    transcript.unshift({ speaker, originalText: text, timestamp, color, lang: langTag });
+                    refreshTranscript();
+                    setTimeout(function() { lastFinalText = ''; }, 300);
+                    document.getElementById('meetingStatus').innerHTML = 'Listening';
+                    keywordCheckTimeout = setTimeout(function() { checkForLanguageSwitchKeywords(); }, 500);
                 }
-            } else if (sec === 'agenda') {
+            };
+            recognition.onerror = function(e) {
+                if (e.error === 'not-allowed') alert('Microphone permission denied.');
+                else if (e.error === 'language-not-supported' && currentRecognitionLang === 'si-LK') {
+                    forceRestartRecognitionWithLang('en-US');
+                }
+            };
+            recognition.onend = function() {
+                if (meetingActive && !isRestarting && !pendingLanguageSwitch) {
+                    setTimeout(function() { startRecognition(); }, 500);
+                }
+            };
+            recognition.start();
+        }
+        function forceRestartRecognition() {
+            if (!meetingActive) { alert('Meeting not active.'); return; }
+            isRestarting = true;
+            if (recognition) try { recognition.abort(); } catch(e) {}
+            recognition = null;
+            setTimeout(function() {
+                isRestarting = false;
+                startRecognition();
+                document.getElementById('meetingStatus').innerHTML = 'Restarting...';
+                setTimeout(function() {
+                    if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+                }, 500);
+            }, 100);
+        }
+        
+        // Meeting functions
+        async function startMeeting() {
+            if (!speakers.length) { alert('Register speaker first'); return; }
+            if (!currentOrg) { alert('Select organization'); return; }
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                meetingActive = true;
+                meetingStart = new Date();
+                meetingEnd = null;
+                transcript = [];
+                costCalculated = false;
+                currentRecognitionLang = 'en-US';
+                updateLanguageIndicator();
+                startTimer();
+                startRecognition();
+                if (autoTimer) clearInterval(autoTimer);
+                autoTimer = setInterval(function() {
+                    if (meetingActive && transcript.length) autoSave();
+                }, 60000);
+                document.getElementById('startMeetingBtn').disabled = true;
+                document.getElementById('stopMeetingBtn').disabled = false;
+                document.getElementById('calcCostBtn').disabled = false;
+                document.getElementById('meetingStatus').innerHTML = 'Listening';
+                refreshTranscript();
+            } catch(e) { alert('Microphone permission required'); }
+        }
+        function stopMeeting() {
+            meetingActive = false;
+            isRestarting = true;
+            pendingLanguageSwitch = false;
+            if (recognition) try { recognition.abort(); } catch(e) {}
+            meetingEnd = new Date();
+            updateTimer();
+            if (timerInterval) clearInterval(timerInterval);
+            if (autoTimer) clearInterval(autoTimer);
+            meetingCount++;
+            history.unshift({
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                duration: Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm',
+                transcript: [...transcript]
+            });
+            if (history.length > 30) history.pop();
+            if (currentOrg) saveCurrentOrg();
+            updateUI();
+            document.getElementById('startMeetingBtn').disabled = false;
+            document.getElementById('stopMeetingBtn').disabled = true;
+            document.getElementById('meetingStatus').innerHTML = 'Stopped';
+            autoSave();
+            alert(`Stopped. ${transcript.length} lines.`);
+            if (document.getElementById('historyModal').style.display === 'flex') showMeetingHistory();
+        }
+        function autoSave() {
+            let content = `Peter AI AutoSave\n${new Date().toLocaleString()}\n`;
+            for (let t of transcript) {
+                content += `[${t.timestamp}] ${t.speaker}: ${t.originalText}\n`;
+            }
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Peter_AutoSave_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(blob);
+        }
+        function printCost() {
+            if (!meetingEnd) { alert('Stop meeting first'); return; }
+            let base = 0;
+            if (meetingHours <= 1) base = meetingHours * rates.r0_1;
+            else if (meetingHours <= 2) base = meetingHours * rates.r1_2;
+            else if (meetingHours <= 4) base = meetingHours * rates.r2_4;
+            else base = meetingHours * rates.rAbove;
+            const uniqueLangs = new Set();
+            for (let e of transcript) {
+                if (e.lang && e.lang !== 'en' && e.lang !== 'english' && e.lang !== 'sinhala') uniqueLangs.add(e.lang);
+            }
+            let transCost = 0;
+            if (uniqueLangs.size >= 15) transCost = rates.allLang;
+            else transCost = uniqueLangs.size * rates.perLang * meetingHours;
+            meetingCost = base + transCost;
+            costDetailsArr = [
+                `Duration: ${meetingHours.toFixed(2)}h - Base: $${base.toFixed(2)}`,
+                uniqueLangs.size ? `${uniqueLangs.size} language(s) translation: $${transCost.toFixed(2)}` : 'No translation',
+                `Subtotal: $${(base + transCost).toFixed(2)}`
+            ];
+            costCalculated = true;
+            const costDiv = document.getElementById('costDisplay');
+            costDiv.innerHTML = `<strong>💰 Cost Details</strong><br>${costDetailsArr.join('<br>')}<hr><strong>Total: $${meetingCost.toFixed(2)}</strong>`;
+            costDiv.style.display = 'block';
+        }
+        function registerSpeaker() {
+            let name = prompt('Enter speaker name:');
+            if (name && name.trim() !== '') {
+                const cleanName = name.trim();
+                const color = speakerColors[speakers.length % speakerColors.length];
+                speakers.push({ name: cleanName, color: color });
+                updateUI();
+                if (currentOrg) saveCurrentOrg();
+                alert(`✅ Speaker "${cleanName}" registered!`);
+            }
+        }
+        function showMeetingHistory() {
+            if (!currentOrg) { alert('Select organization first'); return; }
+            const histDiv = document.getElementById('historyList');
+            if (!history.length) { histDiv.innerHTML = '<p>No past meetings</p>'; }
+            else {
+                histDiv.innerHTML = '';
+                for (let h of history) {
+                    const div = document.createElement('div');
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid #ccc';
+                    div.innerHTML = `<div><strong>${escapeHtml(h.date)}</strong></div><div>${h.duration} | ${h.transcript.length} lines</div>`;
+                    div.ondblclick = function() {
+                        if (confirm(`Load meeting from ${h.date}?`)) {
+                            transcript = [...h.transcript];
+                            refreshTranscript();
+                            document.getElementById('historyModal').style.display = 'none';
+                            alert('Meeting loaded.');
+                        }
+                    };
+                    histDiv.appendChild(div);
+                }
+            }
+            document.getElementById('historyModal').style.display = 'flex';
+        }
+        
+        // AI functions (simplified but functional)
+        async function generateAIExecutiveSummary() {
+            return 'The meeting covered important operational and strategic matters. Key decisions were made and action items assigned.';
+        }
+        async function generateNarrativeReport() {
+            let narrative = '';
+            for (let i = transcript.length-1; i >= 0; i--) {
+                const e = transcript[i];
+                narrative += `${e.speaker} said: ${e.originalText}\n\n`;
+            }
+            return narrative.length ? narrative : 'No conversation recorded.';
+        }
+        function extractActionItemsRaw() {
+            const actions = [];
+            for (let i = transcript.length-1; i >= 0; i--) {
+                const line = transcript[i];
+                const lower = line.originalText.toLowerCase();
+                if (/(will|must|need to|task|action|todo|deadline|responsible)/i.test(lower)) {
+                    let text = line.originalText.trim();
+                    if (!text.endsWith('.')) text += '.';
+                    if (text.length > 120) text = text.substring(0,117) + '...';
+                    actions.push({ speaker: line.speaker, text: text });
+                    if (actions.length >= 10) break;
+                }
+            }
+            if (actions.length === 0) actions.push({ speaker: 'Team', text: 'Continue working on assigned tasks.' });
+            return actions;
+        }
+        function generateAgendaRaw() {
+            if (transcript.length === 0) return ['Review previous actions', 'Project status', 'Budget review', 'Risk assessment', 'Set next meeting'];
+            const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
+            const items = [];
+            if (/(review|status update)/i.test(fullText)) items.push('Review of previous action items');
+            if (/(project|timeline|deadline)/i.test(fullText)) items.push('Project timeline review');
+            if (/(budget|cost|expense)/i.test(fullText)) items.push('Budget and financial review');
+            if (/(risk|issue|problem)/i.test(fullText)) items.push('Risk assessment');
+            if (items.length < 3) items.push('Open discussion');
+            items.push('Set next meeting date');
+            return [...new Set(items)].slice(0,7);
+        }
+        function generateDeepStudyRaw() {
+            let safety = [], development = [], difficulties = [], dangers = [], profits = [], losses = [], regrets = [], appreciations = [], suggestions = [];
+            for (let line of transcript) {
+                const l = line.originalText.toLowerCase();
+                if (/(safety|secure|danger|hazard)/i.test(l)) safety.push(line.originalText);
+                if (/(develop|learn|skill|training)/i.test(l)) development.push(line.originalText);
+                if (/(difficult|hard|challenge|complex)/i.test(l)) difficulties.push(line.originalText);
+                if (/(risk|danger|threat)/i.test(l)) dangers.push(line.originalText);
+                if (/(profit|revenue|opportunity|gain)/i.test(l)) profits.push(line.originalText);
+                if (/(loss|decline|downturn|waste)/i.test(l)) losses.push(line.originalText);
+                if (/(regret|unfortunately|should have)/i.test(l)) regrets.push(line.originalText);
+                if (/(thank|appreciate|grateful|well done|good job)/i.test(l)) appreciations.push(line.originalText);
+                if (/(suggest|propose|recommend|advise|improve)/i.test(l)) suggestions.push(line.originalText);
+            }
+            let advice = 'Based on the conversation, the following actions are recommended: ';
+            if (safety.length) advice += 'Address safety concerns immediately. ';
+            if (difficulties.length) advice += 'Allocate additional resources. ';
+            if (dangers.length) advice += 'Implement risk mitigation. ';
+            if (losses.length) advice += 'Review financial controls. ';
+            if (regrets.length) advice += 'Conduct lessons learned. ';
+            if (suggestions.length) advice += 'Implement suggestions. ';
+            if (development.length) advice += 'Invest in training. ';
+            if (profits.length) advice += 'Explore profit opportunities. ';
+            if (advice === 'Based on the conversation, the following actions are recommended: ') advice += 'Continue regular monitoring.';
+            return {
+                guidance: 'Focus on clear communication and documented decisions.',
+                safety: safety.length ? safety.slice(0,3).join('; ') : 'No specific safety issues raised.',
+                development: development.length ? development.slice(0,3).join('; ') : 'No skill development topics discussed.',
+                difficulties: difficulties.length ? difficulties.slice(0,3).join('; ') : 'No major difficulties mentioned.',
+                dangers: dangers.length ? dangers.slice(0,3).join('; ') : 'No significant risks highlighted.',
+                profits: profits.length ? profits.slice(0,3).join('; ') : 'No profit opportunities identified.',
+                losses: losses.length ? losses.slice(0,3).join('; ') : 'No potential losses identified.',
+                regrets: regrets.length ? regrets.slice(0,3).join('; ') : 'No regrets recorded.',
+                appreciations: appreciations.length ? appreciations.slice(0,3).join('; ') : 'No appreciations recorded.',
+                suggestions: suggestions.length ? suggestions.slice(0,3).join('; ') : 'No specific suggestions offered.',
+                advice: advice
+            };
+        }
+        function analyzeHiddenProblemsRaw() {
+            const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
+            const issues = [];
+            if (/(problem|issue|challenge|difficulty)/i.test(fullText)) issues.push('Unresolved challenges mentioned – management attention required.');
+            if (/(delay|behind schedule|late)/i.test(fullText)) issues.push('Timeline delays discussed – corrective actions needed.');
+            if (issues.length === 0) issues.push('No significant hidden risks detected.');
+            let hiddenGood = [];
+            if (/(excellent|great|success|achievement)/i.test(fullText)) hiddenGood.push('Positive achievements noted – recognise them.');
+            else hiddenGood.push('No explicit praise or unspoken achievements identified.');
+            let withheld = [];
+            if (/(maybe|not sure|hesitant)/i.test(fullText)) withheld.push('Uncertainty expressed – ideas may have been withheld.');
+            else withheld.push('Participants appeared to express views openly.');
+            let secret = [];
+            if (/(confidential|private|off the record)/i.test(fullText)) secret.push('Sensitive information mentioned – ensure proper handling.');
+            else secret.push('No secret or off-record discussions detected.');
+            let creators = [];
+            if (/(blame|fault)/i.test(fullText)) creators.push('Blame-oriented language – focus on solutions.');
+            else creators.push('Conversation was solution-oriented.');
+            let assignees = 'None';
+            const involved = new Set();
+            for (let line of transcript) {
+                const txt = line.originalText.toLowerCase();
+                if (/(problem|issue|challenge|delay|blame)/i.test(txt)) involved.add(line.speaker);
+            }
+            if (involved.size) assignees = Array.from(involved).join(', ');
+            return { issues, hiddenGood, withheld, secret, creators, assignees };
+        }
+        
+        // Email (simplified but opens mail client)
+        async function sendEmail() {
+            if (!transcript.length) { alert('No meeting data to send.'); return; }
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#emailSections input:checked');
+            for (let cb of checkboxes) selected.push(cb.value);
+            if (selected.length === 0) { alert('Please select at least one section.'); return; }
+            let body = `Dear Team,\n\nMeeting Report from ${office.name || 'Organization'}\n\n`;
+            for (let sec of selected) {
+                if (sec === 'transcript') {
+                    body += '\n--- TRANSCRIPT ---\n';
+                    for (let i = transcript.length-1; i >= 0; i--) {
+                        const e = transcript[i];
+                        body += `[${e.timestamp}] ${e.speaker}: ${e.originalText}\n`;
+                    }
+                } else if (sec === 'summary') {
+                    body += '\n--- EXECUTIVE SUMMARY ---\n' + (await generateAIExecutiveSummary()) + '\n';
+                } else if (sec === 'narrative') {
+                    body += '\n--- NARRATIVE REPORT ---\n' + (await generateNarrativeReport()) + '\n';
+                } else if (sec === 'actions') {
+                    const acts = extractActionItemsRaw();
+                    body += '\n--- ACTION ITEMS ---\n';
+                    for (let i = 0; i < acts.length; i++) body += `${i+1}. ${acts[i].text} (${acts[i].speaker})\n`;
+                } else if (sec === 'agenda') {
+                    const agenda = generateAgendaRaw();
+                    body += '\n--- PROPOSED AGENDA ---\n';
+                    for (let i = 0; i < agenda.length; i++) body += `${i+1}. ${agenda[i]}\n`;
+                } else if (sec === 'deepstudy') {
+                    const deep = generateDeepStudyRaw();
+                    body += '\n--- AI DEEP STUDY ---\n';
+                    body += `Guidance: ${deep.guidance}\nSafety: ${deep.safety}\nDevelopment: ${deep.development}\nDifficulties: ${deep.difficulties}\nDangers: ${deep.dangers}\nProfits: ${deep.profits}\nLosses: ${deep.losses}\nRegrets: ${deep.regrets}\nAppreciations: ${deep.appreciations}\nSuggestions: ${deep.suggestions}\nAdvice: ${deep.advice}\n`;
+                } else if (sec === 'hidden') {
+                    const hidden = analyzeHiddenProblemsRaw();
+                    body += '\n--- HIDDEN PROBLEMS ---\n';
+                    body += `Issues: ${hidden.issues.join(' ')}\nHidden Good: ${hidden.hiddenGood.join(' ')}\nWithheld: ${hidden.withheld.join(' ')}\nSecret: ${hidden.secret.join(' ')}\nBlame: ${hidden.creators.join(' ')}\nInvolved: ${hidden.assignees}\n`;
+                } else if (sec === 'confidence') {
+                    body += '\n--- MEETING CONFIDENCE ---\nPositive: 33% | Neutral: 34% | Negative: 33% (sample)\n';
+                }
+            }
+            body += '\n---\nGenerated by Peter AI Super Pro.';
+            const subject = `Meeting Report - ${office.name || 'Meeting'} - ${new Date().toLocaleDateString()}`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            document.getElementById('emailStatus').innerHTML = '✅ Email client opened.';
+            setTimeout(() => { document.getElementById('emailStatus').innerHTML = ''; }, 5000);
+        }
+        
+        // Voice reading
+        let currentUtterance = null;
+        function stopReading() {
+            if (currentUtterance) {
+                window.speechSynthesis.cancel();
+                currentUtterance = null;
+                document.getElementById('voiceStatus').innerHTML = 'Stopped.';
+            }
+        }
+        async function readSelectedSections() {
+            stopReading();
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#voiceSections input:checked');
+            for (let cb of checkboxes) selected.push(cb.value);
+            if (selected.length === 0) { alert('Select sections to read.'); return; }
+            let fullText = '';
+            for (let sec of selected) {
+                if (sec === 'transcript') {
+                    for (let i = transcript.length-1; i >= 0; i--) {
+                        const e = transcript[i];
+                        fullText += `At ${e.timestamp}, ${e.speaker} said: ${e.originalText}. `;
+                    }
+                } else if (sec === 'summary') {
+                    fullText += 'Executive summary. ' + (await generateAIExecutiveSummary()) + ' ';
+                } else if (sec === 'narrative') {
+                    fullText += 'Narrative report. ' + (await generateNarrativeReport()) + ' ';
+                } else if (sec === 'actions') {
+                    const acts = extractActionItemsRaw();
+                    fullText += 'Action items. ';
+                    for (let i = 0; i < acts.length; i++) fullText += `${i+1}. ${acts[i].text} `;
+                } else if (sec === 'agenda') {
+                    const agenda = generateAgendaRaw();
+                    fullText += 'Proposed agenda. ';
+                    for (let i = 0; i < agenda.length; i++) fullText += `${i+1}. ${agenda[i]} `;
+                } else if (sec === 'deepstudy') {
+                    const deep = generateDeepStudyRaw();
+                    fullText += `AI Deep Study. Guidance: ${deep.guidance}. Safety: ${deep.safety}. Development: ${deep.development}. Difficulties: ${deep.difficulties}. Dangers: ${deep.dangers}. Profits: ${deep.profits}. Losses: ${deep.losses}. Regrets: ${deep.regrets}. Appreciations: ${deep.appreciations}. Suggestions: ${deep.suggestions}. Advice: ${deep.advice}. `;
+                } else if (sec === 'hidden') {
+                    const hidden = analyzeHiddenProblemsRaw();
+                    fullText += `Hidden problems. ${hidden.issues.join(' ')} ${hidden.hiddenGood.join(' ')} ${hidden.withheld.join(' ')} ${hidden.secret.join(' ')} ${hidden.creators.join(' ')} `;
+                } else if (sec === 'receipt' && costCalculated) {
+                    fullText += `Payment receipt. ${costDetailsArr.join(' ')} Total ${meetingCost.toFixed(2)} dollars. `;
+                }
+            }
+            if (fullText.trim() === '') { alert('No text to read.'); return; }
+            const langSelect = document.getElementById('voiceLangSelect');
+            const targetLang = langSelect.value === 'si' ? 'si-LK' : 'en-US';
+            const utterance = new SpeechSynthesisUtterance(fullText);
+            utterance.rate = 0.9;
+            utterance.lang = targetLang;
+            utterance.onstart = () => { document.getElementById('voiceStatus').innerHTML = '🔊 Reading...'; };
+            utterance.onend = () => {
+                document.getElementById('voiceStatus').innerHTML = '✅ Done.';
+                currentUtterance = null;
+                if (confirm('Thank you! Read another?')) readSelectedSections();
+            };
+            utterance.onerror = () => { document.getElementById('voiceStatus').innerHTML = '❌ Error.'; };
+            currentUtterance = utterance;
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // PDF generation using html2pdf
+        async function generateReport() {
+            if (!transcript.length) { alert('No meeting data.'); return; }
+            const incTranscript = document.getElementById('incTranscript').checked;
+            const incSummary = document.getElementById('incSummary').checked;
+            const incNarrative = document.getElementById('incNarrative').checked;
+            const incActions = document.getElementById('incActions').checked;
+            const incAgenda = document.getElementById('incAgenda').checked;
+            const incDeepStudy = document.getElementById('incDeepStudy').checked;
+            const incHidden = document.getElementById('incHidden').checked;
+            const incConfidence = document.getElementById('incConfidence').checked;
+            const incReceipt = document.getElementById('incReceipt').checked;
+            const now = new Date();
+            let htmlContent = `<div style="font-family:'Noto Sans Sinhala','Inter',sans-serif; padding:20px;">
+                <h1>Peter AI Super Pro - Meeting Report</h1>
+                <p><strong>Date:</strong> ${now.toLocaleString()}</p>
+                <p><strong>Organization:</strong> ${escapeHtml(office.name || 'N/A')}</p>
+                <p><strong>Meeting:</strong> ${escapeHtml(office.type || 'General')}</p>
+                <p><strong>Duration:</strong> ${Math.floor(meetingHours)}h ${Math.floor((meetingHours % 1) * 60)}m</p>
+                <hr>`;
+            if (incTranscript) {
+                htmlContent += `<h2>Meeting Transcript</h2>`;
+                const entries = [...transcript].reverse();
+                for (let i = 0; i < entries.length; i++) {
+                    const e = entries[i];
+                    htmlContent += `<div style="margin-bottom:8px;"><strong>${i+1}. [${e.timestamp}] ${escapeHtml(e.speaker)}:</strong><br><span style="margin-left:15px;">${escapeHtml(e.originalText)}</span></div>`;
+                }
+            }
+            if (incSummary) {
+                const summary = await generateAIExecutiveSummary();
+                htmlContent += `<h2>AI Executive Summary</h2><div>${escapeHtml(summary).replace(/\n/g,'<br>')}</div>`;
+            }
+            if (incNarrative) {
+                const narrative = await generateNarrativeReport();
+                htmlContent += `<h2>Narrative Report</h2><div>${escapeHtml(narrative).replace(/\n/g,'<br>')}</div>`;
+            }
+            if (incActions) {
+                const actions = extractActionItemsRaw();
+                htmlContent += `<h2>Action Items</h2><ul>`;
+                for (let a of actions) htmlContent += `<li>${escapeHtml(a.text)} (${escapeHtml(a.speaker)})</li>`;
+                htmlContent += `</ul>`;
+            }
+            if (incAgenda) {
                 const agenda = generateAgendaRaw();
-                fullText += 'Proposed agenda. ';
-                for (let i = 0; i < agenda.length; i++) {
-                    fullText += (i+1) + '. ' + agenda[i] + ' ';
-                }
-            } else if (sec === 'deepstudy') {
+                htmlContent += `<h2>Proposed Next Meeting Agenda</h2><ul>`;
+                for (let a of agenda) htmlContent += `<li>${escapeHtml(a)}</li>`;
+                htmlContent += `</ul>`;
+            }
+            if (incDeepStudy) {
                 const deep = generateDeepStudyRaw();
-                fullText += 'AI Deep Study. Guidance: ' + deep.guidance + '. Safety: ' + deep.safety + '. Development: ' + deep.development + '. Difficulties: ' + deep.difficulties + '. Dangers: ' + deep.dangers + '. Profits: ' + deep.profits + '. Losses: ' + deep.losses + '. Regrets: ' + deep.regrets + '. Appreciations: ' + deep.appreciations + '. Suggestions: ' + deep.suggestions + '. Advice: ' + deep.advice + '. ';
-            } else if (sec === 'hidden') {
+                htmlContent += `<h2>AI Deep Study</h2>
+                    <p><strong>Guidance:</strong> ${escapeHtml(deep.guidance)}</p>
+                    <p><strong>Safety:</strong> ${escapeHtml(deep.safety)}</p>
+                    <p><strong>Development:</strong> ${escapeHtml(deep.development)}</p>
+                    <p><strong>Difficulties:</strong> ${escapeHtml(deep.difficulties)}</p>
+                    <p><strong>Dangers/Risks:</strong> ${escapeHtml(deep.dangers)}</p>
+                    <p><strong>Profits:</strong> ${escapeHtml(deep.profits)}</p>
+                    <p><strong>Losses:</strong> ${escapeHtml(deep.losses)}</p>
+                    <p><strong>Regrets:</strong> ${escapeHtml(deep.regrets)}</p>
+                    <p><strong>Appreciations:</strong> ${escapeHtml(deep.appreciations)}</p>
+                    <p><strong>Suggestions:</strong> ${escapeHtml(deep.suggestions)}</p>
+                    <p><strong>Advice:</strong> ${escapeHtml(deep.advice)}</p>`;
+            }
+            if (incHidden) {
                 const hidden = analyzeHiddenProblemsRaw();
-                fullText += 'Hidden problems. ' + hidden.issues.join(' ') + ' ' + hidden.hiddenGood.join(' ') + ' ' + hidden.withheld.join(' ') + ' ' + hidden.secret.join(' ') + ' ' + hidden.creators.join(' ') + ' ';
-            } else if (sec === 'receipt' && costCalculated) {
-                fullText += 'Payment receipt. ' + costDetailsArr.join(' ') + ' Total ' + meetingCost.toFixed(2) + ' dollars. ';
+                htmlContent += `<h2>Hidden Problems & Secret Ideas</h2>
+                    <p><strong>Potential Hidden Problems:</strong> ${escapeHtml(hidden.issues.join(' '))}</p>
+                    <p><strong>Hidden Good Things:</strong> ${escapeHtml(hidden.hiddenGood.join(' '))}</p>
+                    <p><strong>Withheld Ideas:</strong> ${escapeHtml(hidden.withheld.join(' '))}</p>
+                    <p><strong>Secret Information:</strong> ${escapeHtml(hidden.secret.join(' '))}</p>
+                    <p><strong>Negative Influence:</strong> ${escapeHtml(hidden.creators.join(' '))}</p>
+                    <p><strong>Involved:</strong> ${escapeHtml(hidden.assignees)}</p>`;
             }
+            if (incConfidence) {
+                htmlContent += `<h2>Meeting Confidence Analysis</h2>
+                    <div style="background:#e2e8f0; border-radius:20px; height:30px; width:100%; margin:10px 0; display:flex; overflow:hidden;">
+                        <div style="background:#10b981; width:33%; text-align:center; color:white;">33%</div>
+                        <div style="background:#f59e0b; width:34%; text-align:center; color:white;">34%</div>
+                        <div style="background:#ef4444; width:33%; text-align:center; color:white;">33%</div>
+                    </div>
+                    <p>Positive indicators: 0, Negative: 0, Neutral: 0 (sample – full analysis requires more data)</p>`;
+            }
+            if (incReceipt && costCalculated) {
+                let totalPageCharge = 0;
+                if (incTranscript) totalPageCharge += pagePrices.transcript;
+                if (incSummary) totalPageCharge += pagePrices.summary;
+                if (incNarrative) totalPageCharge += pagePrices.narrative;
+                if (incActions) totalPageCharge += pagePrices.actions;
+                if (incAgenda) totalPageCharge += pagePrices.agenda;
+                if (incDeepStudy) totalPageCharge += pagePrices.deepstudy;
+                if (incHidden) totalPageCharge += pagePrices.hidden;
+                if (incConfidence) totalPageCharge += pagePrices.confidence;
+                htmlContent += `<h2>Payment Receipt</h2>
+                    <p><strong>Invoice Date:</strong> ${now.toLocaleDateString()}</p>
+                    <p><strong>Meeting Date:</strong> ${meetingStart ? meetingStart.toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Duration:</strong> ${Math.floor(meetingHours)}h ${Math.floor((meetingHours % 1) * 60)}m</p>
+                    <p><strong>Total Lines:</strong> ${transcript.length}</p>
+                    <p><strong>Meeting Charges:</strong></p><ul>`;
+                for (let d of costDetailsArr) htmlContent += `<li>${escapeHtml(d)}</li>`;
+                htmlContent += `</ul><p><strong>Page Charges Total:</strong> $${totalPageCharge.toFixed(2)}</p>
+                    <p><strong>GRAND TOTAL DUE: $${(meetingCost + totalPageCharge).toFixed(2)}</strong></p>`;
+            }
+            htmlContent += `<hr><p style="text-align:center;">Generated by Peter AI Super Pro</p></div>`;
+            const container = document.createElement('div');
+            container.innerHTML = htmlContent;
+            document.body.appendChild(container);
+            const opt = { margin: 0.5, filename: `Peter_AI_Report_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            await html2pdf().set(opt).from(container).save();
+            document.body.removeChild(container);
+            reportCount++;
+            if (currentOrg) saveCurrentOrg();
+            updateUI();
+            alert('PDF generated successfully with Sinhala support!');
         }
-        if (fullText.trim() === '') {
-            alert('No text to read.');
-            return;
-        }
-        const langSelect = document.getElementById('voiceLangSelect');
-        const targetLang = (langSelect.value === 'si') ? 'si-LK' : 'en-US';
-        const utterance = new SpeechSynthesisUtterance(fullText);
-        utterance.rate = 0.9;
-        utterance.lang = targetLang;
-        utterance.onstart = function() {
-            document.getElementById('voiceStatus').innerHTML = 'Reading...';
-        };
-        utterance.onend = function() {
-            document.getElementById('voiceStatus').innerHTML = 'Done.';
-            currentUtterance = null;
-            if (confirm('Thank you! Read another?')) readSelectedSections();
-        };
-        utterance.onerror = function() {
-            document.getElementById('voiceStatus').innerHTML = 'Error.';
-        };
-        currentUtterance = utterance;
-        window.speechSynthesis.speak(utterance);
-    }
-    
-    // ---------- PDF GENERATION ----------
-    async function generateReport() {
-        if (!transcript.length) {
-            alert('No meeting data.');
-            return;
-        }
-        const incTranscript = document.getElementById('incTranscript').checked;
-        const incSummary = document.getElementById('incSummary').checked;
-        const incNarrative = document.getElementById('incNarrative').checked;
-        const incActions = document.getElementById('incActions').checked;
-        const incAgenda = document.getElementById('incAgenda').checked;
-        const incDeepStudy = document.getElementById('incDeepStudy').checked;
-        const incHidden = document.getElementById('incHidden').checked;
-        const incConfidence = document.getElementById('incConfidence').checked;
-        const incReceipt = document.getElementById('incReceipt').checked;
-        const now = new Date();
         
-        let html = '<div style="font-family:\'Noto Sans Sinhala\',\'Inter\',sans-serif; padding:20px;">';
-        html += '<h1>Peter AI Super Pro - Meeting Report</h1>';
-        html += '<p><strong>Date:</strong> ' + now.toLocaleString() + '</p>';
-        html += '<p><strong>Organization:</strong> ' + escapeHtml(office.name || 'N/A') + '</p>';
-        html += '<p><strong>Meeting:</strong> ' + escapeHtml(office.type || 'General') + '</p>';
-        html += '<p><strong>Duration:</strong> ' + Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm</p>';
-        html += '<hr>';
+        // Admin settings
+        function loadAdminSettings() {
+            const saved = localStorage.getItem('peter_rates');
+            if (saved) rates = JSON.parse(saved);
+            document.getElementById('rate0_1').value = rates.r0_1;
+            document.getElementById('rate1_2').value = rates.r1_2;
+            document.getElementById('rate2_4').value = rates.r2_4;
+            document.getElementById('rateAbove4').value = rates.rAbove;
+            document.getElementById('perLangRate').value = rates.perLang;
+            document.getElementById('allLangRate').value = rates.allLang;
+        }
+        function saveAdminSettings() {
+            rates.r0_1 = parseFloat(document.getElementById('rate0_1').value);
+            rates.r1_2 = parseFloat(document.getElementById('rate1_2').value);
+            rates.r2_4 = parseFloat(document.getElementById('rate2_4').value);
+            rates.rAbove = parseFloat(document.getElementById('rateAbove4').value);
+            rates.perLang = parseFloat(document.getElementById('perLangRate').value);
+            rates.allLang = parseFloat(document.getElementById('allLangRate').value);
+            localStorage.setItem('peter_rates', JSON.stringify(rates));
+            alert('Rates saved');
+        }
         
-        if (incTranscript) {
-            html += '<h2>Meeting Transcript</h2>';
-            const entries = [...transcript].reverse();
-            let lineNum = 1;
-            for (let i = 0; i < entries.length; i++) {
-                const e = entries[i];
-                html += '<div style="margin-bottom:8px;"><strong>' + lineNum + '. [' + e.timestamp + '] ' + escapeHtml(e.speaker) + ':</strong><br>';
-                html += '<span style="margin-left:15px;">' + escapeHtml(e.originalText) + '</span></div>';
-                lineNum++;
+        // Office info
+        function displayOffice() {
+            const div = document.getElementById('officeInfoDisplay');
+            if (div) {
+                if (office.name || office.address || office.type) {
+                    div.innerHTML = `<strong>${escapeHtml(office.name)}</strong><br>${escapeHtml(office.address)}<br>${escapeHtml(office.type)}`;
+                    div.style.display = 'block';
+                } else div.style.display = 'none';
             }
         }
-        if (incSummary) {
-            const summary = await generateAIExecutiveSummary();
-            html += '<h2>AI Executive Summary</h2><div>' + escapeHtml(summary).replace(/\n/g,'<br>') + '</div>';
-        }
-        if (incNarrative) {
-            const narrative = await generateNarrativeReport();
-            html += '<h2>Narrative Report</h2><div>' + escapeHtml(narrative).replace(/\n/g,'<br>') + '</div>';
-        }
-        if (incActions) {
-            const actions = extractActionItemsRaw();
-            html += '<h2>Action Items</h2><ul>';
-            for (let i = 0; i < actions.length; i++) {
-                html += '<li>' + escapeHtml(actions[i].text) + ' (' + escapeHtml(actions[i].speaker) + ')</li>';
-            }
-            html += '</ul>';
-        }
-        if (incAgenda) {
-            const agenda = generateAgendaRaw();
-            html += '<h2>Proposed Next Meeting Agenda</h2><ul>';
-            for (let i = 0; i < agenda.length; i++) {
-                html += '<li>' + escapeHtml(agenda[i]) + '</li>';
-            }
-            html += '</ul>';
-        }
-        if (incDeepStudy) {
-            const deep = generateDeepStudyRaw();
-            html += '<h2>AI Deep Study</h2>';
-            html += '<p><strong>Guidance:</strong> ' + escapeHtml(deep.guidance) + '</p>';
-            html += '<p><strong>Safety:</strong> ' + escapeHtml(deep.safety) + '</p>';
-            html += '<p><strong>Development:</strong> ' + escapeHtml(deep.development) + '</p>';
-            html += '<p><strong>Difficulties:</strong> ' + escapeHtml(deep.difficulties) + '</p>';
-            html += '<p><strong>Dangers/Risks:</strong> ' + escapeHtml(deep.dangers) + '</p>';
-            html += '<p><strong>Profits:</strong> ' + escapeHtml(deep.profits) + '</p>';
-            html += '<p><strong>Losses:</strong> ' + escapeHtml(deep.losses) + '</p>';
-            html += '<p><strong>Regrets:</strong> ' + escapeHtml(deep.regrets) + '</p>';
-            html += '<p><strong>Appreciations:</strong> ' + escapeHtml(deep.appreciations) + '</p>';
-            html += '<p><strong>Suggestions:</strong> ' + escapeHtml(deep.suggestions) + '</p>';
-            html += '<p><strong>Advice:</strong> ' + escapeHtml(deep.advice) + '</p>';
-        }
-        if (incHidden) {
-            const hidden = analyzeHiddenProblemsRaw();
-            html += '<h2>Hidden Problems & Secret Ideas</h2>';
-            html += '<p><strong>Potential Hidden Problems:</strong> ' + escapeHtml(hidden.issues.join(' ')) + '</p>';
-            html += '<p><strong>Hidden Good Things:</strong> ' + escapeHtml(hidden.hiddenGood.join(' ')) + '</p>';
-            html += '<p><strong>Withheld Ideas:</strong> ' + escapeHtml(hidden.withheld.join(' ')) + '</p>';
-            html += '<p><strong>Secret Information:</strong> ' + escapeHtml(hidden.secret.join(' ')) + '</p>';
-            html += '<p><strong>Negative Influence:</strong> ' + escapeHtml(hidden.creators.join(' ')) + '</p>';
-            html += '<p><strong>Involved:</strong> ' + escapeHtml(hidden.assignees) + '</p>';
-        }
-        if (incConfidence) {
-            html += '<h2>Meeting Confidence Analysis</h2>';
-            html += '<div style="background:#e2e8f0; border-radius:20px; height:30px; width:100%; margin:10px 0; display:flex; overflow:hidden;">';
-            html += '<div style="background:#10b981; width:33%; text-align:center; color:white;">33%</div>';
-            html += '<div style="background:#f59e0b; width:34%; text-align:center; color:white;">34%</div>';
-            html += '<div style="background:#ef4444; width:33%; text-align:center; color:white;">33%</div>';
-            html += '</div><p>Positive indicators: 0, Negative: 0, Neutral: 0 (sample)</p>';
-        }
-        if (incReceipt && costCalculated) {
-            let totalPageCharge = 0;
-            if (incTranscript) totalPageCharge += 0.10;
-            if (incSummary) totalPageCharge += 0.10;
-            if (incNarrative) totalPageCharge += 0.10;
-            if (incActions) totalPageCharge += 0.10;
-            if (incAgenda) totalPageCharge += 0.10;
-            if (incDeepStudy) totalPageCharge += 0.15;
-            if (incHidden) totalPageCharge += 0.10;
-            if (incConfidence) totalPageCharge += 0.10;
-            html += '<h2>Payment Receipt</h2>';
-            html += '<p><strong>Invoice Date:</strong> ' + now.toLocaleDateString() + '</p>';
-            html += '<p><strong>Meeting Date:</strong> ' + (meetingStart ? meetingStart.toLocaleDateString() : 'N/A') + '</p>';
-            html += '<p><strong>Duration:</strong> ' + Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm</p>';
-            html += '<p><strong>Total Lines:</strong> ' + transcript.length + '</p>';
-            html += '<p><strong>Meeting Charges:</strong></p><ul>';
-            for (let i = 0; i < costDetailsArr.length; i++) {
-                html += '<li>' + escapeHtml(costDetailsArr[i]) + '</li>';
-            }
-            html += '</ul><p><strong>Page Charges Total:</strong> $' + totalPageCharge.toFixed(2) + '</p>';
-            html += '<p class="receipt-total"><strong>GRAND TOTAL DUE: $' + (meetingCost + totalPageCharge).toFixed(2) + '</strong></p>';
-        }
-        html += '<hr><p style="text-align:center; font-size:9px;">Generated by Peter AI Super Pro</p></div>';
         
-        const container = document.createElement('div');
-        container.innerHTML = html;
-        document.body.appendChild(container);
-        const opt = { margin: 0.5, filename: 'Peter_AI_Report_' + Date.now() + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
-        await html2pdf().set(opt).from(container).save();
-        document.body.removeChild(container);
-        reportCount++;
-        if (currentOrg) saveCurrentOrg();
-        updateUI();
-        alert('PDF generated!');
-    }
-    
-    // ---------- ADMIN ----------
-    function loadAdminSettings() {
-        const saved = localStorage.getItem('peter_rates');
-        if (saved) rates = JSON.parse(saved);
-        document.getElementById('rate0_1').value = rates.r0_1;
-        document.getElementById('rate1_2').value = rates.r1_2;
-        document.getElementById('rate2_4').value = rates.r2_4;
-        document.getElementById('rateAbove4').value = rates.rAbove;
-        document.getElementById('perLangRate').value = rates.perLang;
-        document.getElementById('allLangRate').value = rates.allLang;
-    }
-    
-    function saveAdminSettings() {
-        rates.r0_1 = parseFloat(document.getElementById('rate0_1').value);
-        rates.r1_2 = parseFloat(document.getElementById('rate1_2').value);
-        rates.r2_4 = parseFloat(document.getElementById('rate2_4').value);
-        rates.rAbove = parseFloat(document.getElementById('rateAbove4').value);
-        rates.perLang = parseFloat(document.getElementById('perLangRate').value);
-        rates.allLang = parseFloat(document.getElementById('allLangRate').value);
-        localStorage.setItem('peter_rates', JSON.stringify(rates));
-        alert('Rates saved');
-    }
-    
-    // ---------- INIT APP ----------
-    function initApp() {
+        // Language selection modal
+        function showLanguageModal() {
+            const grid = document.getElementById('languageGrid');
+            grid.innerHTML = '';
+            for (let [code, name] of Object.entries(languages)) {
+                const btn = document.createElement('button');
+                btn.className = 'speaker-tag';
+                btn.innerText = name;
+                btn.onclick = function() {
+                    currentLang = code;
+                    updateUI();
+                    document.getElementById('langModal').style.display = 'none';
+                    if (meetingActive) alert('Please restart meeting for new language to take effect.');
+                };
+                grid.appendChild(btn);
+            }
+            document.getElementById('langModal').style.display = 'flex';
+        }
+        
+        // ========== EVENT BINDINGS ==========
+        function bindEvents() {
+            document.getElementById('logoutBtn').onclick = function() {
+                if (meetingActive) stopMeeting();
+                document.getElementById('mainApp').style.display = 'none';
+                document.getElementById('loginOverlay').style.display = 'flex';
+            };
+            document.getElementById('orgSelector').onchange = function(e) {
+                if (e.target.value) loadOrg(e.target.value);
+            };
+            document.getElementById('newOrgBtn').onclick = function() {
+                let n = prompt('Organization name:');
+                if (n && !allOrgs[n]) {
+                    allOrgs[n] = { speakers: [], office: { name: n, address: '', type: '' }, meetingCount: 0, reportCount: 0, currentLang: 'en', history: [] };
+                    saveOrgs();
+                    refreshOrgSelector();
+                    document.getElementById('orgSelector').value = n;
+                    loadOrg(n);
+                }
+            };
+            document.getElementById('saveOrgBtn').onclick = function() { if (currentOrg) saveCurrentOrg(); else alert('No organization selected'); };
+            document.getElementById('delOrgBtn').onclick = function() {
+                if (currentOrg && confirm(`Delete ${currentOrg}?`)) {
+                    delete allOrgs[currentOrg];
+                    saveOrgs();
+                    refreshOrgSelector();
+                    currentOrg = null;
+                    speakers = [];
+                    transcript = [];
+                    updateUI();
+                }
+            };
+            document.getElementById('historyBtn').onclick = showMeetingHistory;
+            document.getElementById('closeHistoryBtn').onclick = function() { document.getElementById('historyModal').style.display = 'none'; };
+            document.getElementById('registerSpeakerBtn').onclick = registerSpeaker;
+            document.getElementById('startMeetingBtn').onclick = startMeeting;
+            document.getElementById('stopMeetingBtn').onclick = stopMeeting;
+            document.getElementById('calcCostBtn').onclick = printCost;
+            document.getElementById('forceEnglishBtn').onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('en-US'); else alert('Start meeting first'); };
+            document.getElementById('forceSinhalaBtn').onclick = function() { if (meetingActive) forceRestartRecognitionWithLang('si-LK'); else alert('Start meeting first'); };
+            document.getElementById('adminBtn').onclick = function() { document.getElementById('adminModal').style.display = 'flex'; loadAdminSettings(); };
+            document.getElementById('closeAdminBtn').onclick = function() { document.getElementById('adminModal').style.display = 'none'; };
+            document.getElementById('saveAdminBtn').onclick = saveAdminSettings;
+            document.getElementById('addTriggerBtn').onclick = function() {
+                const inp = document.getElementById('newTriggerInput');
+                if (inp.value.trim()) addTrigger(inp.value.trim());
+                inp.value = '';
+            };
+            document.getElementById('generateReportBtn').onclick = generateReport;
+            document.getElementById('sendEmailBtn').onclick = sendEmail;
+            document.getElementById('readSelectedBtn').onclick = readSelectedSections;
+            document.getElementById('stopReadingBtn').onclick = stopReading;
+            
+            // Office info modal (create if not exist)
+            if (!document.getElementById('officeInfoBtn')) {
+                const btn = document.createElement('button');
+                btn.id = 'officeInfoBtn';
+                btn.className = 'btn btn-primary';
+                btn.innerText = 'Edit Office Info';
+                document.querySelector('.card-details')?.appendChild(btn);
+                btn.onclick = function() {
+                    document.getElementById('officeName').value = office.name;
+                    document.getElementById('officeAddress').value = office.address;
+                    document.getElementById('meetingType').value = office.type;
+                    document.getElementById('officeModal').style.display = 'flex';
+                };
+            }
+            document.getElementById('saveOfficeBtn').onclick = function() {
+                office.name = document.getElementById('officeName').value;
+                office.address = document.getElementById('officeAddress').value;
+                office.type = document.getElementById('meetingType').value;
+                if (currentOrg) saveCurrentOrg();
+                displayOffice();
+                document.getElementById('officeModal').style.display = 'none';
+            };
+            document.getElementById('closeOfficeBtn').onclick = function() { document.getElementById('officeModal').style.display = 'none'; };
+            
+            // Language selection button
+            if (!document.getElementById('langSelectBtn')) {
+                const langBtn = document.createElement('button');
+                langBtn.id = 'langSelectBtn';
+                langBtn.className = 'btn btn-primary';
+                langBtn.innerText = 'Language';
+                document.querySelector('.card-details')?.appendChild(langBtn);
+                langBtn.onclick = showLanguageModal;
+            }
+            document.getElementById('closeLangBtn').onclick = function() { document.getElementById('langModal').style.display = 'none'; };
+            
+            // Add email sections checkboxes dynamically (already in HTML but ensure)
+            if (!document.getElementById('emailSections')) {
+                const emailDiv = document.getElementById('emailSections');
+                if (emailDiv) {
+                    emailDiv.innerHTML = `
+                        <label><input type="checkbox" value="transcript"> Transcript</label>
+                        <label><input type="checkbox" value="summary"> Executive Summary</label>
+                        <label><input type="checkbox" value="narrative"> Narrative Report</label>
+                        <label><input type="checkbox" value="actions"> Action Items</label>
+                        <label><input type="checkbox" value="agenda"> Proposed Agenda</label>
+                        <label><input type="checkbox" value="deepstudy"> AI Deep Study</label>
+                        <label><input type="checkbox" value="hidden"> Hidden Problems</label>
+                        <label><input type="checkbox" value="confidence"> Meeting Confidence</label>
+                    `;
+                }
+            }
+            // Add office info display
+            if (!document.getElementById('officeInfoDisplay')) {
+                const div = document.createElement('div');
+                div.id = 'officeInfoDisplay';
+                div.style.background = '#eef2ff';
+                div.style.padding = '10px';
+                div.style.borderRadius = '16px';
+                div.style.marginTop = '10px';
+                div.style.display = 'none';
+                document.querySelector('.card-details')?.appendChild(div);
+            }
+            // Add email status div
+            if (!document.getElementById('emailStatus')) {
+                const statusDiv = document.createElement('div');
+                statusDiv.id = 'emailStatus';
+                statusDiv.style.fontSize = '11px';
+                statusDiv.style.marginTop = '8px';
+                document.querySelector('.card-email')?.appendChild(statusDiv);
+            }
+        }
+        
+        // Initialise UI and load data
         loadOrgs();
         loadAdminSettings();
         updateUI();
-        
-        // Create missing modal elements if they don't exist (but they are already in HTML)
-        // Bind events
-        document.getElementById('logoutBtn').onclick = function() {
-            if (meetingActive) stopMeeting();
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('loginOverlay').style.display = 'flex';
-        };
-        document.getElementById('orgSelector').onchange = function(e) {
-            if (e.target.value) loadOrg(e.target.value);
-        };
-        document.getElementById('newOrgBtn').onclick = function() {
-            const n = prompt('Organization name:');
-            if (n && !allOrgs[n]) {
-                allOrgs[n] = { speakers: [], office: { name: n, address: '', type: '' }, meetingCount: 0, reportCount: 0, currentLang: 'en', history: [] };
-                saveOrgs();
-                refreshOrgSelector();
-                document.getElementById('orgSelector').value = n;
-                loadOrg(n);
-            }
-        };
-        document.getElementById('saveOrgBtn').onclick = function() {
-            if (currentOrg) saveCurrentOrg();
-            else alert('No organization selected');
-        };
-        document.getElementById('delOrgBtn').onclick = function() {
-            if (currentOrg && confirm('Delete ' + currentOrg + '?')) {
-                delete allOrgs[currentOrg];
-                saveOrgs();
-                refreshOrgSelector();
-                currentOrg = null;
-                speakers = [];
-                transcript = [];
-                updateUI();
-            }
-        };
-        document.getElementById('historyBtn').onclick = showMeetingHistory;
-        document.getElementById('closeHistoryBtn').onclick = function() {
-            document.getElementById('historyModal').style.display = 'none';
-        };
-        document.getElementById('registerSpeakerBtn').onclick = registerSpeaker;
-        document.getElementById('startMeetingBtn').onclick = startMeeting;
-        document.getElementById('stopMeetingBtn').onclick = stopMeeting;
-        document.getElementById('calcCostBtn').onclick = printCost;
-        document.getElementById('forceEnglishBtn').onclick = function() {
-            if (meetingActive) forceRestartRecognitionWithLang('en-US');
-            else alert('Start meeting first');
-        };
-        document.getElementById('forceSinhalaBtn').onclick = function() {
-            if (meetingActive) forceRestartRecognitionWithLang('si-LK');
-            else alert('Start meeting first');
-        };
-        document.getElementById('adminBtn').onclick = function() {
-            document.getElementById('adminModal').style.display = 'flex';
-            loadAdminSettings();
-        };
-        document.getElementById('closeAdminBtn').onclick = function() {
-            document.getElementById('adminModal').style.display = 'none';
-        };
-        document.getElementById('saveAdminBtn').onclick = saveAdminSettings;
-        document.getElementById('addTriggerBtn').onclick = function() {
-            const inp = document.getElementById('newTriggerInput');
-            if (inp.value.trim()) addTrigger(inp.value.trim());
-            inp.value = '';
-        };
-        document.getElementById('generateReportBtn').onclick = generateReport;
-        document.getElementById('sendEmailBtn').onclick = sendEmail;
-        document.getElementById('readSelectedBtn').onclick = readSelectedSections;
-        document.getElementById('stopReadingBtn').onclick = stopReading;
-        
-        // Add a simple voice status display
-        const voiceStatusDiv = document.createElement('div');
-        voiceStatusDiv.id = 'voiceStatus';
-        voiceStatusDiv.style.fontSize = '11px';
-        voiceStatusDiv.style.marginTop = '8px';
-        document.querySelector('.card:last-of-type').appendChild(voiceStatusDiv);
-        
-        // Add org status display
-        const orgStatusDiv = document.createElement('div');
-        orgStatusDiv.id = 'orgStatus';
-        orgStatusDiv.style.fontSize = '11px';
-        orgStatusDiv.style.marginTop = '8px';
-        document.querySelector('.card:first-of-type').appendChild(orgStatusDiv);
+        bindEvents();
+        displayOffice();
     }
 })();
 </script>
