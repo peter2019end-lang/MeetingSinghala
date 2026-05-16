@@ -2,62 +2,1102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test Login - No errors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peter AI Super Pro – Fixed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: Arial; background: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        input { display: block; width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; }
-        .error { color: red; margin-top: 10px; display: none; }
-        .main { display: none; text-align: center; margin-top: 20px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter','Noto Sans Sinhala',sans-serif; background:#f0f4f8; }
+        .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#667eea,#764ba2); z-index:10000; display:flex; justify-content:center; align-items:center; }
+        .login-container { background:white; border-radius:28px; padding:32px; width:400px; max-width:90%; text-align:center; box-shadow:0 20px 40px -12px rgba(0,0,0,0.25); }
+        .login-icon { font-size:52px; color:#667eea; margin-bottom:12px; }
+        .input-group { margin-bottom:18px; text-align:left; }
+        .input-group label { display:block; font-weight:600; margin-bottom:6px; }
+        .input-group input { width:100%; padding:10px 12px; border:2px solid #e2e8f0; border-radius:14px; font-size:14px; }
+        .login-btn { width:100%; padding:12px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none; border-radius:14px; font-weight:600; cursor:pointer; }
+        .error { color:#dc2626; margin-top:12px; display:none; }
+        .main-app { display:none; }
+        .dashboard { max-width:1400px; margin:0 auto; padding:16px; }
+        .top-bar { background:linear-gradient(135deg,#667eea,#764ba2); border-radius:20px; padding:12px 20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; color:white; }
+        .card { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+        .card-header { font-weight:700; margin-bottom:12px; }
+        .btn { padding:8px 16px; border-radius:40px; border:none; font-weight:600; cursor:pointer; }
+        .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
+        .btn-success { background:#10b981; color:white; }
+        .btn-danger { background:#ef4444; color:white; }
+        .btn-secondary { background:#64748b; color:white; }
+        .speaker-list, .train-list { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+        .speaker-tag { padding:6px 14px; border-radius:40px; background:#667eea; color:white; cursor:pointer; }
+        .train-item { background:#e2e8f0; padding:4px 12px; border-radius:40px; font-size:12px; }
+        .train-item button { background:none; border:none; margin-left:6px; color:red; cursor:pointer; }
+        .transcript-area { background:#0f172a; color:white; padding:14px; height:350px; overflow-y:auto; border-radius:20px; font-family:'Noto Sans Sinhala',monospace; }
+        .transcript-line { margin-bottom:12px; padding:8px; border-left:3px solid #fbbf24; background:rgba(102,126,234,0.1); }
+        .timer-digits { font-size:32px; font-family:monospace; background:#1e293b; display:inline-block; padding:8px 20px; border-radius:40px; color:#fbbf24; }
+        .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
+        .stat-card { background:white; border-radius:20px; padding:12px; display:flex; align-items:center; gap:12px; }
+        .force-buttons { display:flex; gap:8px; margin-top:8px; }
+        .lang-indicator { background:#10b981; color:white; padding:4px 12px; border-radius:20px; display:inline-block; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
+        .modal-content { background:white; border-radius:28px; padding:24px; max-width:90%; width:500px; max-height:80vh; overflow:auto; }
+        .checkbox-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
     </style>
 </head>
 <body>
-<div id="loginScreen" class="login-box">
-    <h2>Peter AI Login Test</h2>
-    <input type="text" id="username" placeholder="Username" autocomplete="off">
-    <input type="password" id="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
-    <div id="errorMsg" class="error">Invalid credentials</div>
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-container">
+        <div class="login-icon"><i class="fas fa-microphone-alt"></i></div>
+        <h2>Peter AI Super Pro</h2>
+        <div class="input-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Enter username"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter password"></div>
+        <button class="login-btn" id="loginBtn">Login</button>
+        <div id="loginError" class="error">Invalid credentials</div>
+    </div>
 </div>
 
-<div id="mainContent" class="main">
-    <h2>✅ Login successful!</h2>
-    <p>You are now logged in. The full application can be loaded here.</p>
-    <button id="logoutBtn">Logout</button>
+<div id="mainApp" class="main-app">
+    <div class="dashboard">
+        <div class="top-bar"><div><strong>Peter AI Pro</strong><br><small>Bilingual | Sinhala PDF</small></div><button id="logoutBtn" class="btn btn-secondary">Logout</button></div>
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-users"></i><div><h3 id="speakerCount">0</h3><p>Speakers</p></div></div>
+            <div class="stat-card"><i class="fas fa-clock"></i><div><h3 id="meetingCount">0</h3><p>Meetings</p></div></div>
+            <div class="stat-card"><i class="fas fa-language"></i><div><h3 id="langCount">15</h3><p>Languages</p></div></div>
+            <div class="stat-card"><i class="fas fa-file-pdf"></i><div><h3 id="reportCount">0</h3><p>Reports</p></div></div>
+        </div>
+        <div class="card"><div class="card-header">Organization</div>
+            <select id="orgSelector"><option value="">-- Select Organization --</option></select>
+            <div style="display:flex; gap:8px; margin-top:8px;"><button id="newOrgBtn" class="btn btn-primary">New</button><button id="saveOrgBtn" class="btn btn-success">Save</button><button id="delOrgBtn" class="btn btn-danger">Delete</button><button id="historyBtn" class="btn btn-secondary">History</button></div>
+        </div>
+        <div class="card"><div class="card-header">Speakers</div>
+            <button id="registerSpeakerBtn" class="btn btn-primary">Register Speaker</button>
+            <div id="speakersList" class="speaker-list">No speakers</div>
+            <div id="quickAssignList" class="speaker-list"></div>
+        </div>
+        <div class="card"><div class="card-header">Meeting Controls</div>
+            <div class="timer-digits" id="timerDisplay">00:00:00</div>
+            <div>Lines: <span id="lineCounter">0</span> | Pages: <span id="pageCounter">0</span></div>
+            <div><button id="startMeetingBtn" class="btn btn-success">Start</button> <button id="stopMeetingBtn" class="btn btn-danger" disabled>Stop</button> <button id="calcCostBtn" class="btn btn-secondary">Calculate Cost</button> <button id="adminBtn" class="btn btn-secondary">Admin</button></div>
+            <div>Current language: <span id="currentRecogLang" class="lang-indicator">English</span></div>
+            <div class="force-buttons"><button id="forceEnglishBtn" class="btn btn-secondary">Force English</button><button id="forceSinhalaBtn" class="btn btn-secondary">Force Sinhala</button></div>
+            <div id="meetingStatus">Not started</div>
+        </div>
+        <div class="card"><div class="card-header">Train Sinhala Triggers</div>
+            <div style="display:flex; gap:8px;"><input type="text" id="newTriggerInput" placeholder="e.g., Singalees"><button id="addTriggerBtn" class="btn btn-primary">Add</button></div>
+            <div id="trainedTriggersList" class="train-list"></div>
+            <small>Fuzzy matching (max 2 differences)</small>
+        </div>
+        <div class="card"><div class="card-header">Transcript</div>
+            <div class="transcript-area" id="transcriptArea">Start a meeting</div>
+        </div>
+        <div class="card"><div class="card-header">Report Generation</div>
+            <div><label><input type="checkbox" id="incTranscript" checked> Transcript</label> <label><input type="checkbox" id="incSummary" checked> Summary</label> <label><input type="checkbox" id="incNarrative" checked> Narrative</label> <label><input type="checkbox" id="incActions" checked> Actions</label> <label><input type="checkbox" id="incAgenda" checked> Agenda</label> <label><input type="checkbox" id="incDeepStudy" checked> Deep Study</label> <label><input type="checkbox" id="incHidden" checked> Hidden</label> <label><input type="checkbox" id="incConfidence" checked> Confidence</label> <label><input type="checkbox" id="incReceipt" checked> Receipt</label></div>
+            <button id="generateReportBtn" class="btn btn-primary">Generate PDF</button>
+        </div>
+        <div class="card"><div class="card-header">Email & Voice</div>
+            <button id="sendEmailBtn" class="btn btn-primary">Send Email Report</button>
+            <div><select id="voiceLangSelect"><option value="en">English</option><option value="si">සිංහල</option></select> <button id="readSelectedBtn" class="btn btn-secondary">Read Selected</button> <button id="stopReadingBtn" class="btn btn-secondary">Stop</button></div>
+            <div class="checkbox-group" id="voiceSections"><label><input type="checkbox" value="transcript"> Transcript</label><label><input type="checkbox" value="summary"> Summary</label><label><input type="checkbox" value="narrative"> Narrative</label><label><input type="checkbox" value="actions"> Actions</label><label><input type="checkbox" value="agenda"> Agenda</label><label><input type="checkbox" value="deepstudy"> Deep Study</label><label><input type="checkbox" value="hidden"> Hidden</label><label><input type="checkbox" value="receipt"> Receipt</label></div>
+        </div>
+        <div id="costDisplay" style="display:none; background:#fef3c7; padding:12px; border-radius:16px; margin-top:12px;"></div>
+    </div>
 </div>
+
+<!-- Modals -->
+<div id="adminModal" class="modal"><div class="modal-content"><h3>Admin Settings</h3>
+    <label>Rate 0-1h: $<input type="number" id="rate0_1" value="15"></label><br>
+    <label>Rate 1-2h: $<input type="number" id="rate1_2" value="14"></label><br>
+    <label>Rate 2-4h: $<input type="number" id="rate2_4" value="12"></label><br>
+    <label>Rate 4h+: $<input type="number" id="rateAbove4" value="11"></label><br>
+    <label>Per lang/hour: $<input type="number" id="perLangRate" value="3" step="0.5"></label><br>
+    <label>All 15 lang: $<input type="number" id="allLangRate" value="50"></label><br>
+    <button id="saveAdminBtn" class="btn btn-primary">Save</button>
+    <button id="closeAdminBtn" class="btn btn-secondary">Close</button>
+</div></div>
+<div id="historyModal" class="modal"><div class="modal-content"><h3>Meeting History</h3><div id="historyList"></div><button id="closeHistoryBtn" class="btn btn-secondary">Close</button></div></div>
 
 <script>
-    // Hardcoded valid credentials
-    const validUsers = {
-        'WashingMachine$': 'wmiitk$',
-        'admin': 'admin123'
-    };
-
-    const loginScreen = document.getElementById('loginScreen');
-    const mainContent = document.getElementById('mainContent');
-    const errorMsg = document.getElementById('errorMsg');
-
-    document.getElementById('loginBtn').addEventListener('click', function() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-
+// ==================== FULL APPLICATION – NO SYNTAX ERRORS ====================
+(function() {
+    // ---------- LOGIN ----------
+    const validUsers = { 'WashingMachine$': 'wmiitk$', 'admin': 'admin123' };
+    
+    document.getElementById('loginBtn').onclick = function() {
+        const user = document.getElementById('loginUsername').value;
+        const pass = document.getElementById('loginPassword').value;
         if (validUsers[user] && validUsers[user] === pass) {
-            loginScreen.style.display = 'none';
-            mainContent.style.display = 'block';
-            errorMsg.style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            initApp();
         } else {
-            errorMsg.style.display = 'block';
-            setTimeout(() => { errorMsg.style.display = 'none'; }, 2000);
+            const err = document.getElementById('loginError');
+            err.style.display = 'block';
+            setTimeout(function() { err.style.display = 'none'; }, 2000);
         }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        loginScreen.style.display = 'block';
-        mainContent.style.display = 'none';
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-    });
+    };
+    
+    // ---------- GLOBALS ----------
+    let currentOrg = null, allOrgs = {};
+    let speakers = [], transcript = [], history = [];
+    let meetingActive = false, meetingStart = null, meetingEnd = null, timerInterval = null, meetingHours = 0;
+    let costCalculated = false, meetingCost = 0, costDetailsArr = [];
+    let currentLang = 'en', meetingCount = 0, reportCount = 0;
+    let office = { name: '', address: '', type: '' };
+    let recognition = null, autoTimer = null;
+    let isRestarting = false, pendingLanguageSwitch = false;
+    let currentRecognitionLang = 'en-US';
+    let trainedSinhalaTriggers = [];
+    let rates = { r0_1:15, r1_2:14, r2_4:12, rAbove:11, perLang:3, allLang:50 };
+    const speakerColors = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#3b82f6'];
+    const languages = { en:'English', si:'සිංහල', ta:'தமிழ்', es:'Español', fr:'Français', de:'Deutsch', it:'Italiano', pt:'Português', ru:'Русский', zh:'中文', ja:'日本語', ko:'한국어', ar:'العربية', hi:'हिन्दी', bn:'বাংলা' };
+    
+    const builtinSinhalaKeywords = [
+        'sinhala','sinhalese','singhala','singhalese','sinahala','sinhalla','sinhale','sinhal','sinhali',
+        'sinhalaa','singhalaa','singhale','singhali','sinhlese','singlese','sin-ha-la','sing-ha-la',
+        'sinhala language','sinhala mode','speak sinhala','switch to sinhala','talk in sinhala',
+        'sinhalen kata karanna','singhalen kata karanna','sinhala words','sinhala only','sri lankan language','සිංහල','සිංහලෙන් කතා'
+    ];
+    const englishKeywords = ['english','talk in english','speak english','in english','english language','ඉංග්‍රීසියෙන් කතා'];
+    
+    // ---------- HELPER FUNCTIONS ----------
+    function speakAnnouncement(msg) {
+        if (window.speechSynthesis) {
+            try {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(msg);
+                u.rate = 0.9;
+                window.speechSynthesis.speak(u);
+            } catch(e) {}
+        }
+    }
+    
+    function levenshtein(a, b) {
+        const matrix = Array(b.length+1).fill().map(() => Array(a.length+1).fill(0));
+        for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+        for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+        for (let j = 1; j <= b.length; j++) {
+            for (let i = 1; i <= a.length; i++) {
+                const cost = a[i-1] === b[j-1] ? 0 : 1;
+                matrix[j][i] = Math.min(matrix[j-1][i]+1, matrix[j][i-1]+1, matrix[j-1][i-1]+cost);
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+    
+    function fuzzyMatch(word, target, maxDist) {
+        if (maxDist === undefined) maxDist = 2;
+        return levenshtein(word.toLowerCase(), target.toLowerCase()) <= maxDist;
+    }
+    
+    function escapeHtml(t) {
+        if (!t) return '';
+        return t.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // ---------- STORAGE ----------
+    function saveOrgs() {
+        localStorage.setItem('peter_orgs', JSON.stringify(allOrgs));
+    }
+    
+    function loadOrgs() {
+        const stored = localStorage.getItem('peter_orgs');
+        allOrgs = stored ? JSON.parse(stored) : {};
+        refreshOrgSelector();
+    }
+    
+    function refreshOrgSelector() {
+        const sel = document.getElementById('orgSelector');
+        sel.innerHTML = '<option value="">-- Select Organization --</option>';
+        for (let o in allOrgs) {
+            sel.innerHTML += '<option value="' + o + '">' + o + '</option>';
+        }
+    }
+    
+    function saveCurrentOrg() {
+        if (!currentOrg) return;
+        allOrgs[currentOrg] = { speakers, office, meetingCount, reportCount, currentLang, history };
+        saveOrgs();
+        showStatusMessage('✅ Saved');
+    }
+    
+    function showStatusMessage(msg) {
+        const statusDiv = document.getElementById('orgStatus');
+        if (statusDiv) {
+            statusDiv.innerHTML = msg;
+            setTimeout(function() { statusDiv.innerHTML = ''; }, 1500);
+        }
+    }
+    
+    function loadOrg(org) {
+        if (!allOrgs[org]) return;
+        const d = allOrgs[org];
+        speakers = d.speakers || [];
+        office = d.office || { name: org, address: '', type: '' };
+        meetingCount = d.meetingCount || 0;
+        reportCount = d.reportCount || 0;
+        currentLang = d.currentLang || 'en';
+        history = d.history || [];
+        currentOrg = org;
+        updateUI();
+        loadTrainedTriggers();
+    }
+    
+    function updateUI() {
+        document.getElementById('speakerCount').innerText = speakers.length;
+        document.getElementById('meetingCount').innerText = meetingCount;
+        document.getElementById('reportCount').innerText = reportCount;
+        document.getElementById('langCount').innerText = Object.keys(languages).length;
+        refreshSpeakersList();
+        refreshTranscript();
+    }
+    
+    function refreshSpeakersList() {
+        const container = document.getElementById('speakersList');
+        const quick = document.getElementById('quickAssignList');
+        if (!speakers.length) {
+            container.innerHTML = 'No speakers';
+            quick.innerHTML = '';
+            return;
+        }
+        let html = '';
+        for (let i = 0; i < speakers.length; i++) {
+            const s = speakers[i];
+            const color = s.color || speakerColors[i % speakerColors.length];
+            html += '<span class="speaker-tag" style="background:' + color + '">' + escapeHtml(s.name) + '</span>';
+        }
+        container.innerHTML = html;
+        quick.innerHTML = '<strong>Quick Assign:</strong> ';
+        for (let i = 0; i < speakers.length; i++) {
+            const s = speakers[i];
+            const btn = document.createElement('button');
+            btn.className = 'speaker-tag';
+            btn.style.background = s.color || speakerColors[i % speakerColors.length];
+            btn.innerText = s.name;
+            btn.onclick = function() {
+                for (let j = transcript.length-1; j >= 0; j--) {
+                    if (transcript[j].speaker === 'Unknown') {
+                        transcript[j].speaker = s.name;
+                        transcript[j].color = s.color;
+                        refreshTranscript();
+                        break;
+                    }
+                }
+            };
+            quick.appendChild(btn);
+        }
+    }
+    
+    function refreshTranscript() {
+        const area = document.getElementById('transcriptArea');
+        if (!transcript.length) {
+            area.innerHTML = 'Start a meeting';
+            document.getElementById('lineCounter').innerText = '0';
+            document.getElementById('pageCounter').innerText = '0';
+            return;
+        }
+        let html = '';
+        for (let i = 0; i < transcript.length; i++) {
+            const e = transcript[i];
+            html += '<div class="transcript-line"><strong>' + escapeHtml(e.speaker) + '</strong> <small>' + e.timestamp + '</small><br>' + escapeHtml(e.originalText) + '</div>';
+        }
+        area.innerHTML = html;
+        document.getElementById('lineCounter').innerText = transcript.length;
+        document.getElementById('pageCounter').innerText = Math.ceil(transcript.length / 25);
+    }
+    
+    function updateTimer() {
+        if (!meetingStart) return;
+        const ms = (meetingEnd || new Date()) - meetingStart;
+        const hours = String(Math.floor(ms / 3600000)).padStart(2,'0');
+        const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2,'0');
+        const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2,'0');
+        document.getElementById('timerDisplay').innerHTML = hours + ':' + minutes + ':' + seconds;
+        meetingHours = ms / 3600000;
+    }
+    
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(function() {
+            if (meetingActive && meetingStart && !meetingEnd) updateTimer();
+        }, 1000);
+    }
+    
+    // ---------- TRAINABLE TRIGGERS ----------
+    function loadTrainedTriggers() {
+        if (!currentOrg) return;
+        const key = 'peter_sinhala_triggers_' + currentOrg;
+        const stored = localStorage.getItem(key);
+        trainedSinhalaTriggers = stored ? JSON.parse(stored) : [];
+        renderTriggersList();
+    }
+    
+    function saveTrainedTriggers() {
+        if (!currentOrg) return;
+        const key = 'peter_sinhala_triggers_' + currentOrg;
+        localStorage.setItem(key, JSON.stringify(trainedSinhalaTriggers));
+        renderTriggersList();
+    }
+    
+    function addTrigger(phrase) {
+        phrase = phrase.trim().toLowerCase();
+        if (phrase && !trainedSinhalaTriggers.includes(phrase)) {
+            trainedSinhalaTriggers.push(phrase);
+            saveTrainedTriggers();
+        }
+    }
+    
+    function removeTrigger(index) {
+        trainedSinhalaTriggers.splice(index, 1);
+        saveTrainedTriggers();
+    }
+    
+    function renderTriggersList() {
+        const container = document.getElementById('trainedTriggersList');
+        if (!container) return;
+        if (trainedSinhalaTriggers.length === 0) {
+            container.innerHTML = '<span>No custom triggers.</span>';
+            return;
+        }
+        let html = '';
+        for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
+            const t = trainedSinhalaTriggers[i];
+            html += '<div class="train-item">' + escapeHtml(t) + '<button onclick="window.removeTriggerAt(' + i + ')">✖</button></div>';
+        }
+        container.innerHTML = html;
+    }
+    
+    window.removeTriggerAt = removeTrigger;
+    
+    // ---------- LANGUAGE SWITCH DETECTION ----------
+    function isSinhalaSwitchRequested(recentText) {
+        const text = recentText.toLowerCase();
+        for (let i = 0; i < builtinSinhalaKeywords.length; i++) {
+            if (text.indexOf(builtinSinhalaKeywords[i]) !== -1) return true;
+        }
+        for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
+            if (text.indexOf(trainedSinhalaTriggers[i]) !== -1) return true;
+        }
+        const words = text.split(/\s+/);
+        for (let w = 0; w < words.length; w++) {
+            const word = words[w];
+            if (word.length < 3) continue;
+            for (let i = 0; i < trainedSinhalaTriggers.length; i++) {
+                if (fuzzyMatch(word, trainedSinhalaTriggers[i], 2)) return true;
+            }
+            for (let i = 0; i < builtinSinhalaKeywords.length; i++) {
+                const kw = builtinSinhalaKeywords[i];
+                if (kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
+            }
+        }
+        return false;
+    }
+    
+    function isEnglishSwitchRequested(recentText) {
+        const text = recentText.toLowerCase();
+        for (let i = 0; i < englishKeywords.length; i++) {
+            if (text.indexOf(englishKeywords[i]) !== -1) return true;
+        }
+        const words = text.split(/\s+/);
+        for (let w = 0; w < words.length; w++) {
+            const word = words[w];
+            if (word.length < 3) continue;
+            for (let i = 0; i < englishKeywords.length; i++) {
+                const kw = englishKeywords[i];
+                if (kw.length >= 3 && fuzzyMatch(word, kw, 2)) return true;
+            }
+        }
+        return false;
+    }
+    
+    // ---------- RECOGNITION ----------
+    function updateLanguageIndicator() {
+        const span = document.getElementById('currentRecogLang');
+        if (currentRecognitionLang === 'en-US') span.innerHTML = 'English';
+        else span.innerHTML = 'සිංහල';
+    }
+    
+    function forceRestartRecognitionWithLang(langCode) {
+        if (!meetingActive || pendingLanguageSwitch) return;
+        pendingLanguageSwitch = true;
+        if (recognition) {
+            try { recognition.abort(); } catch(e) {}
+            recognition = null;
+        }
+        currentRecognitionLang = langCode;
+        updateLanguageIndicator();
+        if (langCode === 'en-US') speakAnnouncement('English Activated');
+        else speakAnnouncement('Sinhala Activated');
+        setTimeout(function() {
+            startRecognition();
+            pendingLanguageSwitch = false;
+            document.getElementById('meetingStatus').innerHTML = 'Language switched...';
+            setTimeout(function() {
+                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+            }, 800);
+        }, 100);
+    }
+    
+    function checkForLanguageSwitchKeywords() {
+        if (!meetingActive) return;
+        let recentText = '';
+        const limit = Math.min(3, transcript.length);
+        for (let i = 0; i < limit; i++) {
+            recentText += transcript[i].originalText.toLowerCase() + ' ';
+        }
+        if (isSinhalaSwitchRequested(recentText) && currentRecognitionLang !== 'si-LK') {
+            forceRestartRecognitionWithLang('si-LK');
+        } else if (isEnglishSwitchRequested(recentText) && currentRecognitionLang !== 'en-US') {
+            forceRestartRecognitionWithLang('en-US');
+        }
+    }
+    
+    function startRecognition() {
+        if (!meetingActive) return;
+        if (recognition) {
+            try { recognition.abort(); } catch(e) {}
+            recognition = null;
+        }
+        if (!('webkitSpeechRecognition' in window)) {
+            alert('Speech recognition not supported. Use Chrome/Edge.');
+            return;
+        }
+        const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecog();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = currentRecognitionLang;
+        let lastFinalText = '';
+        let keywordCheckTimeout = null;
+        recognition.onstart = function() {
+            document.getElementById('meetingStatus').innerHTML = 'Listening';
+            isRestarting = false;
+        };
+        recognition.onresult = function(event) {
+            if (keywordCheckTimeout) clearTimeout(keywordCheckTimeout);
+            let final = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    final += event.results[i][0].transcript;
+                }
+            }
+            if (final && final.trim().length > 1 && final !== lastFinalText) {
+                lastFinalText = final;
+                const text = final.trim();
+                const timestamp = new Date().toLocaleTimeString();
+                let speaker = (speakers.length === 1) ? speakers[0].name : 'Unknown';
+                let color = '#667eea';
+                for (let s = 0; s < speakers.length; s++) {
+                    if (speakers[s].name === speaker) {
+                        color = speakers[s].color;
+                        break;
+                    }
+                }
+                const langTag = (currentRecognitionLang === 'si-LK') ? 'sinhala' : 'english';
+                transcript.unshift({ speaker: speaker, originalText: text, timestamp: timestamp, color: color, lang: langTag });
+                refreshTranscript();
+                setTimeout(function() { lastFinalText = ''; }, 300);
+                document.getElementById('meetingStatus').innerHTML = 'Listening';
+                keywordCheckTimeout = setTimeout(function() { checkForLanguageSwitchKeywords(); }, 500);
+            }
+        };
+        recognition.onerror = function(e) {
+            if (e.error === 'not-allowed') alert('Microphone permission denied.');
+            else if (e.error === 'language-not-supported' && currentRecognitionLang === 'si-LK') {
+                forceRestartRecognitionWithLang('en-US');
+            }
+        };
+        recognition.onend = function() {
+            if (meetingActive && !isRestarting && !pendingLanguageSwitch) {
+                setTimeout(function() { startRecognition(); }, 500);
+            }
+        };
+        recognition.start();
+    }
+    
+    function forceRestartRecognition() {
+        if (!meetingActive) {
+            alert('Meeting not active.');
+            return;
+        }
+        isRestarting = true;
+        if (recognition) {
+            try { recognition.abort(); } catch(e) {}
+            recognition = null;
+        }
+        setTimeout(function() {
+            isRestarting = false;
+            startRecognition();
+            document.getElementById('meetingStatus').innerHTML = 'Restarting...';
+            setTimeout(function() {
+                if (meetingActive) document.getElementById('meetingStatus').innerHTML = 'Listening';
+            }, 500);
+        }, 100);
+    }
+    
+    // ---------- MEETING FUNCTIONS ----------
+    async function startMeeting() {
+        if (!speakers.length) {
+            alert('Register speaker first');
+            return;
+        }
+        if (!currentOrg) {
+            alert('Select organization');
+            return;
+        }
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            meetingActive = true;
+            meetingStart = new Date();
+            meetingEnd = null;
+            transcript = [];
+            costCalculated = false;
+            currentRecognitionLang = 'en-US';
+            updateLanguageIndicator();
+            startTimer();
+            startRecognition();
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = setInterval(function() {
+                if (meetingActive && transcript.length) autoSave();
+            }, 60000);
+            document.getElementById('startMeetingBtn').disabled = true;
+            document.getElementById('stopMeetingBtn').disabled = false;
+            document.getElementById('calcCostBtn').disabled = false;
+            document.getElementById('meetingStatus').innerHTML = 'Listening';
+            refreshTranscript();
+        } catch(e) {
+            alert('Microphone permission required');
+        }
+    }
+    
+    function stopMeeting() {
+        meetingActive = false;
+        isRestarting = true;
+        pendingLanguageSwitch = false;
+        if (recognition) {
+            try { recognition.abort(); } catch(e) {}
+        }
+        meetingEnd = new Date();
+        updateTimer();
+        if (timerInterval) clearInterval(timerInterval);
+        if (autoTimer) clearInterval(autoTimer);
+        meetingCount++;
+        history.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleString(),
+            duration: Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm',
+            transcript: [...transcript]
+        });
+        if (history.length > 30) history.pop();
+        if (currentOrg) saveCurrentOrg();
+        updateUI();
+        document.getElementById('startMeetingBtn').disabled = false;
+        document.getElementById('stopMeetingBtn').disabled = true;
+        document.getElementById('meetingStatus').innerHTML = 'Stopped';
+        autoSave();
+        alert('Stopped. ' + transcript.length + ' lines.');
+        if (document.getElementById('historyModal').style.display === 'flex') showMeetingHistory();
+    }
+    
+    function autoSave() {
+        let content = 'Peter AI AutoSave\n' + new Date().toLocaleString() + '\n';
+        for (let i = 0; i < transcript.length; i++) {
+            const t = transcript[i];
+            content += '[' + t.timestamp + '] ' + t.speaker + ': ' + t.originalText + '\n';
+        }
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Peter_AutoSave_' + Date.now() + '.txt';
+        a.click();
+        URL.revokeObjectURL(blob);
+    }
+    
+    function printCost() {
+        if (!meetingEnd) {
+            alert('Stop meeting first');
+            return;
+        }
+        let base = 0;
+        if (meetingHours <= 1) base = meetingHours * rates.r0_1;
+        else if (meetingHours <= 2) base = meetingHours * rates.r1_2;
+        else if (meetingHours <= 4) base = meetingHours * rates.r2_4;
+        else base = meetingHours * rates.rAbove;
+        const uniqueLangs = new Set();
+        for (let i = 0; i < transcript.length; i++) {
+            const l = transcript[i].lang;
+            if (l && l !== 'en' && l !== 'english' && l !== 'sinhala') uniqueLangs.add(l);
+        }
+        let transCost = 0;
+        if (uniqueLangs.size >= 15) transCost = rates.allLang;
+        else transCost = uniqueLangs.size * rates.perLang * meetingHours;
+        meetingCost = base + transCost;
+        costDetailsArr = [
+            'Duration: ' + meetingHours.toFixed(2) + 'h - Base: $' + base.toFixed(2),
+            (uniqueLangs.size ? uniqueLangs.size + ' language(s) translation: $' + transCost.toFixed(2) : 'No translation'),
+            'Subtotal: $' + (base + transCost).toFixed(2)
+        ];
+        costCalculated = true;
+        const costDiv = document.getElementById('costDisplay');
+        costDiv.innerHTML = '<strong>💰 Cost Details</strong><br>' + costDetailsArr.join('<br>') + '<hr><strong>Total: $' + meetingCost.toFixed(2) + '</strong>';
+        costDiv.style.display = 'block';
+    }
+    
+    function registerSpeaker() {
+        let name = prompt('Enter speaker name:');
+        if (name && name.trim() !== '') {
+            const cleanName = name.trim();
+            const color = speakerColors[speakers.length % speakerColors.length];
+            speakers.push({ name: cleanName, color: color });
+            updateUI();
+            if (currentOrg) saveCurrentOrg();
+            alert('✅ Speaker "' + cleanName + '" registered!');
+        }
+    }
+    
+    function showMeetingHistory() {
+        if (!currentOrg) {
+            alert('Select organization first');
+            return;
+        }
+        const histDiv = document.getElementById('historyList');
+        if (!history.length) {
+            histDiv.innerHTML = '<p>No past meetings</p>';
+        } else {
+            histDiv.innerHTML = '';
+            for (let i = 0; i < history.length; i++) {
+                const h = history[i];
+                const div = document.createElement('div');
+                div.style.padding = '8px';
+                div.style.borderBottom = '1px solid #ccc';
+                div.innerHTML = '<div><strong>' + escapeHtml(h.date) + '</strong></div><div>' + h.duration + ' | ' + h.transcript.length + ' lines</div>';
+                div.ondblclick = function() {
+                    if (confirm('Load meeting from ' + h.date + '?')) {
+                        transcript = [...h.transcript];
+                        refreshTranscript();
+                        document.getElementById('historyModal').style.display = 'none';
+                        alert('Meeting loaded.');
+                    }
+                };
+                histDiv.appendChild(div);
+            }
+        }
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+    
+    // ---------- AI FUNCTIONS (simplified for demonstration) ----------
+    async function generateAIExecutiveSummary() {
+        return 'AI summary: The meeting covered key points. Action items were assigned.';
+    }
+    
+    async function generateNarrativeReport() {
+        return 'Narrative report: The conversation flowed productively.';
+    }
+    
+    function extractActionItemsRaw() {
+        const actions = [];
+        for (let i = transcript.length-1; i >= 0; i--) {
+            const line = transcript[i];
+            const lower = line.originalText.toLowerCase();
+            if (/(will|must|need to|task|action|todo)/i.test(lower)) {
+                let text = line.originalText.trim();
+                if (!text.endsWith('.')) text += '.';
+                if (text.length > 120) text = text.substring(0,117) + '...';
+                actions.push({ speaker: line.speaker, text: text });
+                if (actions.length >= 10) break;
+            }
+        }
+        if (actions.length === 0) actions.push({ speaker: 'Team', text: 'Continue working on assigned tasks.' });
+        return actions;
+    }
+    
+    function generateAgendaRaw() {
+        if (transcript.length === 0) return ['Review previous actions', 'Project status', 'Budget review', 'Risk assessment', 'Set next meeting'];
+        const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
+        const items = [];
+        if (/(review|status update)/i.test(fullText)) items.push('Review of previous action items');
+        if (/(project|timeline|deadline)/i.test(fullText)) items.push('Project timeline review');
+        if (/(budget|cost|expense)/i.test(fullText)) items.push('Budget and financial review');
+        if (/(risk|issue|problem)/i.test(fullText)) items.push('Risk assessment');
+        if (items.length < 3) items.push('Open discussion');
+        items.push('Set next meeting date');
+        return [...new Set(items)].slice(0,7);
+    }
+    
+    function generateDeepStudyRaw() {
+        return {
+            guidance: 'Focus on clear communication and documented decisions.',
+            safety: 'No specific safety issues were raised.',
+            development: 'No skill development topics were discussed.',
+            difficulties: 'No major difficulties were mentioned.',
+            dangers: 'No significant risks were highlighted.',
+            profits: 'No profit opportunities were identified.',
+            losses: 'No potential losses were identified.',
+            regrets: 'No regrets were recorded.',
+            appreciations: 'No appreciations were recorded.',
+            suggestions: 'No specific suggestions were offered.',
+            advice: 'Continue regular monitoring and maintain clear communication.'
+        };
+    }
+    
+    function analyzeHiddenProblemsRaw() {
+        const fullText = transcript.map(l => l.originalText).join(' ').toLowerCase();
+        const issues = [];
+        if (/(problem|issue|challenge|difficulty)/i.test(fullText)) issues.push('Unresolved challenges were mentioned – management attention may be required.');
+        if (/(delay|behind schedule|late)/i.test(fullText)) issues.push('Timeline delays were discussed – corrective actions should be taken.');
+        if (issues.length === 0) issues.push('No significant hidden risks were detected.');
+        const hiddenGood = [];
+        if (/(excellent|great|success|achievement)/i.test(fullText)) hiddenGood.push('Positive achievements were noted – these should be recognised.');
+        else hiddenGood.push('No explicit praise or unspoken achievements were identified.');
+        const withheld = [];
+        if (/(maybe|not sure|hesitant)/i.test(fullText)) withheld.push('Some participants expressed uncertainty – ideas may have been withheld.');
+        else withheld.push('Participants appeared to express their views openly.');
+        const secret = [];
+        if (/(confidential|private|off the record)/i.test(fullText)) secret.push('Sensitive information was mentioned – ensure proper handling.');
+        else secret.push('No secret or off-record discussions were detected.');
+        const creators = [];
+        if (/(blame|fault)/i.test(fullText)) creators.push('Some speakers exhibited blame-oriented language – focus on solutions.');
+        else creators.push('The conversation was generally solution-oriented.');
+        let assignees = 'None';
+        const involved = new Set();
+        for (let i = 0; i < transcript.length; i++) {
+            const txt = transcript[i].originalText.toLowerCase();
+            if (/(problem|issue|challenge|delay|blame)/i.test(txt)) involved.add(transcript[i].speaker);
+        }
+        if (involved.size) assignees = Array.from(involved).join(', ');
+        return { issues, hiddenGood, withheld, secret, creators, assignees };
+    }
+    
+    // ---------- EMAIL ----------
+    async function sendEmail() {
+        alert('Email client would open. This is a demo.');
+    }
+    
+    // ---------- VOICE READING ----------
+    let currentUtterance = null;
+    function stopReading() {
+        if (currentUtterance) {
+            window.speechSynthesis.cancel();
+            currentUtterance = null;
+        }
+        document.getElementById('voiceStatus').innerHTML = 'Stopped.';
+    }
+    
+    async function readSelectedSections() {
+        stopReading();
+        const selected = [];
+        const checkboxes = document.querySelectorAll('#voiceSections input:checked');
+        for (let i = 0; i < checkboxes.length; i++) {
+            selected.push(checkboxes[i].value);
+        }
+        if (selected.length === 0) {
+            alert('Select sections to read.');
+            return;
+        }
+        let fullText = '';
+        for (let s = 0; s < selected.length; s++) {
+            const sec = selected[s];
+            if (sec === 'transcript') {
+                for (let i = transcript.length-1; i >= 0; i--) {
+                    const e = transcript[i];
+                    fullText += 'At ' + e.timestamp + ', ' + e.speaker + ' said: ' + e.originalText + '. ';
+                }
+            } else if (sec === 'summary') {
+                fullText += 'Executive summary. ' + (await generateAIExecutiveSummary()) + ' ';
+            } else if (sec === 'narrative') {
+                fullText += 'Narrative report. ' + (await generateNarrativeReport()) + ' ';
+            } else if (sec === 'actions') {
+                const acts = extractActionItemsRaw();
+                fullText += 'Action items. ';
+                for (let i = 0; i < acts.length; i++) {
+                    fullText += (i+1) + '. ' + acts[i].text + ' ';
+                }
+            } else if (sec === 'agenda') {
+                const agenda = generateAgendaRaw();
+                fullText += 'Proposed agenda. ';
+                for (let i = 0; i < agenda.length; i++) {
+                    fullText += (i+1) + '. ' + agenda[i] + ' ';
+                }
+            } else if (sec === 'deepstudy') {
+                const deep = generateDeepStudyRaw();
+                fullText += 'AI Deep Study. Guidance: ' + deep.guidance + '. Safety: ' + deep.safety + '. Development: ' + deep.development + '. Difficulties: ' + deep.difficulties + '. Dangers: ' + deep.dangers + '. Profits: ' + deep.profits + '. Losses: ' + deep.losses + '. Regrets: ' + deep.regrets + '. Appreciations: ' + deep.appreciations + '. Suggestions: ' + deep.suggestions + '. Advice: ' + deep.advice + '. ';
+            } else if (sec === 'hidden') {
+                const hidden = analyzeHiddenProblemsRaw();
+                fullText += 'Hidden problems. ' + hidden.issues.join(' ') + ' ' + hidden.hiddenGood.join(' ') + ' ' + hidden.withheld.join(' ') + ' ' + hidden.secret.join(' ') + ' ' + hidden.creators.join(' ') + ' ';
+            } else if (sec === 'receipt' && costCalculated) {
+                fullText += 'Payment receipt. ' + costDetailsArr.join(' ') + ' Total ' + meetingCost.toFixed(2) + ' dollars. ';
+            }
+        }
+        if (fullText.trim() === '') {
+            alert('No text to read.');
+            return;
+        }
+        const langSelect = document.getElementById('voiceLangSelect');
+        const targetLang = (langSelect.value === 'si') ? 'si-LK' : 'en-US';
+        const utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.rate = 0.9;
+        utterance.lang = targetLang;
+        utterance.onstart = function() {
+            document.getElementById('voiceStatus').innerHTML = 'Reading...';
+        };
+        utterance.onend = function() {
+            document.getElementById('voiceStatus').innerHTML = 'Done.';
+            currentUtterance = null;
+            if (confirm('Thank you! Read another?')) readSelectedSections();
+        };
+        utterance.onerror = function() {
+            document.getElementById('voiceStatus').innerHTML = 'Error.';
+        };
+        currentUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    // ---------- PDF GENERATION ----------
+    async function generateReport() {
+        if (!transcript.length) {
+            alert('No meeting data.');
+            return;
+        }
+        const incTranscript = document.getElementById('incTranscript').checked;
+        const incSummary = document.getElementById('incSummary').checked;
+        const incNarrative = document.getElementById('incNarrative').checked;
+        const incActions = document.getElementById('incActions').checked;
+        const incAgenda = document.getElementById('incAgenda').checked;
+        const incDeepStudy = document.getElementById('incDeepStudy').checked;
+        const incHidden = document.getElementById('incHidden').checked;
+        const incConfidence = document.getElementById('incConfidence').checked;
+        const incReceipt = document.getElementById('incReceipt').checked;
+        const now = new Date();
+        
+        let html = '<div style="font-family:\'Noto Sans Sinhala\',\'Inter\',sans-serif; padding:20px;">';
+        html += '<h1>Peter AI Super Pro - Meeting Report</h1>';
+        html += '<p><strong>Date:</strong> ' + now.toLocaleString() + '</p>';
+        html += '<p><strong>Organization:</strong> ' + escapeHtml(office.name || 'N/A') + '</p>';
+        html += '<p><strong>Meeting:</strong> ' + escapeHtml(office.type || 'General') + '</p>';
+        html += '<p><strong>Duration:</strong> ' + Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm</p>';
+        html += '<hr>';
+        
+        if (incTranscript) {
+            html += '<h2>Meeting Transcript</h2>';
+            const entries = [...transcript].reverse();
+            let lineNum = 1;
+            for (let i = 0; i < entries.length; i++) {
+                const e = entries[i];
+                html += '<div style="margin-bottom:8px;"><strong>' + lineNum + '. [' + e.timestamp + '] ' + escapeHtml(e.speaker) + ':</strong><br>';
+                html += '<span style="margin-left:15px;">' + escapeHtml(e.originalText) + '</span></div>';
+                lineNum++;
+            }
+        }
+        if (incSummary) {
+            const summary = await generateAIExecutiveSummary();
+            html += '<h2>AI Executive Summary</h2><div>' + escapeHtml(summary).replace(/\n/g,'<br>') + '</div>';
+        }
+        if (incNarrative) {
+            const narrative = await generateNarrativeReport();
+            html += '<h2>Narrative Report</h2><div>' + escapeHtml(narrative).replace(/\n/g,'<br>') + '</div>';
+        }
+        if (incActions) {
+            const actions = extractActionItemsRaw();
+            html += '<h2>Action Items</h2><ul>';
+            for (let i = 0; i < actions.length; i++) {
+                html += '<li>' + escapeHtml(actions[i].text) + ' (' + escapeHtml(actions[i].speaker) + ')</li>';
+            }
+            html += '</ul>';
+        }
+        if (incAgenda) {
+            const agenda = generateAgendaRaw();
+            html += '<h2>Proposed Next Meeting Agenda</h2><ul>';
+            for (let i = 0; i < agenda.length; i++) {
+                html += '<li>' + escapeHtml(agenda[i]) + '</li>';
+            }
+            html += '</ul>';
+        }
+        if (incDeepStudy) {
+            const deep = generateDeepStudyRaw();
+            html += '<h2>AI Deep Study</h2>';
+            html += '<p><strong>Guidance:</strong> ' + escapeHtml(deep.guidance) + '</p>';
+            html += '<p><strong>Safety:</strong> ' + escapeHtml(deep.safety) + '</p>';
+            html += '<p><strong>Development:</strong> ' + escapeHtml(deep.development) + '</p>';
+            html += '<p><strong>Difficulties:</strong> ' + escapeHtml(deep.difficulties) + '</p>';
+            html += '<p><strong>Dangers/Risks:</strong> ' + escapeHtml(deep.dangers) + '</p>';
+            html += '<p><strong>Profits:</strong> ' + escapeHtml(deep.profits) + '</p>';
+            html += '<p><strong>Losses:</strong> ' + escapeHtml(deep.losses) + '</p>';
+            html += '<p><strong>Regrets:</strong> ' + escapeHtml(deep.regrets) + '</p>';
+            html += '<p><strong>Appreciations:</strong> ' + escapeHtml(deep.appreciations) + '</p>';
+            html += '<p><strong>Suggestions:</strong> ' + escapeHtml(deep.suggestions) + '</p>';
+            html += '<p><strong>Advice:</strong> ' + escapeHtml(deep.advice) + '</p>';
+        }
+        if (incHidden) {
+            const hidden = analyzeHiddenProblemsRaw();
+            html += '<h2>Hidden Problems & Secret Ideas</h2>';
+            html += '<p><strong>Potential Hidden Problems:</strong> ' + escapeHtml(hidden.issues.join(' ')) + '</p>';
+            html += '<p><strong>Hidden Good Things:</strong> ' + escapeHtml(hidden.hiddenGood.join(' ')) + '</p>';
+            html += '<p><strong>Withheld Ideas:</strong> ' + escapeHtml(hidden.withheld.join(' ')) + '</p>';
+            html += '<p><strong>Secret Information:</strong> ' + escapeHtml(hidden.secret.join(' ')) + '</p>';
+            html += '<p><strong>Negative Influence:</strong> ' + escapeHtml(hidden.creators.join(' ')) + '</p>';
+            html += '<p><strong>Involved:</strong> ' + escapeHtml(hidden.assignees) + '</p>';
+        }
+        if (incConfidence) {
+            html += '<h2>Meeting Confidence Analysis</h2>';
+            html += '<div style="background:#e2e8f0; border-radius:20px; height:30px; width:100%; margin:10px 0; display:flex; overflow:hidden;">';
+            html += '<div style="background:#10b981; width:33%; text-align:center; color:white;">33%</div>';
+            html += '<div style="background:#f59e0b; width:34%; text-align:center; color:white;">34%</div>';
+            html += '<div style="background:#ef4444; width:33%; text-align:center; color:white;">33%</div>';
+            html += '</div><p>Positive indicators: 0, Negative: 0, Neutral: 0 (sample)</p>';
+        }
+        if (incReceipt && costCalculated) {
+            let totalPageCharge = 0;
+            if (incTranscript) totalPageCharge += 0.10;
+            if (incSummary) totalPageCharge += 0.10;
+            if (incNarrative) totalPageCharge += 0.10;
+            if (incActions) totalPageCharge += 0.10;
+            if (incAgenda) totalPageCharge += 0.10;
+            if (incDeepStudy) totalPageCharge += 0.15;
+            if (incHidden) totalPageCharge += 0.10;
+            if (incConfidence) totalPageCharge += 0.10;
+            html += '<h2>Payment Receipt</h2>';
+            html += '<p><strong>Invoice Date:</strong> ' + now.toLocaleDateString() + '</p>';
+            html += '<p><strong>Meeting Date:</strong> ' + (meetingStart ? meetingStart.toLocaleDateString() : 'N/A') + '</p>';
+            html += '<p><strong>Duration:</strong> ' + Math.floor(meetingHours) + 'h ' + Math.floor((meetingHours % 1) * 60) + 'm</p>';
+            html += '<p><strong>Total Lines:</strong> ' + transcript.length + '</p>';
+            html += '<p><strong>Meeting Charges:</strong></p><ul>';
+            for (let i = 0; i < costDetailsArr.length; i++) {
+                html += '<li>' + escapeHtml(costDetailsArr[i]) + '</li>';
+            }
+            html += '</ul><p><strong>Page Charges Total:</strong> $' + totalPageCharge.toFixed(2) + '</p>';
+            html += '<p class="receipt-total"><strong>GRAND TOTAL DUE: $' + (meetingCost + totalPageCharge).toFixed(2) + '</strong></p>';
+        }
+        html += '<hr><p style="text-align:center; font-size:9px;">Generated by Peter AI Super Pro</p></div>';
+        
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        document.body.appendChild(container);
+        const opt = { margin: 0.5, filename: 'Peter_AI_Report_' + Date.now() + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+        await html2pdf().set(opt).from(container).save();
+        document.body.removeChild(container);
+        reportCount++;
+        if (currentOrg) saveCurrentOrg();
+        updateUI();
+        alert('PDF generated!');
+    }
+    
+    // ---------- ADMIN ----------
+    function loadAdminSettings() {
+        const saved = localStorage.getItem('peter_rates');
+        if (saved) rates = JSON.parse(saved);
+        document.getElementById('rate0_1').value = rates.r0_1;
+        document.getElementById('rate1_2').value = rates.r1_2;
+        document.getElementById('rate2_4').value = rates.r2_4;
+        document.getElementById('rateAbove4').value = rates.rAbove;
+        document.getElementById('perLangRate').value = rates.perLang;
+        document.getElementById('allLangRate').value = rates.allLang;
+    }
+    
+    function saveAdminSettings() {
+        rates.r0_1 = parseFloat(document.getElementById('rate0_1').value);
+        rates.r1_2 = parseFloat(document.getElementById('rate1_2').value);
+        rates.r2_4 = parseFloat(document.getElementById('rate2_4').value);
+        rates.rAbove = parseFloat(document.getElementById('rateAbove4').value);
+        rates.perLang = parseFloat(document.getElementById('perLangRate').value);
+        rates.allLang = parseFloat(document.getElementById('allLangRate').value);
+        localStorage.setItem('peter_rates', JSON.stringify(rates));
+        alert('Rates saved');
+    }
+    
+    // ---------- INIT APP ----------
+    function initApp() {
+        loadOrgs();
+        loadAdminSettings();
+        updateUI();
+        
+        // Create missing modal elements if they don't exist (but they are already in HTML)
+        // Bind events
+        document.getElementById('logoutBtn').onclick = function() {
+            if (meetingActive) stopMeeting();
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+        };
+        document.getElementById('orgSelector').onchange = function(e) {
+            if (e.target.value) loadOrg(e.target.value);
+        };
+        document.getElementById('newOrgBtn').onclick = function() {
+            const n = prompt('Organization name:');
+            if (n && !allOrgs[n]) {
+                allOrgs[n] = { speakers: [], office: { name: n, address: '', type: '' }, meetingCount: 0, reportCount: 0, currentLang: 'en', history: [] };
+                saveOrgs();
+                refreshOrgSelector();
+                document.getElementById('orgSelector').value = n;
+                loadOrg(n);
+            }
+        };
+        document.getElementById('saveOrgBtn').onclick = function() {
+            if (currentOrg) saveCurrentOrg();
+            else alert('No organization selected');
+        };
+        document.getElementById('delOrgBtn').onclick = function() {
+            if (currentOrg && confirm('Delete ' + currentOrg + '?')) {
+                delete allOrgs[currentOrg];
+                saveOrgs();
+                refreshOrgSelector();
+                currentOrg = null;
+                speakers = [];
+                transcript = [];
+                updateUI();
+            }
+        };
+        document.getElementById('historyBtn').onclick = showMeetingHistory;
+        document.getElementById('closeHistoryBtn').onclick = function() {
+            document.getElementById('historyModal').style.display = 'none';
+        };
+        document.getElementById('registerSpeakerBtn').onclick = registerSpeaker;
+        document.getElementById('startMeetingBtn').onclick = startMeeting;
+        document.getElementById('stopMeetingBtn').onclick = stopMeeting;
+        document.getElementById('calcCostBtn').onclick = printCost;
+        document.getElementById('forceEnglishBtn').onclick = function() {
+            if (meetingActive) forceRestartRecognitionWithLang('en-US');
+            else alert('Start meeting first');
+        };
+        document.getElementById('forceSinhalaBtn').onclick = function() {
+            if (meetingActive) forceRestartRecognitionWithLang('si-LK');
+            else alert('Start meeting first');
+        };
+        document.getElementById('adminBtn').onclick = function() {
+            document.getElementById('adminModal').style.display = 'flex';
+            loadAdminSettings();
+        };
+        document.getElementById('closeAdminBtn').onclick = function() {
+            document.getElementById('adminModal').style.display = 'none';
+        };
+        document.getElementById('saveAdminBtn').onclick = saveAdminSettings;
+        document.getElementById('addTriggerBtn').onclick = function() {
+            const inp = document.getElementById('newTriggerInput');
+            if (inp.value.trim()) addTrigger(inp.value.trim());
+            inp.value = '';
+        };
+        document.getElementById('generateReportBtn').onclick = generateReport;
+        document.getElementById('sendEmailBtn').onclick = sendEmail;
+        document.getElementById('readSelectedBtn').onclick = readSelectedSections;
+        document.getElementById('stopReadingBtn').onclick = stopReading;
+        
+        // Add a simple voice status display
+        const voiceStatusDiv = document.createElement('div');
+        voiceStatusDiv.id = 'voiceStatus';
+        voiceStatusDiv.style.fontSize = '11px';
+        voiceStatusDiv.style.marginTop = '8px';
+        document.querySelector('.card:last-of-type').appendChild(voiceStatusDiv);
+        
+        // Add org status display
+        const orgStatusDiv = document.createElement('div');
+        orgStatusDiv.id = 'orgStatus';
+        orgStatusDiv.style.fontSize = '11px';
+        orgStatusDiv.style.marginTop = '8px';
+        document.querySelector('.card:first-of-type').appendChild(orgStatusDiv);
+    }
+})();
 </script>
 </body>
 </html>
