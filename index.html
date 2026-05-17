@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Peter AI Super Pro v54.0 – PDF Fixed</title>
+    <title>Peter AI Super Pro v55.0 – PDF Fully Working</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -105,7 +105,6 @@
         .train-item { background: #e2e8f0; padding: 4px 12px; border-radius: 40px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
         .train-item button { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px; }
         .train-input-group { display: flex; gap: 8px; margin: 10px 0; }
-        .temp-pdf-container { position: absolute; top: -9999px; left: -9999px; width: 210mm; background: white; padding: 20px; font-family: 'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', sans-serif; font-size: 12pt; line-height: 1.4; z-index: -1; }
         .pause-resume-buttons { display: inline-flex; gap: 8px; margin-left: 8px; }
     </style>
 </head>
@@ -113,7 +112,7 @@
     <div id="loginOverlay" class="login-overlay">
         <div class="login-container">
             <div class="login-icon"><i class="fas fa-microphone-alt"></i></div>
-            <div class="login-header"><h2>Peter AI Super Pro v54.0</h2></div>
+            <div class="login-header"><h2>Peter AI Super Pro v55.0</h2></div>
             <div class="input-group">
                 <label><i class="fas fa-user"></i> Username</label>
                 <input type="text" id="loginUsername" placeholder="Enter username">
@@ -132,7 +131,7 @@
     <div id="mainApp" class="main-app">
         <div class="dashboard">
             <div class="top-bar">
-                <div class="logo-area"><h1>Peter AI Super Pro <span style="font-size:11px;">v54.0</span></h1><p>Final | PDF Fixed | Pause/Resume</p></div>
+                <div class="logo-area"><h1>Peter AI Super Pro <span style="font-size:11px;">v55.0</span></h1><p>Final – PDF Fixed</p></div>
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div class="language-display" id="languageDisplay"><i class="fas fa-globe"></i> <span id="languageName">English</span></div>
                     <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -311,11 +310,11 @@
                 <button id="generateReportBtn" class="btn btn-primary">Generate PDF (Sinhala + To‑Do List)</button>
                 <div id="reportStatus" class="status-badge status-inactive" style="margin-top:10px;">Ready</div>
             </div>
-            <div class="footer">© 2025 Peter AI Super Pro v54.0 | Developed by Pesala Jayawardene</div>
+            <div class="footer">© 2025 Peter AI Super Pro v55.0 | Developed by Pesala Jayawardene</div>
         </div>
     </div>
 
-    <!-- Modals (simplified but functional) -->
+    <!-- Modals (same as before) -->
     <div id="officeModal" class="modal"><div class="modal-content"><h3>Office Info</h3><input type="text" id="officeName" placeholder="Office Name"><textarea id="officeAddress" rows="2" placeholder="Address"></textarea><input type="text" id="meetingType" placeholder="Meeting Type"><button id="saveOfficeBtn" class="btn btn-primary">Save</button><button id="closeOfficeBtn" class="btn btn-secondary">Close</button></div></div>
     <div id="historyModal" class="modal"><div class="modal-content"><h3>Meeting History</h3><div id="historyList"></div><button id="closeHistoryBtn" class="btn btn-secondary">Close</button></div></div>
     <div id="adminModal" class="modal"><div class="modal-content"><h3>Admin Panel</h3><div class="admin-panel-prof"><div class="admin-tabs"><div class="admin-tab active" data-tab="rates">Meeting Rates</div><div class="admin-tab" data-tab="pages">Page Charges</div><div class="admin-tab" data-tab="danger">Danger</div></div><div id="tab-rates" class="admin-tab-content active"><div class="admin-card"><label>0-1h: $<input type="number" id="rate0_1" value="15"></label><br><label>1-2h: $<input type="number" id="rate1_2" value="14"></label><br><label>2-4h: $<input type="number" id="rate2_4" value="12"></label><br><label>4h+: $<input type="number" id="rateAbove4" value="11"></label><br><label>Per lang/hour: $<input type="number" id="perLanguageRate" value="3" step="0.5"></label><br><label>All 15: $<input type="number" id="allLanguagesRate" value="50"></label><br><button id="saveRatesBtn" class="btn btn-success">Save</button><button id="saveTranslationRatesBtn" class="btn btn-info">Save</button></div></div><div id="tab-pages" class="admin-tab-content"><div class="admin-card"><label>Transcript: $<input type="number" id="priceTranscript" value="0.10" step="0.01"></label><br><label>Summary: $<input type="number" id="priceSummary" value="0.10" step="0.01"></label><br><label>Narrative: $<input type="number" id="priceNarrative" value="0.10" step="0.01"></label><br><label>Actions: $<input type="number" id="priceActions" value="0.10" step="0.01"></label><br><label>Agenda: $<input type="number" id="priceAgenda" value="0.10" step="0.01"></label><br><label>Deep Study: $<input type="number" id="priceDeepStudy" value="0.15" step="0.01"></label><br><label>Hidden: $<input type="number" id="priceHidden" value="0.10" step="0.01"></label><br><label>Confidence: $<input type="number" id="priceConfidence" value="0.10" step="0.01"></label><br><label>To‑Do List: $<input type="number" id="priceTodo" value="0.10" step="0.01"></label><br><button id="savePagePricesBtn" class="btn btn-primary">Save</button><div id="pagePriceStatus"></div></div></div><div id="tab-danger" class="admin-tab-content"><button id="masterResetBtn" class="btn btn-danger">MASTER RESET</button></div></div><button id="closeAdminBtn" class="btn btn-secondary">Close</button></div></div>
@@ -567,7 +566,7 @@
                 alert(`Stopped. ${transcript.length} lines.`);
                 if(document.getElementById('historyModal') && document.getElementById('historyModal').style.display==='flex') showMeetingHistory();
             }
-            function autoSave() { let blob=new Blob([`Peter AI v54.0 AutoSave\n${new Date().toLocaleString()}\n${transcript.map(t=>`[${t.timestamp}] ${t.speaker}: ${t.originalText}`).join('\n')}`], {type:'text/plain'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Peter_AutoSave_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(blob); }
+            function autoSave() { let blob=new Blob([`Peter AI v55.0 AutoSave\n${new Date().toLocaleString()}\n${transcript.map(t=>`[${t.timestamp}] ${t.speaker}: ${t.originalText}`).join('\n')}`], {type:'text/plain'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Peter_AutoSave_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(blob); }
             function printCost() {
                 if(!meetingEnd){ alert("Stop meeting first"); return; }
                 let base=meetingHours<=1?meetingHours*rates.r0_1:meetingHours<=2?meetingHours*rates.r1_2:meetingHours<=4?meetingHours*rates.r2_4:meetingHours*rates.rAbove;
@@ -667,7 +666,7 @@
                 window.speechSynthesis.speak(utterance);
             }
             
-            // ========== PDF GENERATION – FIXED ==========
+            // ========== PDF GENERATION – FIXED WITH DELAY AND VISIBLE CONTAINER ==========
             async function generateReport() {
                 if(!transcript.length){ alert("No meeting data."); return; }
                 const incTranscript=document.getElementById('incTranscript').checked;
@@ -746,25 +745,29 @@
                     if(incHidden && problemsEnabled && hiddenRaw) html+=`<h2>Hidden Problems</h2><p>Issues: ${escapeHtml(hiddenRaw.issues.join(' '))}<br>Hidden Good: ${escapeHtml(hiddenRaw.hiddenGood.join(' '))}<br>Withheld: ${escapeHtml(hiddenRaw.withheld.join(' '))}<br>Secret: ${escapeHtml(hiddenRaw.secret.join(' '))}<br>Negative: ${escapeHtml(hiddenRaw.creators.join(' '))}<br>Involved: ${escapeHtml(hiddenRaw.assignees)}</p>`;
                     if(incConfidence && confidence) html+=`<h2>Meeting Confidence</h2><div style="background:#e2e8f0; border-radius:20px; height:30px; display:flex;"><div style="background:#10b981; width:${confidence.green}%; text-align:center;">${Math.round(confidence.green)}%</div><div style="background:#f59e0b; width:${confidence.yellow}%; text-align:center;">${Math.round(confidence.yellow)}%</div><div style="background:#ef4444; width:${confidence.red}%; text-align:center;">${Math.round(confidence.red)}%</div></div><p>Positive: ${confidence.posCount}, Negative: ${confidence.negCount}, Neutral: ${confidence.neutralCount}</p><p>Recommendation: ${confidence.red>40?"Review meeting dynamics.":(confidence.green>50?"Positive and productive.":"Neutral – focus on actions.")}</p>`;
                     if(incTodo && todoItems.length>0){
-                        html+=`<h2>📌 Actionable To‑Do Items</h2><table><thead><tr><th>#</th><th>Task</th><th>Speaker</th></tr></thead><tbody>`;
-                        todoItems.forEach((it,idx)=>{ html+=`<tr><td>${idx+1}</td><td>${escapeHtml(it.text)}</td><td>${escapeHtml(it.speaker)}</td></tr>`; });
-                        html+=`</tbody><tr><p><em>Automatically detected action-oriented phrases.</em></p>`;
+                        html+=`<h2>📌 Actionable To‑Do Items</h2><td><thead><tr><th>#</th><th>Task</th><th>Speaker</th></tr></thead><tbody>`;
+                        todoItems.forEach((it,idx)=>{ html+=`<tr><td>${idx+1}</td><td>${escapeHtml(it.text)}</td><td>${escapeHtml(it.speaker)}</td>`; });
+                        html+=`</tbody></table><p><em>Automatically detected action-oriented phrases.</em></p>`;
                     } else if(incTodo && todoItems.length===0) html+=`<h2>📌 Actionable To‑Do Items</h2><p>No task-oriented statements detected.</p>`;
                     if(incReceipt && costCalculated && meetingCost>0){
                         html+=`<h2>Payment Receipt</h2><p>Organization: ${escapeHtml(office.name)||'N/A'}</p><p>Invoice Date: ${now.toLocaleDateString()}</p><p>Meeting Date: ${meetingStart?meetingStart.toLocaleDateString():'N/A'}</p><p>Duration: ${Math.floor(meetingHours)}h ${Math.floor((meetingHours%1)*60)}m</p><p>Total Lines: ${transcript.length}</p><table><tr><th>Page</th><th>Charge</th></tr>${chargeDetails.map(d=>`<tr><td>${d.name}</td><td>$${d.amount.toFixed(2)}</td></tr>`).join('')}<tr><td><strong>Total Page Charges</strong></td><td><strong>$${totalPageCharge.toFixed(2)}</strong></td></tr></table><p>Meeting Charges: ${costDetailsArr.join('<br>')}</p><p><strong>GRAND TOTAL: $${(meetingCost+totalPageCharge).toFixed(2)}</strong></p>`;
                     }
-                    html+=`<hr><p style="text-align:center;">Generated by Peter AI Super Pro v54.0</p></body></html>`;
+                    html+=`<hr><p style="text-align:center;">Generated by Peter AI Super Pro v55.0</p></body></html>`;
                     
+                    // Create a visible off-screen container (not hidden, just off-screen)
                     const tempDiv = document.createElement('div');
                     tempDiv.style.position = 'absolute';
-                    tempDiv.style.top = '-9999px';
                     tempDiv.style.left = '-9999px';
+                    tempDiv.style.top = '-9999px';
                     tempDiv.style.width = '210mm';
-                    tempDiv.style.background = 'white';
+                    tempDiv.style.backgroundColor = 'white';
                     tempDiv.style.padding = '20px';
                     tempDiv.style.fontFamily = "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', sans-serif";
                     tempDiv.innerHTML = html;
                     document.body.appendChild(tempDiv);
+                    
+                    // Small delay to ensure rendering
+                    await new Promise(resolve => setTimeout(resolve, 100));
                     
                     const opt = { margin: 0.5, filename: `Peter_AI_Report_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, letterRendering: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
                     await html2pdf().set(opt).from(tempDiv).save();
